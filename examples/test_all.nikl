@@ -22,5 +22,7 @@ ram = 1;
 
 // cat = 1.2e+35677x if;    // Throws an error
 
-neko = 1 + 2;
-print(neko);
+// var neko = 1 + 2;
+// print(neko);
+
+1 + 2 - 3;

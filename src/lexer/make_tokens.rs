@@ -23,7 +23,7 @@ pub enum TokenType {
     
     // Keywords
     And, Class, Else, False, Func, For, If, Nil, Or,
-    Print, Return, Super, This, True, Var, While,
+    Print, Return, Super, This, True, Var, While, Const,
 
     // Types
     Int, Float, Bool, Void,
@@ -271,6 +271,7 @@ impl<'a> Lexer<'a> {
             "this" => TokenType::This,
             "True" => TokenType::True,
             "var" => TokenType::Var,
+            "const" => TokenType::Const,
             "while" => TokenType::While,
             "int" => TokenType::Int,
             "float" => TokenType::Float,

@@ -13,8 +13,6 @@ fn main() {
     // Get arguments
     let args: Vec<String> = std::env::args().collect();
 
-    println!("{:?}", args);
-
     // If one argument is passed
     if args.len() == 2 {
         // Get argument

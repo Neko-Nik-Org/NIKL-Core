@@ -16,8 +16,8 @@ pub fn run_file(arg: &str) {
             let file_data =
                 fs::read_to_string(main_file_path).expect("Error: Could not read file");
             // run it
-            run(&file_data);
             println!("Running folder");
+            run(&file_data);
         } else {
             // Print error if "main.nikl" is not found
             println!("Error: 'main.nikl' not found in the specified folder");
@@ -29,8 +29,8 @@ pub fn run_file(arg: &str) {
         let file_data =
             fs::read_to_string(path).expect("Error: Could not read file");
         // Run the file
-        run(&file_data);
         println!("Running file");
+        run(&file_data);
     }
     // If argument is not a file or folder
     else {
