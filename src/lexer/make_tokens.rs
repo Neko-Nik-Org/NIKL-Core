@@ -130,9 +130,20 @@ impl<'a> Lexer<'a> {
                     self.advance();
                 },
                 '/' => {
+                    self.advance(); // Consume the '/' character that was peeked
                     if self.peek_next() == '/' {
                         // A comment goes until the end of the line
                         while self.peek() != '\n' && self.peek() != '\0' {
+                            self.advance();
+                        }
+                    } else if self.peek_next() == '*' {
+                        // The end of a block comment is denoted by "*/"
+                        self.advance();
+                        while self.peek() != '\0' {
+                            if self.peek() == '*' && self.advance().is_some() && self.peek_next() == '/' {
+                                self.advance();
+                                break;
+                            }
                             self.advance();
                         }
                     } else {
@@ -246,7 +257,7 @@ impl<'a> Lexer<'a> {
     
 
     pub fn get_token(&mut self) -> Token {
-        // Skip whitespace
+        // Skip whitespace and comments
         self.skip_whitespace();
     
         // Get the next character
@@ -272,6 +283,7 @@ impl<'a> Lexer<'a> {
             '^' => self.make_token(TokenType::Caret, "^".to_string()),
             '&' => self.make_token(TokenType::Ampersand, "&".to_string()),
             '%' => self.make_token(TokenType::Percent, "%".to_string()),
+            
             // One or two character tokens
             '*' => {
                 if self.match_char('*') {
@@ -338,12 +350,15 @@ impl<'a> Lexer<'a> {
                     self.make_token(TokenType::Slash, "/".to_string())
                 }
             },
+            
             // Literals
             '"' | '\'' => self.string(),
             '0'..='9' => self.number(c),
             'a'..='z' | 'A'..='Z' | '_' => self.identifier(c),
+            
             // End of file
             '\0' => self.make_token(TokenType::Eof, self.column.to_string()),
+            
             // Invalid character
             _ => self.error_token(format!("Unexpected character found: '{}'", c).as_str())
         }

@@ -2,4 +2,14 @@ cat = 19+ 2 * 3 - (4.2 ** 6);
 
 if class
 
-!= == >= <= < > { } else { }
+the = "cat";
+
+else
+
+// != == >= <= < > { } else { }
+
+/* cars = 2; 
+ram = 1;
+*/
+
+rats = 3;
