@@ -1,5 +1,5 @@
-variable_a: int = 1
-variable_b: bool = True
+// variable_a: int = 1
+// variable_b: bool = True
 
 // Operators
 // Arithmetic: + - * / % **

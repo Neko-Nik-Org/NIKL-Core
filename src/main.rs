@@ -1,17 +1,9 @@
 mod interpreter;
 mod lexer;
 
-use lexer::make_tokens;
+
 
 fn main() {
-
-    main_2();
-    return;
-
-
-
-
-
     // If there are arguments passed, run them
     // Currently only file path are supported or a project folder path
     // If folder path is passed, run "main.nikl"
@@ -38,19 +30,5 @@ fn main() {
     } else {
         // If no arguments are passed, start the REPL (Read-Eval-Print-Loop)
         interpreter::repl::start_repl();
-    }
-}
-
-
-
-pub fn main_2() {
-    let mut lexer = make_tokens::Lexer::new("cat = 19+ 2 * 3 - (4.2 ** 6); if class ");
-    
-    loop {
-        let token = lexer.get_token();
-        println!("{:?}", token);
-        if token.token_type == make_tokens::TokenType::Eof {
-            break;
-        }
     }
 }
