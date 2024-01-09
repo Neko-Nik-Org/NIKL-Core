@@ -44,7 +44,7 @@ fn main() {
 
 
 pub fn main_2() {
-    let mut lexer = make_tokens::Lexer::new("cat $= 19+ 2 * 3 - (4.2 ** 6);");
+    let mut lexer = make_tokens::Lexer::new("cat = 19+ 2 * 3 - (4.2 ** 6); if class ");
     
     loop {
         let token = lexer.get_token();

@@ -1,4 +1,3 @@
-use std::fmt::format;
 use std::iter::Peekable;
 use std::str::Chars;
 
@@ -99,7 +98,7 @@ impl<'a> Lexer<'a> {
             self.column += 1;
             c
         })
-    }    
+    }
 
     pub fn peek(&mut self) -> char {
         *self.source.peek().unwrap_or(&'\0')
@@ -162,7 +161,7 @@ impl<'a> Lexer<'a> {
     pub fn number(&mut self, current_char: char) -> Token {
         let mut number = String::new();
         loop {
-            let mut c = self.peek().to_string();
+            let c = self.peek().to_string();
             // First character is already checked in get_token() so add it to the number
             if number.len() == 0 {
                 number.push(current_char);
@@ -204,7 +203,45 @@ impl<'a> Lexer<'a> {
                 }
             }
         }
-        Token::new(TokenType::Identifier, identifier, self.line, self.column)
+        // Check if the identifier is a keyword
+        let token_type = match identifier.as_str() {
+            "and" => TokenType::And,
+            "class" => TokenType::Class,
+            "else" => TokenType::Else,
+            "False" => TokenType::False,
+            "func" => TokenType::Func,
+            "for" => TokenType::For,
+            "if" => TokenType::If,
+            "nil" => TokenType::Nil,
+            "or" => TokenType::Or,
+            "print" => TokenType::Print,
+            "return" => TokenType::Return,
+            "super" => TokenType::Super,
+            "this" => TokenType::This,
+            "True" => TokenType::True,
+            "var" => TokenType::Var,
+            "while" => TokenType::While,
+            "int" => TokenType::Int,
+            "float" => TokenType::Float,
+            "bool" => TokenType::Bool,
+            "void" => TokenType::Void,
+            "int8" => TokenType::Int8,
+            "int16" => TokenType::Int16,
+            "int32" => TokenType::Int32,
+            "int64" => TokenType::Int64,
+            "uint" => TokenType::Uint,
+            "uint8" => TokenType::Uint8,
+            "uint16" => TokenType::Uint16,
+            "uint32" => TokenType::Uint32,
+            "uint64" => TokenType::Uint64,
+            "float32" => TokenType::Float32,
+            "float64" => TokenType::Float64,
+            "byte" => TokenType::Byte,
+            "rune" => TokenType::Rune,
+            "char" => TokenType::Char,
+            _ => TokenType::Identifier
+        };
+        Token::new(token_type, identifier, self.line, self.column)
     }
     
 
