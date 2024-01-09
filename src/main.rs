@@ -1,27 +1,5 @@
 mod interpreter;
 
-// enum Token {
-//     // Special tokens
-//     ILLEGAL,
-//     EOF,
-//     // Identifiers + literals
-//     IDENT,
-//     INT,
-//     // Operators
-//     ASSIGN,
-//     PLUS,
-//     // Delimiters
-//     COMMA,
-//     SEMICOLON,
-//     LPAREN,
-//     RPAREN,
-//     LBRACE,
-//     RBRACE,
-//     // Keywords
-//     FUNCTION,
-//     LET
-// }
-
 
 fn main() {
     // If there are arguments passed, run them
@@ -38,7 +16,7 @@ fn main() {
     // If one argument is passed
     if args.len() == 2 {
         // Get argument
-        let arg = &args[1];
+        let arg: &String = &args[1];
         // Interpret the file
         interpreter::run_file::run_file(arg);
         

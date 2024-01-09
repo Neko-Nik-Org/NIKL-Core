@@ -15,6 +15,18 @@ pub fn start_repl() {
         if input_cleaned == "exit()" || input_cleaned == "exit();" || input == "" {
             println!("Bye!");
             return ();
+        } else if input_cleaned == "help()" || input_cleaned == "help();" {
+            println!("NikL Interpreter Help");
+            println!("exit() - Exit the interpreter");
+            println!("help() - Print this help message");
+            continue;
+        } else {
+            // This is where we will interpret the input
+            // We will use the lexer to get tokens
+            // We will use the parser to parse the tokens
+            // We will use the interpreter to interpret the parsed tokens
+            // We will use the compiler to compile the parsed tokens
+            // We will use the VM to run the compiled tokens
         }
 
         // Print input
