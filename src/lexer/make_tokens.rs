@@ -1,3 +1,4 @@
+use std::fmt::format;
 use std::iter::Peekable;
 use std::str::Chars;
 
@@ -307,7 +308,7 @@ impl<'a> Lexer<'a> {
             // End of file
             '\0' => self.make_token(TokenType::Eof, self.column.to_string()),
             // Invalid character
-            _ => self.error_token("Unexpected character")
+            _ => self.error_token(format!("Unexpected character found: '{}'", c).as_str())
         }
     }
 }
