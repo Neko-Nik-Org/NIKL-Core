@@ -1,4 +1,4 @@
-cat = 19+ 2 * 3 - (4.2 ** 6);
+/* cat = 19+ 2 * 3 - (4.2 ** 6);
 
 if class
 
@@ -7,6 +7,10 @@ the = "cats are cool
 
 else
 
+func = function() {
+    return 1;
+}
+
 // != == >= <= < > 
 { } else { }
 
@@ -14,4 +18,4 @@ else
 ram = 1;
 */
 
-rats = 3;
+rats = -3.123;

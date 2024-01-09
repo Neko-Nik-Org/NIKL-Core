@@ -282,13 +282,20 @@ impl<'a> Lexer<'a> {
             '}' => self.make_token(TokenType::RightBrace, "}".to_string()),
             ',' => self.make_token(TokenType::Comma, ",".to_string()),
             '.' => self.make_token(TokenType::Dot, ".".to_string()),
-            '-' => self.make_token(TokenType::Minus, "-".to_string()),
             '+' => self.make_token(TokenType::Plus, "+".to_string()),
             ';' => self.make_token(TokenType::Semicolon, ";".to_string()),
             '^' => self.make_token(TokenType::Caret, "^".to_string()),
             '%' => self.make_token(TokenType::Percent, "%".to_string()),
             
             // One or two character tokens
+            '-' => {
+                // might be a negative number
+                if self.peek().is_digit(10) {
+                   self.number(c)
+                } else {
+                    self.make_token(TokenType::Minus, "-".to_string())
+                }
+            },
             '*' => {
                 if self.match_char('*') {
                     self.make_token(TokenType::StarStar, "**".to_string())
