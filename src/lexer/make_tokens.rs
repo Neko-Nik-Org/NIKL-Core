@@ -143,6 +143,9 @@ impl<'a> Lexer<'a> {
                             if self.peek() == '*' && self.advance().is_some() && self.peek_next() == '/' {
                                 self.advance();
                                 break;
+                            } else if self.peek() == '\n' {
+                                self.line += 1;
+                                self.column = 1;
                             }
                             self.advance();
                         }
@@ -163,6 +166,11 @@ impl<'a> Lexer<'a> {
             let c = self.advance();
             if c == Some('"') || c == Some('\''){
                 break;
+            } else if c == None {
+                return self.error_token("Unterminated string");
+            } else if c == Some('\n') {
+                self.line += 1;
+                self.column = 0;
             }
             string.push(c.unwrap());
         }

@@ -2,11 +2,13 @@ cat = 19+ 2 * 3 - (4.2 ** 6);
 
 if class
 
-the = "cat";
+the = "cats are cool
+ is true!";
 
 else
 
-// != == >= <= < > { } else { }
+// != == >= <= < > 
+{ } else { }
 
 /* cars = 2; 
 ram = 1;
