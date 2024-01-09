@@ -68,7 +68,7 @@ impl<'a> Lexer<'a> {
         Lexer {
             source: source.chars().peekable(),
             line: 1,
-            column: 1
+            column: 0
         }
     }
 
