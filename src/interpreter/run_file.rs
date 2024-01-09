@@ -42,7 +42,6 @@ pub fn run_file(arg: &str) {
 // Run the file
 fn run(file_data: &str) {
     let mut lexer = make_tokens::Lexer::new(file_data);
-
     loop {
         let token = lexer.get_token();
         println!("{:?}", token);
@@ -50,4 +49,5 @@ fn run(file_data: &str) {
             break;
         }
     }
+    lexer.get_tokens(); // Remove this later
 }

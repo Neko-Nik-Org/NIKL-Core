@@ -194,10 +194,42 @@ impl<'a> Lexer<'a> {
                     if self.peek_next().is_digit(10) {
                         number.push(self.advance().unwrap());
                     } else {
-                        break;
+                        // If the next character is not a digit, then the '.' is not part of the number
+                        // So break the loop and raise an error
+                        let error_literal: String = self.peek_next().to_string();
+                        return self.error_token(format!("Invalid literal '{}' found, expected a digit", &error_literal).as_str());
                     }
                 },
                 _ => {
+                    // If the next character is not a digit, then it is not part of the number meaning its error
+                    let error_literal: String = self.peek_next().to_string();
+                    if error_literal == " " || error_literal == ";" || error_literal == ")" || error_literal == "}" || error_literal == "]" {
+                        number.push(self.advance().unwrap());
+                    } else if error_literal == "e" || error_literal == "E" {
+                        number.push(self.advance().unwrap());
+                        if self.peek_next() == '-' || self.peek_next() == '+' {
+                            number.push(self.advance().unwrap());
+                            loop {
+                                if self.peek_next().is_digit(10) {
+                                    number.push(self.advance().unwrap());
+                                } else if self.peek_next() == ' ' || self.peek_next() == ';' || self.peek_next() == ')' || self.peek_next() == '}' || self.peek_next() == ']' {
+                                    number.push(self.advance().unwrap());
+                                    break;
+                                } else {
+                                    let err_msg = format!("Invalid literal '{}' found, expected a digit", self.peek_next());
+                                    return self.error_token(err_msg.as_str());
+                                }
+                            }
+                        } else if self.peek_next().is_digit(10) {
+                            number.push(self.advance().unwrap());
+                        } else {
+                            let err_msg = format!("Invalid literal '{}' found, expected a digit", self.peek_next());
+                            return self.error_token(err_msg.as_str());
+                        }
+                    } else {
+                        let err_msg = format!("Invalid literal '{}' found, expected a digit", self.peek_next());
+                        return self.error_token(err_msg.as_str());
+                    }
                     break;
                 }
             }
@@ -366,5 +398,146 @@ impl<'a> Lexer<'a> {
             // Invalid character
             _ => self.error_token(format!("Unexpected character found: '{}'", c).as_str())
         }
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_token() {
+        let mut lexer = Lexer::new("1 + 2");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 5));
+    }
+
+    #[test]
+    fn test_get_tokens() {
+        let mut lexer = Lexer::new("1 + 2");
+        assert_eq!(lexer.get_tokens(), vec![
+            Token::new(TokenType::Number, "1".to_string(), 1, 1),
+            Token::new(TokenType::Plus, "+".to_string(), 1, 3),
+            Token::new(TokenType::Number, "2".to_string(), 1, 5),
+            Token::new(TokenType::Eof, "".to_string(), 1, 5)
+        ]);
+    }
+
+    #[test]
+    fn test_skip_whitespace() {
+        let mut lexer = Lexer::new("1 + 2");
+        lexer.skip_whitespace();
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 5));
+    }
+
+    #[test]
+    fn test_string() {
+        let mut lexer = Lexer::new("\"Hello World\"");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::String, "Hello World".to_string(), 1, 13));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 13));
+    }
+
+    #[test]
+    fn test_number() {
+        let mut lexer = Lexer::new("123");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "123".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 3));
+    }
+
+    #[test]
+    fn test_identifier() {
+        let mut lexer = Lexer::new("abc");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Identifier, "abc".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 3));
+    }
+
+    #[test]
+    fn test_get_token_with_whitespace() {
+        let mut lexer = Lexer::new("1 + 2");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 5));
+    }
+
+    #[test]
+    fn test_get_token_with_comments() {
+        let mut lexer = Lexer::new("1 + 2 // This is a comment");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 26));
+    }
+
+    #[test]
+    fn test_get_token_with_block_comment() {
+        let mut lexer = Lexer::new("1 + 2 /* This is a block comment */");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 35));
+    }
+
+    #[test]
+    fn test_get_token_with_block_comment_on_multiple_lines() {
+        let mut lexer = Lexer::new("1 + 2 /* This is a block comment\nThis is a block comment\nThis is a block comment */");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 28));
+    }
+
+    #[test]
+    fn test_get_token_with_block_comment_on_multiple_lines_and_whitespace() {
+        let mut lexer = Lexer::new("1 + 2 /* This is a block comment\nThis is a block comment\nThis is a block comment */");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 28));
+    }
+
+    #[test]
+    fn test_get_token_with_block_comment_on_multiple_lines_and_whitespace_and_code() {
+        let mut lexer = Lexer::new("1 + 2 /* This is a block comment\nThis is a block comment\nThis is a block comment */ 3 + 4");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "3".to_string(), 3, 30));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 3, 32));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "4".to_string(), 3, 34));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 34));
+    }
+
+    #[test]
+    fn test_get_token_with_block_comment_on_multiple_lines_and_whitespace_and_code_and_comments() {
+        let mut lexer = Lexer::new("1 + 2 /* This is a block comment\nThis is a block comment\nThis is a block comment */ 3 + 4 // This is a comment");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "3".to_string(), 3, 30));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 3, 32));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "4".to_string(), 3, 34));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 55));
+    }
+
+    #[test]
+    fn test_get_token_with_block_comment_on_multiple_lines_and_whitespace_and_code_and_comments_and_code() {
+        let mut lexer = Lexer::new("1 + 2 /* This is a block comment\nThis is a block comment\nThis is a block comment */ 3 + 4 // This is a comment\n5 + 6");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "3".to_string(), 3, 30));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 3, 32));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "4".to_string(), 3, 34));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "5".to_string(), 4, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 4, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "6".to_string(), 4, 7));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 4, 7));
     }
 }
