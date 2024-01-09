@@ -262,7 +262,6 @@ impl<'a> Lexer<'a> {
         };
         Token::new(token_type, identifier, self.line, self.column)
     }
-    
 
     pub fn get_token(&mut self) -> Token {
         // Skip whitespace and comments
@@ -286,10 +285,7 @@ impl<'a> Lexer<'a> {
             '-' => self.make_token(TokenType::Minus, "-".to_string()),
             '+' => self.make_token(TokenType::Plus, "+".to_string()),
             ';' => self.make_token(TokenType::Semicolon, ";".to_string()),
-            '/' => self.make_token(TokenType::Slash, "/".to_string()),
-            '|' => self.make_token(TokenType::Pipe, "|".to_string()),
             '^' => self.make_token(TokenType::Caret, "^".to_string()),
-            '&' => self.make_token(TokenType::Ampersand, "&".to_string()),
             '%' => self.make_token(TokenType::Percent, "%".to_string()),
             
             // One or two character tokens
@@ -326,13 +322,6 @@ impl<'a> Lexer<'a> {
                     self.make_token(TokenType::LessEqual, "<=".to_string())
                 } else {
                     self.make_token(TokenType::Less, "<".to_string())
-                }
-            },
-            '*' => {
-                if self.match_char('*') {
-                    self.make_token(TokenType::StarStar, "**".to_string())
-                } else {
-                    self.make_token(TokenType::Star, "*".to_string())
                 }
             },
             '|' => {
