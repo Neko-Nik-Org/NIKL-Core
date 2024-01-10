@@ -26,5 +26,5 @@ ram = 1;
 // print(neko);
 // a=nil;
 
-//1 + 2 - 3;
+1 + 2 - 3;
 cat: int16 = 1;

@@ -1,8 +1,9 @@
 use std::iter::Peekable;
 use std::str::Chars;
 
+
 // Token struct
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TokenType {
     // Single-character tokens
     LeftParen, RightParen, LeftBrace, RightBrace,
@@ -36,7 +37,7 @@ pub enum TokenType {
     Eof
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Token {
     pub token_type: TokenType,
     pub lexeme: String,
@@ -200,36 +201,29 @@ impl<'a> Lexer<'a> {
                         return self.error_token(format!("Invalid literal '{}' found, expected a digit", &error_literal).as_str());
                     }
                 },
-                _ => {
-                    // If the next character is not a digit, then it is not part of the number meaning its error
-                    let error_literal: String = self.peek_next().to_string();
-                    if error_literal == " " || error_literal == ";" || error_literal == ")" || error_literal == "}" || error_literal == "]" {
+                'e' | 'E' => {
+                    number.push(self.advance().unwrap());   // Consume the 'e' or 'E' character that was peeked
+                    if self.peek_next() == '-' || self.peek_next() == '+' {
                         number.push(self.advance().unwrap());
-                    } else if error_literal == "e" || error_literal == "E" {
-                        number.push(self.advance().unwrap());
-                        if self.peek_next() == '-' || self.peek_next() == '+' {
-                            number.push(self.advance().unwrap());
-                            loop {
-                                if self.peek_next().is_digit(10) {
-                                    number.push(self.advance().unwrap());
-                                } else if self.peek_next() == ' ' || self.peek_next() == ';' || self.peek_next() == ')' || self.peek_next() == '}' || self.peek_next() == ']' {
-                                    number.push(self.advance().unwrap());
-                                    break;
-                                } else {
-                                    let err_msg = format!("Invalid literal '{}' found, expected a digit", self.peek_next());
-                                    return self.error_token(err_msg.as_str());
-                                }
+                        loop {
+                            let next_char = self.peek_next();
+                            if next_char.is_digit(10) {
+                                number.push(self.advance().unwrap());
+                            } else if next_char == ' ' || next_char == ';' || next_char == ')' || next_char == '}' || next_char == ']' {
+                                break;  // Break the loop if the next character is a whitespace or a delimiter
+                            } else {
+                                let err_msg = format!("Invalid literal '{}' found, expected a digit", self.peek_next());
+                                return self.error_token(err_msg.as_str());
                             }
-                        } else if self.peek_next().is_digit(10) {
-                            number.push(self.advance().unwrap());
-                        } else {
-                            let err_msg = format!("Invalid literal '{}' found, expected a digit", self.peek_next());
-                            return self.error_token(err_msg.as_str());
                         }
+                    } else if self.peek_next().is_digit(10) {
+                        number.push(self.advance().unwrap());
                     } else {
                         let err_msg = format!("Invalid literal '{}' found, expected a digit", self.peek_next());
                         return self.error_token(err_msg.as_str());
                     }
+                },
+                _ => {
                     break;
                 }
             }
@@ -450,6 +444,24 @@ mod tests {
         let mut lexer = Lexer::new("123");
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "123".to_string(), 1, 3));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 3));
+    }
+
+    #[test]
+    fn number_with_exponent() {
+        let mut lexer = Lexer::new("123e4");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "123e4".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 5));
+    }
+
+    #[test]
+    fn number_with_exponent_and_sign() {
+        let mut lexer = Lexer::new("123e+412; 123e-43; 123e41; 123E4144; 123E+413");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "123e+412".to_string(), 1, 8));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Semicolon, ";".to_string(), 1, 9));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "123e-43".to_string(), 1, 17));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Semicolon, ";".to_string(), 1, 18));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "123e41".to_string(), 1, 25));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Semicolon, ";".to_string(), 1, 26));
     }
 
     #[test]
