@@ -2,6 +2,7 @@ use std::fs;
 use std::path::Path;
 
 use crate::lexer::make_tokens;
+use crate::expressions;
 
 pub fn run_file(arg: &str) {
     let path = Path::new(arg);
@@ -42,12 +43,9 @@ pub fn run_file(arg: &str) {
 // Run the file
 fn run(file_data: &str) {
     let mut lexer = make_tokens::Lexer::new(file_data);
-    loop {
-        let token = lexer.get_token();
-        println!("{:?}", token);
-        if token.token_type == make_tokens::TokenType::Eof {
-            break;
-        }
-    }
-    lexer.get_tokens(); // Remove this later
+    let token = lexer.get_tokens();
+    let mut parser = expressions::Parser::new(token.clone());
+    let parsed_tokens = parser.parse();
+    println!("Lexer tokens: {:?}", token);
+    println!("Parser tokens: {:?}", parsed_tokens);
 }

@@ -26,5 +26,7 @@ ram = 1;
 // print(neko);
 // a=nil;
 
-1 + 2 - 3;
-cat: int16 = 1;
+// var cat = 1+2;
+// var cat = "cat";
+var cat= 1+2;
+//print(1+2);
