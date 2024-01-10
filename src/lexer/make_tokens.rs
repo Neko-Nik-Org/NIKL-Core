@@ -7,7 +7,7 @@ pub enum TokenType {
     // Single-character tokens
     LeftParen, RightParen, LeftBrace, RightBrace,
     Comma, Dot, Minus, Plus, Semicolon, Slash, Star,
-    Pipe, Caret, Ampersand, Percent,    // | ^ & %
+    Pipe, Caret, Ampersand, Percent, Colon,    // | ^ & %
     
     // One or two character tokens
     Bang, BangEqual,    // ! !=
@@ -319,7 +319,8 @@ impl<'a> Lexer<'a> {
             ';' => self.make_token(TokenType::Semicolon, ";".to_string()),
             '^' => self.make_token(TokenType::Caret, "^".to_string()),
             '%' => self.make_token(TokenType::Percent, "%".to_string()),
-            
+            ':' => self.make_token(TokenType::Colon, ":".to_string()),
+
             // One or two character tokens
             '-' => {
                 // might be a negative number
