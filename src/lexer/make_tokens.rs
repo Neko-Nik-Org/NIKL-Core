@@ -106,7 +106,11 @@ impl<'a> Lexer<'a> {
     }
     
     pub fn peek_next(&mut self) -> char {
-        self.source.clone().next().unwrap_or('\0')
+        // Advance the iterator and return the peeked character
+        let mut cloned_source = self.source.clone();
+        cloned_source.next();
+        let c: char = *cloned_source.peek().unwrap_or(&'\0');
+        c
     }
 
     pub fn match_char(&mut self, expected: char) -> bool {
@@ -127,11 +131,10 @@ impl<'a> Lexer<'a> {
                 },
                 '\n' => {
                     self.line += 1;
-                    self.column = 1;
                     self.advance();
+                    self.column = 0;
                 },
                 '/' => {
-                    self.advance(); // Consume the '/' character that was peeked
                     if self.peek_next() == '/' {
                         // A comment goes until the end of the line
                         while self.peek() != '\n' && self.peek() != '\0' {
@@ -139,14 +142,14 @@ impl<'a> Lexer<'a> {
                         }
                     } else if self.peek_next() == '*' {
                         // The end of a block comment is denoted by "*/"
-                        self.advance();
                         while self.peek() != '\0' {
-                            if self.peek() == '*' && self.advance().is_some() && self.peek_next() == '/' {
+                            if self.peek() == '*' && self.peek_next() == '/' {
+                                self.advance();
                                 self.advance();
                                 break;
                             } else if self.peek() == '\n' {
                                 self.line += 1;
-                                self.column = 1;
+                                self.column = 0;
                             }
                             self.advance();
                         }
@@ -191,18 +194,22 @@ impl<'a> Lexer<'a> {
                     number.push(self.advance().unwrap());
                 },
                 '.' => {
-                    number.push(self.advance().unwrap());   // Consume the '.' character that was peeked
-                    if self.peek_next().is_digit(10) {
-                        number.push(self.advance().unwrap());
-                    } else {
-                        // If the next character is not a digit, then the '.' is not part of the number
-                        // So break the loop and raise an error
-                        let error_literal: String = self.peek_next().to_string();
-                        return self.error_token(format!("Invalid literal '{}' found, expected a digit", &error_literal).as_str());
+                    loop {
+                        // println!("> Now {} at line: {}, column: {}", self.peek_next(), self.line, self.column);
+                        let next_char = self.peek_next();
+                        if next_char.is_digit(10) {
+                            number.push(self.advance().unwrap());
+                        } else if next_char == ' ' || next_char == ';' || next_char == ')' || next_char == '}' || next_char == ']' {
+                            break;  // Break the loop if the next character is a whitespace or a delimiter
+                        } else if next_char == 'e' || next_char == 'E' {
+                            break;
+                        } else {
+                            let err_msg = format!("Invalid literal '{}' found, expected a digit", self.peek_next());
+                            return self.error_token(err_msg.as_str());
+                        }
                     }
                 },
                 'e' | 'E' => {
-                    number.push(self.advance().unwrap());   // Consume the 'e' or 'E' character that was peeked
                     if self.peek_next() == '-' || self.peek_next() == '+' {
                         number.push(self.advance().unwrap());
                         loop {
@@ -299,7 +306,7 @@ impl<'a> Lexer<'a> {
             Some(ch) => ch,
             None => return self.make_token(TokenType::Eof, "".to_string())
         };
-    
+
         // Match the character
         match c {
             // Single-character tokens
@@ -447,6 +454,15 @@ mod tests {
     }
 
     #[test]
+    fn test_division() {
+        let mut lexer = Lexer::new("123 / 456");
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "123".to_string(), 1, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Slash, "/".to_string(), 1, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "456".to_string(), 1, 9));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 1, 9));
+    }
+
+    #[test]
     fn number_with_exponent() {
         let mut lexer = Lexer::new("123e4");
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "123e4".to_string(), 1, 5));
@@ -504,7 +520,7 @@ mod tests {
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 28));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 27));
     }
 
     #[test]
@@ -513,7 +529,7 @@ mod tests {
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 28));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 27));
     }
 
     #[test]
@@ -522,10 +538,10 @@ mod tests {
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "3".to_string(), 3, 30));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 3, 32));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "4".to_string(), 3, 34));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 34));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "3".to_string(), 3, 29));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 3, 31));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "4".to_string(), 3, 33));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 33));
     }
 
     #[test]
@@ -534,10 +550,10 @@ mod tests {
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "3".to_string(), 3, 30));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 3, 32));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "4".to_string(), 3, 34));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 55));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "3".to_string(), 3, 29));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 3, 31));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "4".to_string(), 3, 33));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 3, 54));
     }
 
     #[test]
@@ -546,12 +562,12 @@ mod tests {
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "1".to_string(), 1, 1));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 1, 3));
         assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "2".to_string(), 1, 5));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "3".to_string(), 3, 30));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 3, 32));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "4".to_string(), 3, 34));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "5".to_string(), 4, 3));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 4, 5));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "6".to_string(), 4, 7));
-        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 4, 7));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "3".to_string(), 3, 29));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 3, 31));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "4".to_string(), 3, 33));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "5".to_string(), 4, 1));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Plus, "+".to_string(), 4, 3));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Number, "6".to_string(), 4, 5));
+        assert_eq!(lexer.get_token(), Token::new(TokenType::Eof, "".to_string(), 4, 5));
     }
 }

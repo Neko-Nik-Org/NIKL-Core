@@ -43,9 +43,12 @@ pub fn run_file(arg: &str) {
 // Run the file
 fn run(file_data: &str) {
     let mut lexer = make_tokens::Lexer::new(file_data);
-    let token = lexer.get_tokens();
-    let mut parser = expressions::Parser::new(token.clone());
+    let tokens = lexer.get_tokens();
+    let mut parser = expressions::Parser::new(tokens.clone());
     let parsed_tokens = parser.parse();
-    println!("Lexer tokens: {:?}", token);
-    println!("Parser tokens: {:?}", parsed_tokens);
+    println!("Lexer tokens:");
+    for token in tokens {
+        println!("{:?}", token);
+    }
+    println!("\nParser tokens: {:?}", parsed_tokens);
 }
