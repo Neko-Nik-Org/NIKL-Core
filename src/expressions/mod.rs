@@ -79,6 +79,12 @@ impl Parser {
         self.equality()
     }
 
+    fn expression_statement(&mut self) -> Result<Statement, String> {
+        let expr = self.expression()?;
+        self.consume(TokenType::Semicolon, "Expect ';' after expression.")?;
+        Ok(Statement::Expression(expr))
+    }
+
     fn statement(&mut self) -> Result<Statement, String> {
         if self.match_token(vec![TokenType::Var]) {
             self.var_declaration()
@@ -106,7 +112,6 @@ impl Parser {
         }
     }
 
-    // Parse a variable declaration statement
     fn var_declaration(&mut self) -> Result<Statement, String> {
         let variable = self.consume(TokenType::Identifier, "Expect variable name after 'var'.")?;
         let initializer = if self.match_token(vec![TokenType::Equal]) {
@@ -122,7 +127,6 @@ impl Parser {
         })
     }
 
-    // Parse a constant declaration statement
     fn const_declaration(&mut self) -> Result<Statement, String> {
         let constant = self.consume(TokenType::Identifier, "Expect constant name after 'const'.")?;
         let initializer = if self.match_token(vec![TokenType::Equal]) {
@@ -137,13 +141,6 @@ impl Parser {
             value: initializer.unwrap_or_else(|| Expression::Literal { value: Literal::Nil }),
             is_constant: true,
         })
-    }
-
-    // Parse an expression statement
-    fn expression_statement(&mut self) -> Result<Statement, String> {
-        let expr = self.expression()?;
-        self.consume(TokenType::Semicolon, "Expect ';' after expression.")?;
-        Ok(Statement::Expression(expr))
     }
 
     fn equality(&mut self) -> Result<Expression, String> {
