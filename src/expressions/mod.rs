@@ -49,19 +49,18 @@ pub enum Expression {
 #[derive(Debug)]
 pub enum Statement {
     Expression(Expression),
-    Assignment { variable: Token, value: Expression },
+    Assignment { variable: Token, value: Expression , is_constant: bool},
 }
 
 pub struct Parser {
     tokens: Vec<Token>,
-    current: usize,
-    current_statement: Statement,
+    current: usize
 }
 
 
 impl Parser {
     pub fn new(tokens: Vec<Token>) -> Parser {
-        Parser { tokens, current: 0 , current_statement: Statement::Expression(Expression::Literal { value: Literal::Nil }) }
+        Parser { tokens, current: 0 }
     }
 
     pub fn parse(&mut self) -> Result<Vec<Statement>, String> {
@@ -85,6 +84,10 @@ impl Parser {
             self.var_declaration()
         }
 
+        else if self.match_token(vec![TokenType::Const]) {
+            self.const_declaration()
+        }
+
         else if self.match_token(vec![TokenType::Semicolon]) {
             Ok(Statement::Expression(Expression::Literal { value: Literal::Nil }))
         }
@@ -105,7 +108,6 @@ impl Parser {
 
     // Parse a variable declaration statement
     fn var_declaration(&mut self) -> Result<Statement, String> {
-        let var_token = self.previous(); // var token or const token? implement const later
         let variable = self.consume(TokenType::Identifier, "Expect variable name after 'var'.")?;
         let initializer = if self.match_token(vec![TokenType::Equal]) {
             Some(self.expression()?)
@@ -116,6 +118,24 @@ impl Parser {
         Ok(Statement::Assignment {
             variable,
             value: initializer.unwrap_or_else(|| Expression::Literal { value: Literal::Nil }),
+            is_constant: false,
+        })
+    }
+
+    // Parse a constant declaration statement
+    fn const_declaration(&mut self) -> Result<Statement, String> {
+        let constant = self.consume(TokenType::Identifier, "Expect constant name after 'const'.")?;
+        let initializer = if self.match_token(vec![TokenType::Equal]) {
+            Some(self.expression()?)
+        } else {
+            // Constant must be initialized
+            return Err("Expect constant to be initialized.".to_string());
+        };
+        self.consume(TokenType::Semicolon, "Expect ';' after variable declaration.")?;
+        Ok(Statement::Assignment {
+            variable: constant,
+            value: initializer.unwrap_or_else(|| Expression::Literal { value: Literal::Nil }),
+            is_constant: true,
         })
     }
 
