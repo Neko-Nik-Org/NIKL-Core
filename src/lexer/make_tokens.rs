@@ -24,7 +24,8 @@ pub enum TokenType {
     
     // Keywords
     And, Class, Else, False, Func, For, If, Nil, Or,
-    Print, Return, Super, This, True, Var, While, Const,
+    Print, Return, This, True, Var, While, Const,
+    Import, Elif, As, From, Break, Continue, Do, In, Is,
 
     // Types
     Int, Float, Bool, Void,
@@ -268,7 +269,6 @@ impl<'a> Lexer<'a> {
             "or" => TokenType::Or,
             "print" => TokenType::Print,
             "return" => TokenType::Return,
-            "super" => TokenType::Super,
             "this" => TokenType::This,
             "True" => TokenType::True,
             "var" => TokenType::Var,
@@ -292,6 +292,15 @@ impl<'a> Lexer<'a> {
             "byte" => TokenType::Byte,
             "rune" => TokenType::Rune,
             "char" => TokenType::Char,
+            "import" => TokenType::Import,
+            "elif" => TokenType::Elif,
+            "as" => TokenType::As,
+            "from" => TokenType::From,
+            "break" => TokenType::Break,
+            "continue" => TokenType::Continue,
+            "do" => TokenType::Do,
+            "in" => TokenType::In,
+            "is" => TokenType::Is,
             _ => TokenType::Identifier
         };
         Token::new(token_type, identifier, self.line, self.column)
