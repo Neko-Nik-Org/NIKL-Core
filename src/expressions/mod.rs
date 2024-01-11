@@ -43,6 +43,7 @@ pub enum Expression {
     Unary { operator: Token, right: Box<Expression> },
     Binary { left: Box<Expression>, operator: BinaryOperator, right: Box<Expression> },
     Grouping { expression: Box<Expression> },
+    Print { expression: Box<Expression> }
 }
 
 #[derive(Debug)]
@@ -82,23 +83,29 @@ impl Parser {
     fn statement(&mut self) -> Result<Statement, String> {
         if self.match_token(vec![TokenType::Var]) {
             self.var_declaration()
-        } else if self.match_token(vec![TokenType::Semicolon]) {
+        }
+
+        else if self.match_token(vec![TokenType::Semicolon]) {
             Ok(Statement::Expression(Expression::Literal { value: Literal::Nil }))
+        }
+   
+        else if self.match_token(vec![TokenType::Print]) {
+            self.print_statement()
+        }
+        
         // Add all the other statements here that you want to parse
-        } else if false {
+        else if false {
             todo!("Add all the other statements here that you want to parse")
-        // } else if self.match_token(vec![TokenType::Print]) {
-        //     let expr = self.expression()?;
-        //     self.consume(TokenType::Semicolon, "Expect ';' after value.")?;
-        //     Ok(Statement::Expression(expr))
-        } else {
+        }
+
+        else {
             self.expression_statement()
         }
     }
 
     // Parse a variable declaration statement
     fn var_declaration(&mut self) -> Result<Statement, String> {
-        let var_token = self.previous();
+        let var_token = self.previous(); // var token or const token? implement const later
         let variable = self.consume(TokenType::Identifier, "Expect variable name after 'var'.")?;
         let initializer = if self.match_token(vec![TokenType::Equal]) {
             Some(self.expression()?)
@@ -243,6 +250,17 @@ impl Parser {
         } else {
             Err(format!("Unexpected token: {:?}", self.peek()))
         }
+    }
+
+    fn print_statement(&mut self) -> Result<Statement, String> {
+        // print(expr or variable name or literal or Identifier)
+        self.consume(TokenType::LeftParen, format!("Expected '(' after 'print' but found {:?}", self.peek().lexeme).as_str())?;
+        let expr = self.expression()?;
+
+        self.consume(TokenType::RightParen, format!("Expected ')' after 'print' but found {:?}", self.peek().lexeme).as_str())?;
+        self.consume(TokenType::Semicolon, format!("Expected ';' after 'print' but found {:?}", self.peek().lexeme).as_str())?;
+
+        Ok(Statement::Expression(Expression::Print { expression: Box::new(expr) }))
     }
 
     // Helper functions

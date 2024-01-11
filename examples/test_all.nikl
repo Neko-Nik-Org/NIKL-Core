@@ -38,3 +38,5 @@ ram = 1;
 
 var result = (2 + (3 * 4) / 2.123e-13);
 // Correct grouping: (2 + ((3 * 4) / 2))
+// Currently we only support expressions inside print statements
+print(1+2);
