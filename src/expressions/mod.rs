@@ -27,6 +27,7 @@ pub enum BinaryOperator {
     Minus,
     Star,
     Slash,
+    StarStar
 }
 
 #[derive(Debug)]
@@ -216,8 +217,9 @@ impl Parser {
     fn multiplication(&mut self) -> Result<Expression, String> {
         let mut left_expr = self.unary()?;
 
-        while self.match_token(vec![TokenType::Star, TokenType::Slash]) {
+        while self.match_token(vec![TokenType::Star, TokenType::Slash, TokenType::StarStar]) {
             let operator = match self.previous().token_type {
+                TokenType::StarStar => BinaryOperator::StarStar,
                 TokenType::Star => BinaryOperator::Star,
                 TokenType::Slash => BinaryOperator::Slash,
                 _ => unreachable!(),
