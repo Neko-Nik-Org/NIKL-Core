@@ -1,0 +1,4 @@
+annotated-types==0.6.0
+pydantic==2.7.0
+pydantic_core==2.18.1
+typing_extensions==4.11.0
