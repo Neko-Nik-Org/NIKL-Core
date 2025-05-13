@@ -3,6 +3,12 @@ use std::fs;
 use rustyline::{Editor, history::FileHistory};
 use tokio;
 
+use crate::lexer::lex;
+use crate::parser::parse;
+
+mod lexer;
+mod parser;
+
 
 fn check_file_is_valid(filename: &str) -> bool {
     // Check if the file exists and is a regular file
@@ -48,6 +54,13 @@ async fn main() {
         // For now, we just print it
         log::debug!("Running script: {}", filename);
         log::debug!("File content: {}", content);
+        let tokens = lex(&content);
+        log::debug!("Tokens: {:?}", tokens);
+        let expr = parse(tokens);
+        log::debug!("Parsed expression: {:?}", expr);
+        // context.eval(expr).await;
+        // Arc::new(context).eval(expr).await;
+
     } else {
         // Otherwise, REPL mode
         println!("Welcome to Nik-Lang REPL!");
@@ -81,6 +94,11 @@ async fn main() {
                     // Here you would normally parse and evaluate the input
                     // For now, we just echo it back
                     println!("You entered: {}", input);
+                    let tokens = lex(input);
+                    let expr = parse(tokens);
+                    log::debug!("Parsed expression: {:?}", expr);
+                    // context.eval(expr).await;
+        
                 }
                 Err(_) => {
                     // Handle error, for example, if the user interrupts

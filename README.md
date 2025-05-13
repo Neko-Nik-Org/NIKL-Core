@@ -38,7 +38,7 @@ cargo build --release
 ```bash
 cargo run -- path/to/script.nk
 ```
-> **Tip:** By setting `export RUST_LOG=trace`, you can enable detailed logging for debugging
+> **Tip:** By setting `export RUST_LOG=nik_lang=trace`, you can enable detailed logging for debugging
 
 ---
 
