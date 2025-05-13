@@ -1,5 +1,5 @@
 #[derive(Debug, Clone, PartialEq)]
-pub enum Token {
+pub enum TokenKind {
     Let,
     Print,
     Func,
@@ -7,187 +7,328 @@ pub enum Token {
     Wait,
     Identifier(String),
     StringLiteral(String),
-    Equals,
-    Devide,
-    Multiply,
-    Subtract,
-    Add,
     IntegerLiteral(i64),
     FloatLiteral(f64),
     BooleanLiteral(bool),
+
+    Equals,
+    Divide,
+    Multiply,
+    Subtract,
+    Add,
+
     LessThan,
     GreaterThan,
     LessThanOrEqual,
     GreaterThanOrEqual,
     NotEqual,
+
     LeftParen,
     RightParen,
     Comma,
+
     Comment(String),
     Eof,
 }
 
-pub fn lex(input: &str) -> Vec<Token> {
-    let mut tokens = Vec::new();
-    let mut chars = input.chars().peekable();
-    
-    while let Some(ch) = chars.next() {
-        match ch {
-            // Skip whitespace
-            ' ' | '\n' | '\r' | '\t' => continue,
+#[derive(Debug, Clone, PartialEq)]
+pub struct Token {
+    pub kind: TokenKind,
+    pub line: usize,
+    pub column: usize,
+}
 
-            // Handle comments
-            '/' => {
-                // Check if the next character is also a '/'
-                if let Some(&next_ch) = chars.peek() {
-                    if next_ch == '/' {
-                        chars.next(); // Consume the second '/'
-                        let mut comment = String::new();
-                        while let Some(&next_ch) = chars.peek() {
-                            if next_ch == '\n' {
-                                break;
-                            }
-                            comment.push(next_ch);
-                            chars.next(); // Consume the character
-                        }
-                        tokens.push(Token::Comment(comment));
-                    } else {
-                        tokens.push(Token::Devide);
-                    }
-                } else {
-                    tokens.push(Token::Devide);
-                }
-            }
+#[derive(Debug)]
+pub enum LexError {
+    UnexpectedChar(char, usize, usize),
+    UnterminatedString(usize, usize),
+    InvalidNumber(String, usize, usize),
+}
 
-            // Handle symbols
-            '=' => tokens.push(Token::Equals),
-            '(' => tokens.push(Token::LeftParen),
-            ')' => tokens.push(Token::RightParen),
-            ',' => tokens.push(Token::Comma),
-            '+' => tokens.push(Token::Add),
-            '-' => tokens.push(Token::Subtract),
-            '*' => tokens.push(Token::Multiply),
-            '<' => {
-                if let Some(&next_ch) = chars.peek() {
-                    if next_ch == '=' {
-                        chars.next(); // Consume the '='
-                        tokens.push(Token::LessThanOrEqual);
-                    } else {
-                        tokens.push(Token::LessThan);
-                    }
-                } else {
-                    tokens.push(Token::LessThan);
-                }
-            }
-            '>' => {
-                if let Some(&next_ch) = chars.peek() {
-                    if next_ch == '=' {
-                        chars.next(); // Consume the '='
-                        tokens.push(Token::GreaterThanOrEqual);
-                    } else {
-                        tokens.push(Token::GreaterThan);
-                    }
-                } else {
-                    tokens.push(Token::GreaterThan);
-                }
-            }
-            '!' => {
-                if let Some(&next_ch) = chars.peek() {
-                    if next_ch == '=' {
-                        chars.next(); // Consume the '='
-                        tokens.push(Token::NotEqual);
-                    } else {
-                        eprintln!("Unexpected character: {}", ch);
-                    }
-                } else {
-                    eprintln!("Unexpected character: {}", ch);
-                }
-            }
 
-            // Handle string literals
-            '"' => {
-                let mut string = String::new();
-                while let Some(&next_ch) = chars.peek() {
-                    if next_ch == '"' {
-                        chars.next(); // Consume the closing quote
-                        break;
-                    }
-                    string.push(next_ch);
-                    chars.next(); // Consume the character
-                }
-                tokens.push(Token::StringLiteral(string));
-            }
+pub struct Lexer<'a> {
+    input: &'a str,
+    chars: std::iter::Peekable<std::str::CharIndices<'a>>,
+    line: usize,
+    column: usize,
+}
 
-            // Handle integer and float literals
-            '0'..='9' => {
-                let mut number = String::new();
-                number.push(ch);
-                let mut is_float = false;
 
-                while let Some(&next_ch) = chars.peek() {
-                    if next_ch == '.' {
-                        is_float = true;
-                        number.push(next_ch);
-                        chars.next(); // Consume the '.'
-                    } else if next_ch.is_digit(10) {
-                        number.push(next_ch);
-                        chars.next(); // Consume the digit
-                    } else {
-                        break;
-                    }
-                }
-
-                if is_float {
-                    if let Ok(float_value) = number.parse::<f64>() {
-                        tokens.push(Token::FloatLiteral(float_value));
-                    }
-                } else {
-                    if let Ok(int_value) = number.parse::<i64>() {
-                        tokens.push(Token::IntegerLiteral(int_value));
-                    }
-                }
-            }
-
-            // Keywords and identifiers
-            _ if ch.is_alphabetic() || ch == '_' => {
-                let mut identifier = String::new();
-                identifier.push(ch);
-                while let Some(&next_ch) = chars.peek() {
-                    if next_ch.is_alphanumeric() || next_ch == '_' {
-                        identifier.push(next_ch);
-                        chars.next();
-                    } else {
-                        break;
-                    }
-                }
-
-                match identifier.as_str() {
-                    "let" => tokens.push(Token::Let),
-                    "print" => tokens.push(Token::Print),
-                    "func" => tokens.push(Token::Func),
-                    "spawn" => tokens.push(Token::Spawn),
-                    "wait" => tokens.push(Token::Wait),
-                    _ => {
-                        if identifier == "True" {
-                            tokens.push(Token::BooleanLiteral(true));
-                        } else if identifier == "False" {
-                            tokens.push(Token::BooleanLiteral(false));
-                        } else {
-                            // Its not a keyword, so it must be an identifier
-                            tokens.push(Token::Identifier(identifier));
-                        }
-                    }
-                }
-            }
-
-            // Catch any unexpected characters (error handling)
-            _ => {
-                eprintln!("Unexpected character: {}", ch);
-                continue;
-            }
+impl<'a> Lexer<'a> {
+    pub fn new(input: &'a str) -> Self {
+        Lexer {
+            input,
+            chars: input.char_indices().peekable(),
+            line: 1,
+            column: 1,
         }
     }
 
-    tokens.push(Token::Eof); // Mark the end of the tokens
-    tokens
+    fn advance(&mut self) -> Option<(usize, char)> {
+        let next = self.chars.next();
+        if let Some((_, c)) = next {
+            if c == '\n' {
+                self.line += 1;
+                self.column = 1;
+            } else {
+                self.column += 1;
+            }
+        }
+        next
+    }
+
+    pub fn tokenize(mut self) -> Result<Vec<Token>, LexError> {
+        let mut tokens = Vec::new();
+
+        while let Some((idx, ch)) = self.chars.peek().copied() {
+            match ch {
+                // Skip whitespace
+                ' ' | '\t' | '\r' => {
+                    self.advance();
+                }
+                '\n' => {
+                    self.advance();
+                }
+
+                // Comments
+                '/' => {
+                    self.advance();
+                    if let Some((_, '/')) = self.chars.peek().copied() {
+                        self.advance();
+                        let start_col = self.column;
+                        let mut comment = String::new();
+                        while let Some((_, ch)) = self.chars.peek().copied() {
+                            if ch == '\n' {
+                                break;
+                            }
+                            comment.push(ch);
+                            self.advance();
+                        }
+                        tokens.push(Token {
+                            kind: TokenKind::Comment(comment),
+                            line: self.line,
+                            column: start_col,
+                        });
+                    } else {
+                        tokens.push(Token {
+                            kind: TokenKind::Divide,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    }
+                }
+
+                // Symbols
+                '=' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::Equals,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                '(' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::LeftParen,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                ')' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::RightParen,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                ',' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::Comma,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                '+' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::Add,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                '-' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::Subtract,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                '*' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::Multiply,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                '<' => {
+                    self.advance();
+                    if let Some((_, '=')) = self.chars.peek().copied() {
+                        self.advance();
+                        tokens.push(Token {
+                            kind: TokenKind::LessThanOrEqual,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    } else {
+                        tokens.push(Token {
+                            kind: TokenKind::LessThan,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    }
+                }
+                '>' => {
+                    self.advance();
+                    if let Some((_, '=')) = self.chars.peek().copied() {
+                        self.advance();
+                        tokens.push(Token {
+                            kind: TokenKind::GreaterThanOrEqual,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    } else {
+                        tokens.push(Token {
+                            kind: TokenKind::GreaterThan,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    }
+                }
+                '!' => {
+                    self.advance();
+                    if let Some((_, '=')) = self.chars.peek().copied() {
+                        self.advance();
+                        tokens.push(Token {
+                            kind: TokenKind::NotEqual,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    } else {
+                        return Err(LexError::UnexpectedChar('!', self.line, self.column));
+                    }
+                }
+
+                // String literals
+                '"' => {
+                    let start_col = self.column;
+                    self.advance(); // consume quote
+                    let mut value = String::new();
+
+                    while let Some((_, ch)) = self.chars.peek().copied() {
+                        if ch == '"' {
+                            self.advance();
+                            break;
+                        }
+                        value.push(ch);
+                        self.advance();
+                    }
+
+                    if !value.ends_with('"') && !self.input[idx..].contains('"') {
+                        return Err(LexError::UnterminatedString(self.line, start_col));
+                    }
+
+                    tokens.push(Token {
+                        kind: TokenKind::StringLiteral(value),
+                        line: self.line,
+                        column: start_col,
+                    });
+                }
+
+                // Numbers
+                '0'..='9' => {
+                    let start_col = self.column;
+                    let mut value = String::new();
+                    let mut dot_count = 0;
+
+                    while let Some((_, ch)) = self.chars.peek().copied() {
+                        if ch == '.' {
+                            dot_count += 1;
+                        }
+                        if !ch.is_digit(10) && ch != '.' {
+                            break;
+                        }
+                        value.push(ch);
+                        self.advance();
+                    }
+
+                    if dot_count > 1 {
+                        return Err(LexError::InvalidNumber(value, self.line, start_col));
+                    }
+
+                    if dot_count == 1 {
+                        tokens.push(Token {
+                            kind: TokenKind::FloatLiteral(value.parse().unwrap()),
+                            line: self.line,
+                            column: start_col,
+                        });
+                    } else {
+                        tokens.push(Token {
+                            kind: TokenKind::IntegerLiteral(value.parse().unwrap()),
+                            line: self.line,
+                            column: start_col,
+                        });
+                    }
+                }
+
+                // Identifiers / keywords / booleans
+                ch if ch.is_alphabetic() || ch == '_' => {
+                    let start_col = self.column;
+                    let mut ident = String::new();
+                    while let Some((_, ch)) = self.chars.peek().copied() {
+                        if ch.is_alphanumeric() || ch == '_' {
+                            ident.push(ch);
+                            self.advance();
+                        } else {
+                            break;
+                        }
+                    }
+
+                    let kind = match ident.as_str() {
+                        "let" => TokenKind::Let,
+                        "print" => TokenKind::Print,
+                        "func" => TokenKind::Func,
+                        "spawn" => TokenKind::Spawn,
+                        "wait" => TokenKind::Wait,
+                        "true" => TokenKind::BooleanLiteral(true),
+                        "false" => TokenKind::BooleanLiteral(false),
+                        _ => TokenKind::Identifier(ident),
+                    };
+
+                    tokens.push(Token {
+                        kind,
+                        line: self.line,
+                        column: start_col,
+                    });
+                }
+
+                // Error
+                ch => {
+                    return Err(LexError::UnexpectedChar(ch, self.line, self.column));
+                }
+            }
+        }
+
+        tokens.push(Token {
+            kind: TokenKind::Eof,
+            line: self.line,
+            column: self.column,
+        });
+
+        Ok(tokens)
+    }
 }

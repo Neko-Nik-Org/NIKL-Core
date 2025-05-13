@@ -3,7 +3,7 @@ use std::fs;
 use rustyline::{Editor, history::FileHistory};
 use tokio;
 
-use crate::lexer::lex;
+use crate::lexer::{Lexer, LexError};
 
 mod lexer;
 
@@ -52,8 +52,27 @@ async fn main() {
         // For now, we just print it
         log::debug!("Running script: {}", filename);
         log::debug!("File content: {}", content);
-        let tokens = lex(&content);
-        log::debug!("Tokens: {:?}", tokens);
+        
+        let lexer = Lexer::new(content.as_str());
+        match lexer.tokenize() {
+            Ok(tokens) => {
+                for token in tokens {
+                    println!("{:?}", token);
+                }
+            }
+            Err(e) => match e {
+                LexError::UnexpectedChar(ch, line, col) => {
+                    eprintln!("Unexpected character '{}' at line {}, column {}", ch, line, col);
+                }
+                LexError::UnterminatedString(line, col) => {
+                    eprintln!("Unterminated string starting at line {}, column {}", line, col);
+                }
+                LexError::InvalidNumber(num, line, col) => {
+                    eprintln!("Invalid number '{}' at line {}, column {}", num, line, col);
+                }
+            },
+        }
+        
 
     } else {
         // Otherwise, REPL mode
@@ -88,9 +107,28 @@ async fn main() {
                     // Here you would normally parse and evaluate the input
                     // For now, we just echo it back
                     println!("You entered: {}", input);
-                    let tokens = lex(input);
-                    log::debug!("Tokens: {:?}", tokens);
-        
+                    
+                    // Tokenize the input
+                    let lexer = Lexer::new(input);
+                    match lexer.tokenize() {
+                        Ok(tokens) => {
+                            for token in tokens {
+                                println!("{:?}", token);
+                            }
+                        }
+                        Err(e) => match e {
+                            LexError::UnexpectedChar(ch, line, col) => {
+                                eprintln!("Unexpected character '{}' at line {}, column {}", ch, line, col);
+                            }
+                            LexError::UnterminatedString(line, col) => {
+                                eprintln!("Unterminated string starting at line {}, column {}", line, col);
+                            }
+                            LexError::InvalidNumber(num, line, col) => {
+                                eprintln!("Invalid number '{}' at line {}, column {}", num, line, col);
+                            }
+                        },
+                    }
+
                 }
                 Err(_) => {
                     // Handle error, for example, if the user interrupts
@@ -100,7 +138,7 @@ async fn main() {
         }
 
         // Optionally, you can save the history to a file on exit
-        if rl.save_history("history.txt").is_ok() {
+        if rl.save_history("~/.nik_history").is_ok() {
             println!("Saved history to file.");
         }
     }

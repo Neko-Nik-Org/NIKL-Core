@@ -2,5 +2,5 @@
 // let data = wait fn_call
 // print(data)
 
-let spawner _ = spawn function_call();
-print(wait spawner_);
+let spawner_ var2 = spawn function_call()
+print(wait spawner_)
