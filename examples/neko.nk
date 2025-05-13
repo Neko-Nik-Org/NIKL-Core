@@ -1,3 +1,6 @@
-let data = "cats are cool"
-let data = wait fn_call
-print(data)
+// let data = "cats are cool"
+// let data = wait fn_call
+// print(data)
+
+let spawner _ = spawn function_call();
+print(wait spawner_);
