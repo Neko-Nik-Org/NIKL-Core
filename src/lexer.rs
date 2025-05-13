@@ -1,4 +1,3 @@
-// src/lexer.rs
 #[derive(Debug, Clone)]
 pub enum Token {
     Let,
@@ -9,6 +8,9 @@ pub enum Token {
     StringLiteral(String),
     Equals,
     Add,
+    Subtract,
+    Multiply,
+    Divide,
     LeftParen,
     RightParen,
     Comma,
@@ -21,7 +23,7 @@ pub fn lex(input: &str) -> Vec<Token> {
 
     while let Some(&ch) = chars.peek() {
         match ch {
-            // Whitespace
+            // Skip whitespaces
             ' ' | '\n' | '\r' | '\t' => {
                 chars.next();
             }
@@ -30,6 +32,22 @@ pub fn lex(input: &str) -> Vec<Token> {
             '=' => {
                 chars.next();
                 tokens.push(Token::Equals);
+            }
+            '+' => {
+                chars.next();
+                tokens.push(Token::Add);
+            }
+            '-' => {
+                chars.next();
+                tokens.push(Token::Subtract);
+            }
+            '*' => {
+                chars.next();
+                tokens.push(Token::Multiply);
+            }
+            '/' => {
+                chars.next();
+                tokens.push(Token::Divide);
             }
             '(' => {
                 chars.next();
@@ -43,12 +61,8 @@ pub fn lex(input: &str) -> Vec<Token> {
                 chars.next();
                 tokens.push(Token::Comma);
             }
-            '+' => {
-                chars.next();
-                tokens.push(Token::Add);
-            }
 
-            // Strings
+            // String literals
             '"' => {
                 chars.next(); // skip opening quote
                 let mut value = String::new();
@@ -63,33 +77,34 @@ pub fn lex(input: &str) -> Vec<Token> {
                 tokens.push(Token::StringLiteral(value));
             }
 
-            // Keywords and identifiers
-            _ => {
-                if ch.is_alphabetic() {
-                    let mut ident = String::new();
-                    while let Some(&c) = chars.peek() {
-                        if c.is_alphanumeric() || c == '_' {
-                            ident.push(c);
-                            chars.next();
-                        } else {
-                            break;
-                        }
+            // Identifiers and keywords
+            ch if ch.is_alphabetic() => {
+                let mut ident = String::new();
+                while let Some(&c) = chars.peek() {
+                    if c.is_alphanumeric() || c == '_' {
+                        ident.push(c);
+                        chars.next();
+                    } else {
+                        break;
                     }
-
-                    match ident.as_str() {
-                        "let" => tokens.push(Token::Let),
-                        "print" => tokens.push(Token::Print),
-                        "spawn" => tokens.push(Token::Spawn),
-                        "wait" => tokens.push(Token::Wait),
-                        _ => tokens.push(Token::Identifier(ident)),
-                    }
-                } else {
-                    chars.next(); // Skip unknown character
                 }
+
+                match ident.as_str() {
+                    "let" => tokens.push(Token::Let),
+                    "print" => tokens.push(Token::Print),
+                    "spawn" => tokens.push(Token::Spawn),
+                    "wait" => tokens.push(Token::Wait),
+                    _ => tokens.push(Token::Identifier(ident)),
+                }
+            }
+
+            // Skip any unrecognized character
+            _ => {
+                chars.next(); // Skip unknown character
             }
         }
     }
 
-    tokens.push(Token::Eof);
+    tokens.push(Token::Eof); // End-of-file marker
     tokens
 }

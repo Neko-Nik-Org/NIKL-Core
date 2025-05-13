@@ -1,2 +1,3 @@
 let data = "cats are cool"
+let data = wait fn_call
 print(data)

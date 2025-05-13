@@ -4,10 +4,8 @@ use rustyline::{Editor, history::FileHistory};
 use tokio;
 
 use crate::lexer::lex;
-use crate::parser::parse;
 
 mod lexer;
-mod parser;
 
 
 fn check_file_is_valid(filename: &str) -> bool {
@@ -56,10 +54,6 @@ async fn main() {
         log::debug!("File content: {}", content);
         let tokens = lex(&content);
         log::debug!("Tokens: {:?}", tokens);
-        let expr = parse(tokens);
-        log::debug!("Parsed expression: {:?}", expr);
-        // context.eval(expr).await;
-        // Arc::new(context).eval(expr).await;
 
     } else {
         // Otherwise, REPL mode
@@ -95,9 +89,7 @@ async fn main() {
                     // For now, we just echo it back
                     println!("You entered: {}", input);
                     let tokens = lex(input);
-                    let expr = parse(tokens);
-                    log::debug!("Parsed expression: {:?}", expr);
-                    // context.eval(expr).await;
+                    log::debug!("Tokens: {:?}", tokens);
         
                 }
                 Err(_) => {
