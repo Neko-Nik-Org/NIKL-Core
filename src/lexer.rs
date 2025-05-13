@@ -304,8 +304,8 @@ impl<'a> Lexer<'a> {
                         "func" => TokenKind::Func,
                         "spawn" => TokenKind::Spawn,
                         "wait" => TokenKind::Wait,
-                        "true" => TokenKind::BooleanLiteral(true),
-                        "false" => TokenKind::BooleanLiteral(false),
+                        "True" => TokenKind::BooleanLiteral(true),
+                        "False" => TokenKind::BooleanLiteral(false),
                         _ => TokenKind::Identifier(ident),
                     };
 
