@@ -31,6 +31,23 @@ fn check_file_is_valid(filename: &str) -> bool {
 }
 
 
+fn read_file(filename: &str) -> String {
+    // Validate the file name
+    if !check_file_is_valid(filename) {
+        return String::new();
+    }
+
+    // Read the file content and return it as a String
+    match fs::read_to_string(filename) {
+        Ok(content) => content,
+        Err(e) => {
+            log::error!("Error reading file '{}': {}", filename, e);
+            String::new()
+        }
+    }
+}
+
+
 #[tokio::main]
 async fn main() {
     // Initialize the logger
@@ -39,20 +56,22 @@ async fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() > 1 {
-        // Check if the file exists and is a valid script
+        // TODO: Add support for package management and other commands
+        // nikl <None> means REPL
+        // nikl help
+        // nikl run <script_name> or nikl <script_name> (Decide)
+        // nikl install <pkg_name>
+        // nikl init . Or dir have a toml file
+        // nikl login, logout, publish, ???
+
+        // If a file is provided, read and tokenize it
         let filename = &args[1];
-        if !check_file_is_valid(filename) {
+        let content = read_file(filename);
+        if content.is_empty() {
+            log::error!("Error: No valid content to process.");
             return;
         }
 
-        // If there's a file to run
-        let content = fs::read_to_string(filename).expect("Unable to read file");
-
-        // Here you would normally parse and evaluate the content
-        // For now, we just print it
-        log::debug!("Running script: {}", filename);
-        log::debug!("File content: {}", content);
-        
         let lexer = Lexer::new(content.as_str());
         match lexer.tokenize() {
             Ok(tokens) => {
@@ -72,11 +91,10 @@ async fn main() {
                 }
             },
         }
-        
 
     } else {
         // Otherwise, REPL mode
-        println!("Welcome to Nik-Lang REPL!");
+        println!("Welcome to Nikl REPL!");
         println!("To exit, type 'exit' or press Ctrl+D");
 
         // Initialize the Rustyline editor with FileHistory, unwrapping the Result
@@ -84,7 +102,7 @@ async fn main() {
             .expect("Failed to initialize rustyline editor");
 
         // Optionally, you can load a history file, if desired
-        if rl.load_history("~/.nik_history").is_ok() {
+        if rl.load_history("~/.nikl_history").is_ok() {
             println!("Loaded history from file.");
         }
 
@@ -138,7 +156,7 @@ async fn main() {
         }
 
         // Optionally, you can save the history to a file on exit
-        if rl.save_history("~/.nik_history").is_ok() {
+        if rl.save_history("~/.nikl_history").is_ok() {
             println!("Saved history to file.");
         }
     }

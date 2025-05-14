@@ -1,30 +1,33 @@
-# 🐾 Nik-Lang
+# 🐾 NIKL-Core
 
-**Nik-Lang** is a lightweight, simple, and concurrent scripting language inspired by Python and Rust — designed for scripting, automation, and networking. It uses a clean syntax with native support for `spawn` and `await`, enabling powerful concurrency with minimal complexity.
+**Nikl** is a lightweight, modern programming language designed for **concurrent**, **network-aware**, and **general-purpose** programming. With native support for threads, asynchronous operations, and networking primitives, Nikl aims to simplify the development of scalable and responsive systems.
 
-> ✨ File extension: `.nk`
+This repository — **NIKL-Core** — contains the **Rust-based interpreter** for Nikl, including its lexer, parser, async runtime integration, and core execution engine.
+
+> 📝 File extension: `.nk`  
+> ⚡ Goal: Simple concurrency, native networking, no boilerplate.
 
 ---
 
 ## 🚀 Features
 
-- ✅ Clean and readable syntax
+- ✅ Clean, Python-like syntax
 - ✅ Concurrency with `spawn` and `wait`
-- ✅ Async task handling with real Rust async runtime (via `tokio`)
-- ✅ Networking and automation-focused primitives
+- ✅ Async execution using real Rust async runtime (`tokio`)
+- ✅ Built-in networking and automation primitives
 - ✅ Lightweight interpreter written in Rust
-- ✅ Simple variable binding and expression evaluation
-- ✅ Ideal for scripting, API automation, and task orchestration
+- ✅ Minimal dependencies and fast startup
+- ✅ Ideal for scripting, orchestration, and lightweight services
 
 ---
 
 ## 📦 Getting Started
 
-### 1. Clone the Repo
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Neko-Nik/Nik-Lang
-cd Nik-Lang
+git clone https://github.com/Neko-Nik/NIKL-Core
+cd NIKL-Core
 ````
 
 ### 2. Build the Interpreter
@@ -33,16 +36,18 @@ cd Nik-Lang
 cargo build --release
 ```
 
-### 3. Run a `.nk` File
+### 3. Run a Nikl Script
 
 ```bash
 cargo run -- path/to/script.nk
 ```
-> **Tip:** By setting `export RUST_LOG=nik_lang=trace`, you can enable detailed logging for debugging
+
+> 💡 For debugging, enable logging:
+> `export RUST_LOG=nikl=trace`
 
 ---
 
-## 📄 Example `.nk` Script
+## 📄 Example Nikl Script
 
 ```nk
 let data = spawn fetch_data("https://example.com")
@@ -55,28 +60,76 @@ print(wait data)
 
 This script:
 
-* Spawns an asynchronous API fetch
-* Prints a calculation
-* Waits 1 second
-* Blocks until the response is ready, then prints it
+* Spawns an async network request
+* Prints `2`
+* Waits for 1 second
+* Awaits and prints the fetched result
 
 ---
 
-## 🧠 Language Concepts
+## 🧠 Core Language Concepts
 
-| Feature       | Syntax Example               |
+| Concept       | Example                      |
 | ------------- | ---------------------------- |
-| Variable      | `let x = 10`                 |
+| Variable      | `let x = 42`                 |
 | Function Call | `fetch_data("url")`          |
-| Concurrency   | `let t = spawn do_task()`    |
+| Thread Spawn  | `let t = spawn do_task()`    |
 | Awaiting      | `let res = wait t`           |
-| Print         | `print("Hello")`             |
+| Output        | `print("Hello World")`       |
 | Sleep         | `sleep(1000)` (milliseconds) |
 
 ---
 
-## 🛠 Tech Stack
+## 🛠 Technology Stack
 
-* 🦀 Rust (core interpreter)
-* ⚙️ `tokio` for async runtime
-* 🧪 Custom lexer, parser, and runtime
+* 🦀 **Rust** — safe and fast systems programming
+* ⚡ **Tokio** — async runtime for concurrency
+* 🧩 Custom **lexer**, **parser**, and **bytecode VM**
+* 🧪 Tests and tracing support via `tracing` and `cargo test`
+
+---
+
+## 📌 Roadmap
+
+* [x] Tokenizer / Lexer
+* [x] Parser
+* [x] Core Interpreter (Eval / Runtime)
+* [x] Basic async + `spawn`, `wait`
+* [ ] File & socket I/O
+* [ ] Native async DNS, HTTP, etc.
+* [ ] Package system (`nikl-pkg`)
+* [ ] Compiler (WIP)
+
+---
+
+## 📚 Coming Soon
+
+* 📦 Prebuilt binaries (`nikl`)
+* 🧰 CLI Tools (`nikl run`, `nikl check`)
+* 📖 Documentation & Language Reference
+* 🌐 nikl.dev website
+
+---
+
+## 👤 Author
+
+Made with ❤️ by [Neko Nik](https://nekonik.com)
+
+> Follow progress and contribute at [github.com/Neko-Nik/NIKL-Core](https://github.com/Neko-Nik/NIKL-Core)
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](./LICENSE)
+
+---
+
+```
+
+Would you like:
+- A `CONTRIBUTING.md`?
+- GitHub labels + issue templates (`feature`, `bug`, `good first issue`)?
+- A `nikl.nk` standard test script?
+- Or help writing the docs landing page for `nikl.dev`?
+```
