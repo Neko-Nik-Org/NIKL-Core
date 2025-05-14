@@ -120,5 +120,4 @@ This script:
 
 Made with ❤️ by [Neko Nik](https://nekonik.com)
 
-> Follow progress and contribute at [github.com/Neko-Nik/NIKL-Core](https://github.com/Neko-Nik/NIKL-Core)
-> Discourse Forum: [forums.nekonik.com](https://forums.nekonik.com)
+> Join the discussion on the [Neko Nik Forums](https://forums.nekonik.com)
