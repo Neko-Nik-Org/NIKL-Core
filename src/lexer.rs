@@ -1,5 +1,6 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum TokenKind {
+    // Diclaration keywords
     Let,
     Const,
     Print,
@@ -7,6 +8,13 @@ pub enum TokenKind {
     Spawn,
     Wait,
     Assign,
+    Identifier(String),
+    StringLiteral(String),
+    IntegerLiteral(i64),
+    FloatLiteral(f64),
+    BooleanLiteral(bool),
+
+    // Control flow keywords
     If,
     ElseIf,
     Else,
@@ -14,28 +22,27 @@ pub enum TokenKind {
     Or,
     Not,
     Return,
-    Identifier(String),
-    StringLiteral(String),
-    IntegerLiteral(i64),
-    FloatLiteral(f64),
-    BooleanLiteral(bool),
 
+    // Operators
     Equals,
     Divide,
     Multiply,
     Subtract,
     Add,
 
+    // Comparison operators
     LessThan,
     GreaterThan,
     LessThanOrEqual,
     GreaterThanOrEqual,
     NotEqual,
 
+    // Symbols
     LeftParen,
     RightParen,
     Comma,
 
+    // Keywords
     Comment(String),
     Eof,
 }
