@@ -4,3 +4,11 @@
 
 let spawner_ var2 = spawn function_call()
 print(wait spawner_)
+
+
+
+// This should not work since let should be defined once?
+let spawner_ = "spawner"
+let spawner_ = True
+let spawner_ = 1
+let spawner_ = 1.1
