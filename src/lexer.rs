@@ -1,10 +1,19 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum TokenKind {
     Let,
+    Const,
     Print,
     Func,
     Spawn,
     Wait,
+    Assign,
+    If,
+    ElseIf,
+    Else,
+    And,
+    Or,
+    Not,
+    Return,
     Identifier(String),
     StringLiteral(String),
     IntegerLiteral(i64),
@@ -121,11 +130,20 @@ impl<'a> Lexer<'a> {
                 // Symbols
                 '=' => {
                     self.advance();
-                    tokens.push(Token {
-                        kind: TokenKind::Equals,
-                        line: self.line,
-                        column: self.column,
-                    });
+                    if let Some((_, '=')) = self.chars.peek().copied() {
+                        self.advance();
+                        tokens.push(Token {
+                            kind: TokenKind::Equals,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    } else {
+                        tokens.push(Token {
+                            kind: TokenKind::Assign,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    }
                 }
                 '(' => {
                     self.advance();
@@ -300,6 +318,14 @@ impl<'a> Lexer<'a> {
 
                     let kind = match ident.as_str() {
                         "let" => TokenKind::Let,
+                        "const" => TokenKind::Const,
+                        "if" => TokenKind::If,
+                        "elif" => TokenKind::ElseIf,
+                        "else" => TokenKind::Else,
+                        "and" => TokenKind::And,
+                        "or" => TokenKind::Or,
+                        "not" => TokenKind::Not,
+                        "return" => TokenKind::Return,
                         "print" => TokenKind::Print,
                         "func" => TokenKind::Func,
                         "spawn" => TokenKind::Spawn,
