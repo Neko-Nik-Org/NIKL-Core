@@ -7,6 +7,10 @@ This repository — **NIKL-Core** — contains the **Rust-based interpreter** fo
 > 📝 File extension: `.nk`  
 > ⚡ Goal: Simple concurrency, native networking, no boilerplate.
 
+> **NOTE:** This project is **not yet complete** and is currently **in progress**.
+> There are **no guarantees** regarding stability, functionality, or completeness at this stage.  
+Use at your own risk.
+
 ---
 
 ## 🚀 Features
@@ -28,7 +32,7 @@ This repository — **NIKL-Core** — contains the **Rust-based interpreter** fo
 ```bash
 git clone https://github.com/Neko-Nik/NIKL-Core
 cd NIKL-Core
-````
+```
 
 ### 2. Build the Interpreter
 
@@ -92,9 +96,9 @@ This script:
 ## 📌 Roadmap
 
 * [x] Tokenizer / Lexer
-* [x] Parser
-* [x] Core Interpreter (Eval / Runtime)
-* [x] Basic async + `spawn`, `wait`
+* [ ] Parser
+* [ ] Core Interpreter (Eval / Runtime)
+* [ ] `spawn` and `wait` for concurrency
 * [ ] File & socket I/O
 * [ ] Native async DNS, HTTP, etc.
 * [ ] Package system (`nikl-pkg`)
@@ -104,10 +108,11 @@ This script:
 
 ## 📚 Coming Soon
 
-* 📦 Prebuilt binaries (`nikl`)
-* 🧰 CLI Tools (`nikl run`, `nikl check`)
-* 📖 Documentation & Language Reference
-* 🌐 nikl.dev website
+* 📦 **Prebuilt binaries**: Easily download and run `nikl` without building from source.
+* 📖 **Documentation & Language Reference**: Comprehensive guides and examples.
+* 🌐 **Official Website**: [nikl.nekonik.com](https://nikl.nekonik.com) (Work in Progress).
+* 🛠 **Package Manager**: `nikl-pkg` for managing dependencies and modules.
+* 🧪 **Standard Library**: Core utilities for common tasks.
 
 ---
 
@@ -116,20 +121,4 @@ This script:
 Made with ❤️ by [Neko Nik](https://nekonik.com)
 
 > Follow progress and contribute at [github.com/Neko-Nik/NIKL-Core](https://github.com/Neko-Nik/NIKL-Core)
-
----
-
-## 📄 License
-
-MIT License — see [LICENSE](./LICENSE)
-
----
-
-```
-
-Would you like:
-- A `CONTRIBUTING.md`?
-- GitHub labels + issue templates (`feature`, `bug`, `good first issue`)?
-- A `nikl.nk` standard test script?
-- Or help writing the docs landing page for `nikl.dev`?
-```
+> Discourse Forum: [forums.nekonik.com](https://forums.nekonik.com)
