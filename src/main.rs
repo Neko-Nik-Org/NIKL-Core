@@ -3,6 +3,7 @@ use std::fs;
 use rustyline::{Editor, history::FileHistory};
 use tokio;
 
+
 use crate::lexer::{Lexer, LexError};
 use crate::interpreter::Interpreter;
 use crate::parser::Parser;
@@ -30,6 +31,15 @@ fn check_file_is_valid(filename: &str) -> bool {
             false
         }
     }
+}
+
+fn create_history_file_if_not_exists(filename: &str) -> std::io::Result<()> {
+    let path = std::path::Path::new(filename);
+    if !path.exists() {
+        fs::create_dir_all(path.parent().unwrap())?;
+        fs::File::create(path)?;
+    }
+    Ok(())
 }
 
 fn read_file(filename: &str) -> Option<String> {
@@ -108,63 +118,80 @@ fn run_file(filename: &str) {
 }
 
 
+use rustyline::error::ReadlineError;
+
 fn run_repl() -> rustyline::Result<()> {
     println!("Welcome to Nikl REPL!");
     println!("To exit, type 'exit' or press Ctrl+D");
 
     let mut rl = Editor::<(), FileHistory>::new()?;
-    if rl.load_history("~/.nikl_history").is_ok() {
+    create_history_file_if_not_exists("/tmp/.nikl_history")?;
+    if rl.load_history("/tmp/.nikl_history").is_ok() {
         println!("Loaded history from file.");
     }
 
-    let mut interpreter = Interpreter::new();  // Single instance of Interpreter to save state
+    let mut interpreter = Interpreter::new();
 
     loop {
-        let input = rl.readline(">>> ")?;
+        let readline = rl.readline(">>> ");
 
-        let input = input.trim();
-
-        if input.is_empty() {
-            continue;
-        }
-
-        if input == "exit" {
-            break;
-        }
-
-        rl.add_history_entry(input)?;
-
-        match tokenize_input(input) {
-            Ok(tokens) => {
-                for token in &tokens {
-                    println!("{:?}", token);
+        match readline {
+            Ok(line) => {
+                let input = line.trim();
+                if input.is_empty() {
+                    continue;
                 }
-        
-                match parse_tokens(tokens.clone()) {
-                    Ok(stmts) => {
-                        match interpreter.run(&stmts) {  // Using the same interpreter instance
-                            Ok(_) => (),
-                            Err(e) => eprintln!("Runtime error: {}", e),
+                if input == "exit" {
+                    break;
+                }
+                rl.add_history_entry(input)?;
+
+                match tokenize_input(input) {
+                    Ok(tokens) => {
+                        for token in &tokens {
+                            println!("{:?}", token);
+                        }
+                        match parse_tokens(tokens.clone()) {
+                            Ok(stmts) => {
+                                match interpreter.run(&stmts) {
+                                    Ok(_) => (),
+                                    Err(e) => eprintln!("Runtime error: {}", e),
+                                }
+                            }
+                            Err(e) => eprintln!("Parse error: {}", e),
                         }
                     }
-                    Err(e) => eprintln!("Parse error: {}", e),
+                    Err(e) => match e {
+                        LexError::UnexpectedChar(ch, line, col) => {
+                            eprintln!("Unexpected character '{}' at line {}, column {}", ch, line, col);
+                        }
+                        LexError::UnterminatedString(line, col) => {
+                            eprintln!("Unterminated string starting at line {}, column {}", line, col);
+                        }
+                        LexError::InvalidNumber(num, line, col) => {
+                            eprintln!("Invalid number '{}' at line {}, column {}", num, line, col);
+                        }
+                    },
                 }
             }
-            Err(e) => match e {
-                LexError::UnexpectedChar(ch, line, col) => {
-                    eprintln!("Unexpected character '{}' at line {}, column {}", ch, line, col);
-                }
-                LexError::UnterminatedString(line, col) => {
-                    eprintln!("Unterminated string starting at line {}, column {}", line, col);
-                }
-                LexError::InvalidNumber(num, line, col) => {
-                    eprintln!("Invalid number '{}' at line {}, column {}", num, line, col);
-                }
-            },
+            Err(ReadlineError::Interrupted) => {
+                // Ctrl+C pressed — print message or just continue
+                println!("Keyboard Interrupt");  // optional
+                continue;        // ignore and continue reading input
+            }
+            Err(ReadlineError::Eof) => {
+                // Ctrl+D pressed — exit gracefully
+                println!("Exiting REPL.");
+                break;
+            }
+            Err(err) => {
+                eprintln!("Error: {:?}", err);
+                break;
+            }
         }
     }
 
-    if rl.save_history("~/.nikl_history").is_ok() {
+    if rl.save_history("/tmp/.nikl_history").is_ok() {
         println!("Saved history to file.");
     }
 
