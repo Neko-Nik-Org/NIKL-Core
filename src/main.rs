@@ -4,8 +4,10 @@ use rustyline::{Editor, history::FileHistory};
 use tokio;
 
 use crate::lexer::{Lexer, LexError};
+use crate::parser::{Parser, Stmt};
 
 mod lexer;
+mod parser;
 
 
 fn check_file_is_valid(filename: &str) -> bool {
@@ -75,9 +77,24 @@ async fn main() {
         let lexer = Lexer::new(content.as_str());
         match lexer.tokenize() {
             Ok(tokens) => {
-                for token in tokens {
-                    println!("{:?}", token);
+                // for token in tokens.iter() {
+                //     println!("{:?}", token);
+                // }
+                // // Here you would normally parse and evaluate the tokens
+                // println!("Tokens successfully parsed.");
+                let mut parser = Parser::new(tokens);
+                let statements = parser.parse();
+                match statements {
+                    Ok(stmts) => {
+                        for stmt in stmts {
+                            println!("{:?}", stmt);
+                        }
+                    }
+                    Err(e) => {
+                        eprintln!("Error parsing statements: {}", e);
+                    }
                 }
+
             }
             Err(e) => match e {
                 LexError::UnexpectedChar(ch, line, col) => {

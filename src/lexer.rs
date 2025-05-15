@@ -4,7 +4,7 @@ pub enum TokenKind {
     Let,
     Const,
     Print,
-    Func,
+    Function,
     Spawn,
     Wait,
     Assign,
@@ -40,6 +40,10 @@ pub enum TokenKind {
     // Symbols
     LeftParen,
     RightParen,
+    LeftBrace,
+    RightBrace,
+    LeftBracket,
+    RightBracket,
     Comma,
 
     // Keywords
@@ -164,6 +168,38 @@ impl<'a> Lexer<'a> {
                     self.advance();
                     tokens.push(Token {
                         kind: TokenKind::RightParen,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                '{' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::LeftBrace,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                '}' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::RightBrace,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                '[' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::LeftBracket,
+                        line: self.line,
+                        column: self.column,
+                    });
+                }
+                ']' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::RightBracket,
                         line: self.line,
                         column: self.column,
                     });
@@ -334,7 +370,7 @@ impl<'a> Lexer<'a> {
                         "not" => TokenKind::Not,
                         "return" => TokenKind::Return,
                         "print" => TokenKind::Print,
-                        "func" => TokenKind::Func,
+                        "fn" => TokenKind::Function,
                         "spawn" => TokenKind::Spawn,
                         "wait" => TokenKind::Wait,
                         "True" => TokenKind::BooleanLiteral(true),

@@ -1,14 +1,29 @@
-// let data = "cats are cool"
-// let data = wait fn_call
-// print(data)
+// let x = 5 + 3
 
-let spawner_ var2 = spawn function_call()
-print(wait spawner_)
+let x = 5 + 1
 
+fn main() {
+    print(x)
+}
 
+if (x > 0) {
+    print("x is positive")
+}
 
-// This should not work since let should be defined once?
-let spawner_ = "spawner"
-let spawner_ = True
-let spawner_ = 1
-let spawner_ = 1.1
+fn add(a, b) {
+    a = a + 1
+    b = b + 1
+    print(a)
+    print(b)
+    return a + b
+}
+
+fn tests() {
+    const and_test = True and False
+    const or_test = True or False
+    const not_test = not True
+
+    print(and_test)
+    print(or_test)
+    print(not_test)
+}
