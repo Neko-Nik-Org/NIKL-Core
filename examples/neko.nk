@@ -1,34 +1,16 @@
 // let x = 5 + 3
 
 let x = 5 + 1
+print(x)
 
-fn main() {
-    print(x)
-}
+let y = 10
+print(y)
 
-if 1 < 2 {
-    print(1)
-} else {
-    print(2)
-}
+let z = x > y
+print(z)
 
-if (x > 0) {
-    print("x is positive")
-}
-
-fn add(a, b) {
-    a = a + 1
-    b = b + 1
-    print(a) print(b)
-    return a + b
-}
-
-fn tests() {
-    const and_test = True and False
-    const or_test = True or False
-    const not_test = not True
-
-    print(and_test)
-    print(or_test)
-    print(not_test)
-}
+let is_true = True
+print(is_true)
+print(is_true != False)
+print(is_true == True)
+print(is_true == False)
