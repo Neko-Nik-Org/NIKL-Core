@@ -3,7 +3,6 @@ pub enum TokenKind {
     // Diclaration keywords
     Let,
     Const,
-    Print,
     Function,
     Spawn,
     Wait,
@@ -360,7 +359,6 @@ impl<'a> Lexer<'a> {
                         "or" => TokenKind::Or,
                         "not" => TokenKind::Not,
                         "return" => TokenKind::Return,
-                        "print" => TokenKind::Print,
                         "fn" => TokenKind::Function,
                         "spawn" => TokenKind::Spawn,
                         "wait" => TokenKind::Wait,

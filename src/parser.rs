@@ -31,7 +31,6 @@ pub enum Expr {
 pub enum Stmt {
     Let { name: String, value: Expr },
     Const { name: String, value: Expr },
-    Print(Expr),
     Expr(Expr),
     If {
         condition: Expr,
@@ -90,7 +89,6 @@ impl Parser {
         match &self.current().kind {
             TokenKind::Let => self.parse_var_decl(true),
             TokenKind::Const => self.parse_var_decl(false),
-            TokenKind::Print => self.parse_print(),
             TokenKind::If => self.parse_if(),
             TokenKind::Function => self.parse_function(),
             TokenKind::LeftBrace => {
@@ -170,15 +168,6 @@ impl Parser {
             body,
             else_body,
         })
-    }
-
-    fn parse_print(&mut self) -> Result<Stmt, String> {
-        // Print should be always be: print(<expr>)
-        self.advance(); // consume 'print'
-        self.expect(&TokenKind::LeftParen)?;
-        let expr = self.parse_expr()?;
-        self.expect(&TokenKind::RightParen)?;
-        Ok(Stmt::Print(expr))
     }
 
     fn parse_function(&mut self) -> Result<Stmt, String> {
@@ -560,18 +549,6 @@ mod tests {
     }
 
     #[test]
-    fn test_print_statement() {
-        let source = "print(\"hello\")";
-        let ast = parse_input(source).unwrap();
-        match &ast[0] {
-            Stmt::Print(expr) => {
-                assert!(matches!(expr, Expr::String(s) if s == "hello"));
-            }
-            _ => panic!("Expected print statement"),
-        }
-    }
-
-    #[test]
     fn test_block_statement() {
         let source = r#"
             {
@@ -650,6 +627,6 @@ mod tests {
         let source = "print(42)";
         let ast = parse_input(source).unwrap();
         assert_eq!(ast.len(), 1);
-        assert!(matches!(ast[0], Stmt::Print(_)));
+        assert!(matches!(ast[0], Stmt::Expr(Expr::Call { .. })));
     }
 }

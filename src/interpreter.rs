@@ -16,6 +16,7 @@ pub enum Value {
         body: Vec<Stmt>,
         closure: Environment,
     },
+    BuiltinFunction(fn(Vec<Value>) -> Result<Value, String>),
     Null, // for statements with no return (like print)
 }
 
@@ -31,12 +32,47 @@ pub struct VariableEntry {
     mutable: bool,
 }
 
+
+fn builtin_print(args: Vec<Value>) -> Result<Value, String> {
+    let output: Vec<String> = args
+        .into_iter()
+        .map(|v| match v {
+            Value::Bool(b) => b.to_string(),
+            Value::Integer(i) => i.to_string(),
+            Value::Float(f) => f.to_string(),
+            Value::String(s) => s,
+            Value::Null => "None".to_string(),
+            _ => "<unprintable>".to_string(),
+        })
+        .collect();
+
+    println!("{}", output.join(" "));
+    Ok(Value::Null)
+}
+
+
+fn builtin_len(args: Vec<Value>) -> Result<Value, String> {
+    if args.len() != 1 {
+        return Err("len() takes exactly one argument".to_string());
+    }
+
+    match &args[0] {
+        Value::String(s) => Ok(Value::Integer(s.len() as i64)),
+        _ => Err("len() currently only works on strings".to_string()),
+    }
+}
+
+
 impl Environment {
     pub fn new() -> Self {
-        Self {
+        let mut env = Self {
             values: HashMap::new(),
             parent: None,
-        }
+        };
+
+        env.define("print", Value::BuiltinFunction(builtin_print), false).unwrap();
+        env.define("len", Value::BuiltinFunction(builtin_len), false).unwrap();
+        env
     }
 
     pub fn with_parent(parent: Environment) -> Self {
@@ -120,18 +156,6 @@ impl Interpreter {
                 self.env.define(name, func, true)?;
                 Ok(None)
             }
-            Stmt::Print(expr) => {
-                let val = self.eval_expr(expr)?;
-                match val {
-                    Value::Bool(b) => println!("{}", if b { "True" } else { "False" }),
-                    Value::Integer(i) => println!("{}", i),
-                    Value::Float(f) => println!("{}", f),
-                    Value::String(s) => println!("{}", s),
-                    Value::Null => println!("None"),
-                    Value::Function { name, .. } => {println!("<function {} at {:#x}>", name, &name as *const _ as usize)},
-                }
-                Ok(Some(Value::Null))
-            }
             Stmt::Expr(expr) => {
                 self.eval_expr(expr)?;
                 Ok(None)
@@ -150,7 +174,7 @@ impl Interpreter {
                 Ok(None)
             }
             Stmt::Return(expr) => Ok(Some(self.eval_expr(expr)?)),
-            // _ => Err("Unsupported statement in basic interpreter".to_string()), // TODO: Print a more specific error message with the line number etc
+            // _ => Err("Unsupported statement in basic interpreter".to_string()), // TODO: Give a more specific error message with the line number etc
         }
     }
 
@@ -180,6 +204,7 @@ impl Interpreter {
             }
             Expr::Call { function, args } => {
                 let func_val = self.eval_expr(function)?;
+                let arg_values: Result<Vec<Value>, String> = args.iter().map(|arg| self.eval_expr(arg)).collect();
 
                 match func_val {
                     Value::Function { name, params, body, closure } => {
@@ -211,6 +236,9 @@ impl Interpreter {
 
                         Ok(Value::Bool(true)) // default return value
                     }
+                    Value::BuiltinFunction(f) => {
+                        f(arg_values?)
+                    }
                     _ => Err("Tried to call non-function".into()),
                 }
             }
@@ -219,7 +247,7 @@ impl Interpreter {
     }
 
     fn eval_binary_op(&self, left: &Value, op: &TokenKind, right: &Value) -> Result<Value, String> {
-
+        // Helper function to handle division to avoid division by zero
         fn divide(left: Value, right: Value) -> Result<Value, String> {
             match (left, right) {
                 (Value::Integer(l), Value::Integer(r)) => {
@@ -488,6 +516,28 @@ mod tests {
     }
 
     #[test]
+    fn test_print_function() {
+        let input = r#"
+            print("Hello, World!")
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_length_function() {
+        let input = r#"
+            let str = "Hello"
+            let len_ = len(str)
+            print(len_)    // should print 5
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
     fn test_variable_shadowing_in_nested_scope() {
         let input = r#"
             let x = 5
@@ -532,11 +582,11 @@ mod tests {
         let input = r#"
             let x = 100
 
-            fn show() {
-                print(x)    // should print 100 because of closure
+            fn show(y) {
+                print(x + y)    // should print 100 because of closure
             }
 
-            show()
+            show(50)
         "#;
 
         let result = run_interpreter(input);
