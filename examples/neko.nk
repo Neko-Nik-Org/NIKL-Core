@@ -25,6 +25,7 @@ if x > y {
     print("This is Same" != "This is Same")
     print(x)
     print(y)
+    print(1.1 + 1 + 2 + 3.3)
 }
 
 

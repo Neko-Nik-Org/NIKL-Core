@@ -112,6 +112,7 @@ impl Interpreter {
 
     fn eval_binary_op(&self, left: &Value, op: &TokenKind, right: &Value) -> Result<Value, String> {
         match (left, right) {
+            // int, int
             (Value::Integer(l), Value::Integer(r)) => match op {
                 TokenKind::Add => Ok(Value::Integer(l + r)),
                 TokenKind::Subtract => Ok(Value::Integer(l - r)),
@@ -123,6 +124,7 @@ impl Interpreter {
                 TokenKind::GreaterThan => Ok(Value::Bool(l > r)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
+            // float, float
             (Value::Float(l), Value::Float(r)) => match op {
                 TokenKind::Add => Ok(Value::Float(l + r)),
                 TokenKind::Subtract => Ok(Value::Float(l - r)),
@@ -134,17 +136,43 @@ impl Interpreter {
                 TokenKind::GreaterThan => Ok(Value::Bool(l > r)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
+            // string, string
             (Value::String(l), Value::String(r)) => match op {
                 TokenKind::Add => Ok(Value::String(format!("{}{}", l, r))),
                 TokenKind::Equals => Ok(Value::Bool(l == r)),
                 TokenKind::NotEqual => Ok(Value::Bool(l != r)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
+            // bool, bool
             (Value::Bool(l), Value::Bool(r)) => match op {
                 TokenKind::And => Ok(Value::Bool(*l && *r)),
                 TokenKind::Or => Ok(Value::Bool(*l || *r)),
                 TokenKind::Equals => Ok(Value::Bool(l == r)),
                 TokenKind::NotEqual => Ok(Value::Bool(l != r)),
+                _ => Err(format!("Unsupported operator: {:?}", op)),
+            },
+            // int, float
+            (Value::Integer(l), Value::Float(r)) => match op {
+                TokenKind::Add => Ok(Value::Float(*l as f64 + *r)),
+                TokenKind::Subtract => Ok(Value::Float(*l as f64 - *r)),
+                TokenKind::Multiply => Ok(Value::Float(*l as f64 * *r)),
+                TokenKind::Divide => Ok(Value::Float(*l as f64 / *r)),
+                TokenKind::Equals => Ok(Value::Bool(*l as f64 == *r)),
+                TokenKind::NotEqual => Ok(Value::Bool(*l as f64 != *r)),
+                TokenKind::LessThan => Ok(Value::Bool((*l as f64) < *r)),
+                TokenKind::GreaterThan => Ok(Value::Bool((*l as f64) > *r)),
+                _ => Err(format!("Unsupported operator: {:?}", op)),
+            },
+            // float, int
+            (Value::Float(l), Value::Integer(r)) => match op {
+                TokenKind::Add => Ok(Value::Float(*l + *r as f64)),
+                TokenKind::Subtract => Ok(Value::Float(*l - *r as f64)),
+                TokenKind::Multiply => Ok(Value::Float(*l * *r as f64)),
+                TokenKind::Divide => Ok(Value::Float(*l / *r as f64)),
+                TokenKind::Equals => Ok(Value::Bool(*l == *r as f64)),
+                TokenKind::NotEqual => Ok(Value::Bool(*l != *r as f64)),
+                TokenKind::LessThan => Ok(Value::Bool(*l < *r as f64)),
+                TokenKind::GreaterThan => Ok(Value::Bool(*l > *r as f64)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
             _ => Err(format!("Type error: {:?} {:?} {:?}", left, op, right)),
