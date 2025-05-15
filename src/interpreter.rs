@@ -123,6 +123,23 @@ impl Interpreter {
                 TokenKind::GreaterThan => Ok(Value::Bool(l > r)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
+            (Value::Float(l), Value::Float(r)) => match op {
+                TokenKind::Add => Ok(Value::Float(l + r)),
+                TokenKind::Subtract => Ok(Value::Float(l - r)),
+                TokenKind::Multiply => Ok(Value::Float(l * r)),
+                TokenKind::Divide => Ok(Value::Float(l / r)),
+                TokenKind::Equals => Ok(Value::Bool(l == r)),
+                TokenKind::NotEqual => Ok(Value::Bool(l != r)),
+                TokenKind::LessThan => Ok(Value::Bool(l < r)),
+                TokenKind::GreaterThan => Ok(Value::Bool(l > r)),
+                _ => Err(format!("Unsupported operator: {:?}", op)),
+            },
+            (Value::String(l), Value::String(r)) => match op {
+                TokenKind::Add => Ok(Value::String(format!("{}{}", l, r))),
+                TokenKind::Equals => Ok(Value::Bool(l == r)),
+                TokenKind::NotEqual => Ok(Value::Bool(l != r)),
+                _ => Err(format!("Unsupported operator: {:?}", op)),
+            },
             (Value::Bool(l), Value::Bool(r)) => match op {
                 TokenKind::And => Ok(Value::Bool(*l && *r)),
                 TokenKind::Or => Ok(Value::Bool(*l || *r)),

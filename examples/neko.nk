@@ -20,7 +20,9 @@ if x > y {
     print(y)
     print("x is greater than y")
 } else {
-    print("x is not greater than y")
+    print("x is not" + " greater than y")
+    print("This is Same" == "This is Same")
+    print("This is Same" != "This is Same")
     print(x)
     print(y)
 }
