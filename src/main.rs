@@ -117,6 +117,8 @@ fn run_repl() -> rustyline::Result<()> {
         println!("Loaded history from file.");
     }
 
+    let mut interpreter = Interpreter::new();  // Single instance of Interpreter to save state
+
     loop {
         let input = rl.readline(">>> ")?;
 
@@ -140,14 +142,14 @@ fn run_repl() -> rustyline::Result<()> {
         
                 match parse_tokens(tokens.clone()) {
                     Ok(stmts) => {
-                        match interpret_statements(&stmts) {
+                        match interpreter.run(&stmts) {  // Using the same interpreter instance
                             Ok(_) => (),
                             Err(e) => eprintln!("Runtime error: {}", e),
                         }
                     }
                     Err(e) => eprintln!("Parse error: {}", e),
                 }
-            }        
+            }
             Err(e) => match e {
                 LexError::UnexpectedChar(ch, line, col) => {
                     eprintln!("Unexpected character '{}' at line {}, column {}", ch, line, col);
