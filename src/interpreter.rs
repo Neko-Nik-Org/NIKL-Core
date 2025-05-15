@@ -150,7 +150,7 @@ impl Interpreter {
                 Ok(None)
             }
             Stmt::Return(expr) => Ok(Some(self.eval_expr(expr)?)),
-            _ => Err("Unsupported statement in basic interpreter".to_string()), // TODO: Print a more specific error message with the line number etc
+            // _ => Err("Unsupported statement in basic interpreter".to_string()), // TODO: Print a more specific error message with the line number etc
         }
     }
 
@@ -214,7 +214,7 @@ impl Interpreter {
                     _ => Err("Tried to call non-function".into()),
                 }
             }
-            _ => Err("Unsupported expression in basic interpreter".to_string()),
+            // _ => Err("Unsupported expression in basic interpreter".to_string()),
         }
     }
 
