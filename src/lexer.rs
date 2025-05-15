@@ -401,3 +401,43 @@ impl<'a> Lexer<'a> {
         Ok(tokens)
     }
 }
+
+
+
+// --- Test cases ---
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_lexer() {
+        let input = r#"
+            let x = 10
+            const y = 20.5
+            print("Hello, World!")
+            
+            if x < y {
+                print("x is less than y")
+            } else {
+                print("x is greater than or equal to y")
+            }
+            
+            if x == 10 {
+                print("x is equal to 10")
+            } else if x > 10 {
+                print("x is greater than 10")
+            } else {
+                print("x is less than 10")
+            }
+            (not True, False)
+        "#;
+
+        let lexer = Lexer::new(input);
+        let tokens = lexer.tokenize().unwrap();
+
+        for token in tokens {
+            println!("{:?}", token);
+        }
+    }
+}

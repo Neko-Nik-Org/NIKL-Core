@@ -6,6 +6,12 @@ fn main() {
     print(x)
 }
 
+if 1 < 2 {
+    print(1)
+} else {
+    print(2)
+}
+
 if (x > 0) {
     print("x is positive")
 }
@@ -13,8 +19,7 @@ if (x > 0) {
 fn add(a, b) {
     a = a + 1
     b = b + 1
-    print(a)
-    print(b)
+    print(a) print(b)
     return a + b
 }
 
