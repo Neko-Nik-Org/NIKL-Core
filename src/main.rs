@@ -1,7 +1,9 @@
 use std::env;
 use std::fs;
 use rustyline::{Editor, history::FileHistory};
+use log::{debug, log_enabled, Level};
 use rustyline::error::ReadlineError;
+
 use tokio;
 
 
@@ -77,23 +79,26 @@ fn run_file(filename: &str) {
     if let Some(content) = read_file(filename) {
         match tokenize_input(&content) {
             Ok(tokens) => {
-                // Iterate over tokens by reference to avoid moving
-                println!("Tokens: ");
-                for token in &tokens {
-                    println!("{:?}", token);
+                if log_enabled!(Level::Debug) {
+                    debug!("Parsing tokens from file: {}", filename);
+                    for token in &tokens {
+                        println!("{:?}", token);
+                    }
                 }
 
                 // Pass tokens.clone() to parser because parse_tokens wants ownership
                 match parse_tokens(tokens.clone()) {
                     Ok(stmts) => {
-                        println!("\nParsed Statements: ");
-                        for stmt in &stmts {
-                            println!("{:?}", stmt);
+                        if log_enabled!(Level::Debug) {
+                            debug!("Parsed statements from tokens:");
+                            for stmt in &stmts {
+                                debug!("{:?}", stmt);
+                            }
                         }
 
-                        println!("\nInterpreting Statements...");
+                        // Execute the parsed statements
                         match interpret_statements(&stmts) {
-                            Ok(_) => println!("Script executed successfully."),
+                            Ok(_) => log::info!("Script executed successfully."),
                             Err(e) => eprintln!("Error executing script: {}", e),
                         }
                     }
@@ -125,7 +130,7 @@ fn run_repl() -> rustyline::Result<()> {
     let mut rl = Editor::<(), FileHistory>::new()?;
     create_history_file_if_not_exists("/tmp/.nikl_history")?;
     if rl.load_history("/tmp/.nikl_history").is_ok() {
-        println!("Loaded history from file.");
+        log::debug!("Loaded history from file");
     }
 
     let mut interpreter = Interpreter::new();
@@ -146,8 +151,10 @@ fn run_repl() -> rustyline::Result<()> {
 
                 match tokenize_input(input) {
                     Ok(tokens) => {
-                        for token in &tokens {
-                            println!("{:?}", token);
+                        if log_enabled!(Level::Debug) {   
+                            for token in &tokens {
+                                debug!("{:?}", token);
+                            }
                         }
                         match parse_tokens(tokens.clone()) {
                             Ok(stmts) => {
@@ -190,7 +197,7 @@ fn run_repl() -> rustyline::Result<()> {
     }
 
     if rl.save_history("/tmp/.nikl_history").is_ok() {
-        println!("Saved history to file.");
+        log::debug!("Saved history to file");
     }
 
     Ok(())
