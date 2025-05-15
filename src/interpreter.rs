@@ -15,22 +15,62 @@ pub enum Value {
 
 #[derive(Debug, Clone)]
 pub struct Environment {
-    values: HashMap<String, Value>,
+    values: HashMap<String, VariableEntry>,
+    parent: Option<Box<Environment>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct VariableEntry {
+    value: Value,
+    mutable: bool,
 }
 
 impl Environment {
     pub fn new() -> Self {
         Self {
             values: HashMap::new(),
+            parent: None,
         }
     }
 
-    pub fn set(&mut self, name: &str, val: Value) {
-        self.values.insert(name.to_string(), val);
+    pub fn with_parent(parent: Environment) -> Self {
+        Self {
+            values: HashMap::new(),
+            parent: Some(Box::new(parent)),
+        }
     }
 
     pub fn get(&self, name: &str) -> Option<Value> {
-        self.values.get(name).cloned()
+        if let Some(entry) = self.values.get(name) {
+            Some(entry.value.clone())
+        } else if let Some(parent) = &self.parent {
+            parent.get(name)
+        } else {
+            None
+        }
+    }
+
+
+    pub fn define(&mut self, name: &str, value: Value, mutable: bool) -> Result<(), String> {
+        if self.values.contains_key(name) {
+            return Err(format!("Variable '{}' is already declared in this scope", name));
+        }
+        self.values.insert(name.to_string(), VariableEntry { value, mutable });
+        Ok(())
+    }
+
+    pub fn assign(&mut self, name: &str, value: Value) -> Result<(), String> {
+        if let Some(entry) = self.values.get_mut(name) {
+            if !entry.mutable {
+                return Err(format!("Cannot assign to constant '{}'", name));
+            }
+            entry.value = value;
+            return Ok(());
+        } else if let Some(parent) = self.parent.as_mut() {
+            return parent.assign(name, value);
+        }
+
+        Err(format!("Variable '{}' is not defined", name))
     }
 }
 
@@ -54,9 +94,14 @@ impl Interpreter {
 
     fn exec_stmt(&mut self, stmt: &Stmt) -> Result<Option<Value>, String> {
         match stmt {
-            Stmt::Let { name, value } | Stmt::Const { name, value } => {
+            Stmt::Let { name, value } => {
                 let val = self.eval_expr(value)?;
-                self.env.set(name, val);
+                self.env.define(name, val, true)?;  // mutable
+                Ok(None)
+            }
+            Stmt::Const { name, value } => {
+                let val = self.eval_expr(value)?;
+                self.env.define(name, val, false)?;  // immutable
                 Ok(None)
             }
             Stmt::Print(expr) => {
@@ -100,7 +145,7 @@ impl Interpreter {
                 .ok_or_else(|| format!("Undefined variable '{}'", name)),
             Expr::Assign { name, value } => {
                 let val = self.eval_expr(value)?;
-                self.env.set(name, val.clone());
+                self.env.assign(name, val.clone())?;
                 Ok(val)
             }
             Expr::BinaryOp { left, op, right } => {
