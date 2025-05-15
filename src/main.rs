@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use rustyline::{Editor, history::FileHistory};
+use rustyline::error::ReadlineError;
 use tokio;
 
 
@@ -116,9 +117,6 @@ fn run_file(filename: &str) {
         eprintln!("Failed to read or validate the file.");
     }
 }
-
-
-use rustyline::error::ReadlineError;
 
 fn run_repl() -> rustyline::Result<()> {
     println!("Welcome to Nikl REPL!");
