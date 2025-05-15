@@ -47,7 +47,6 @@ pub enum TokenKind {
     Comma,
 
     // Keywords
-    Comment(String),
     Eof,
 }
 
@@ -115,20 +114,12 @@ impl<'a> Lexer<'a> {
                     self.advance();
                     if let Some((_, '/')) = self.chars.peek().copied() {
                         self.advance();
-                        let start_col = self.column;
-                        let mut comment = String::new();
                         while let Some((_, ch)) = self.chars.peek().copied() {
                             if ch == '\n' {
                                 break;
                             }
-                            comment.push(ch);
                             self.advance();
                         }
-                        tokens.push(Token {
-                            kind: TokenKind::Comment(comment),
-                            line: self.line,
-                            column: start_col,
-                        });
                     } else {
                         tokens.push(Token {
                             kind: TokenKind::Divide,

@@ -88,10 +88,6 @@ impl Parser {
 
     fn parse_stmt(&mut self) -> Result<Stmt, String> {
         match &self.current().kind {
-            TokenKind::Comment(_) => {
-                self.advance();
-                self.parse_stmt()
-            }
             TokenKind::Let => self.parse_var_decl(true),
             TokenKind::Const => self.parse_var_decl(false),
             TokenKind::Print => self.parse_print(),
