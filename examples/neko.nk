@@ -14,3 +14,13 @@ print(is_true)
 print(is_true != False)
 print(is_true == True)
 print(is_true == False)
+
+if x > y {
+    print(x)
+    print(y)
+    print("x is greater than y")
+} else {
+    print("x is not greater than y")
+    print(x)
+    print(y)
+}

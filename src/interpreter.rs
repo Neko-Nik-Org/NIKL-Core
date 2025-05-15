@@ -61,15 +61,24 @@ impl Interpreter {
             }
             Stmt::Print(expr) => {
                 let val = self.eval_expr(expr)?;
-                println!("{:?}", val);
+                println!("{:?}", val);  // TODO: Use a proper format function to print values: Bool(false) -> False
                 Ok(Some(Value::Null))
             }
             Stmt::Expr(expr) => {
                 self.eval_expr(expr)?;
                 Ok(None)
             }
+            Stmt::If { condition, body, else_body } => {
+                let cond_val = self.eval_expr(condition)?;
+                if let Value::Bool(true) = cond_val {
+                    self.run(body)?;
+                } else if let Some(else_body) = else_body {
+                    self.run(else_body)?;
+                }
+                Ok(None)
+            }
             Stmt::Return(expr) => Ok(Some(self.eval_expr(expr)?)),
-            _ => Err("Unsupported statement in basic interpreter".to_string()),
+            _ => Err("Unsupported statement in basic interpreter".to_string()), // TODO: Print a more specific error message with the line number etc
         }
     }
 
