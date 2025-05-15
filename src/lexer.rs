@@ -430,7 +430,27 @@ mod tests {
             } else {
                 print("x is less than 10")
             }
-            (not True, False)
+            (not True, False, spawn, wait)
+            if (x > 0) {
+                print("x is positive")
+            }
+
+            fn add(a, b) {
+                a = a + 1
+                b = b + 1
+                print(a) print(b)
+                return a + b
+            }
+
+            fn tests() {
+                const and_test = True and False
+                const or_test = True or False
+                const not_test = not True
+
+                print(and_test)
+                print(or_test)
+                print(not_test)
+            }
         "#;
 
         let lexer = Lexer::new(input);
