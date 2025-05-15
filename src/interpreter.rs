@@ -506,8 +506,7 @@ mod tests {
     #[test]
     fn test_division_by_zero() {
         let input = r#"
-            // let a = 10 / 0
-            // let a = 0 / 10
+            let a = 10 / 0
             print(a)
         "#;
 

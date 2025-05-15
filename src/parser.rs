@@ -630,7 +630,7 @@ mod tests {
             if y > 10 {
                 print(y)
             } else {
-                print("small")
+                print("small")  // Test comment
             }
             // 4
             fn add(a, b) {
