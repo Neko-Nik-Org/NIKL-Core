@@ -30,7 +30,7 @@ if x > y {
     print(a)
 }
 
-// const a = 1
+const a = 1
 print(a + 1.0 + 1)  // Output: 7
 
 // fn new_intensive_function() {

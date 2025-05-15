@@ -122,9 +122,13 @@ impl Interpreter {
             Stmt::If { condition, body, else_body } => {
                 let cond_val = self.eval_expr(condition)?;
                 if let Value::Bool(true) = cond_val {
-                    self.run(body)?;
+                    let local_env = Environment::with_parent(self.env.clone());
+                    let mut local_interp = Interpreter { env: local_env };
+                    local_interp.run(body)?;
                 } else if let Some(else_body) = else_body {
-                    self.run(else_body)?;
+                    let local_env = Environment::with_parent(self.env.clone());
+                    let mut local_interp = Interpreter { env: local_env };
+                    local_interp.run(else_body)?;
                 }
                 Ok(None)
             }
