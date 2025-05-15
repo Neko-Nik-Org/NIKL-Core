@@ -61,7 +61,13 @@ impl Interpreter {
             }
             Stmt::Print(expr) => {
                 let val = self.eval_expr(expr)?;
-                println!("{:?}", val);  // TODO: Use a proper format function to print values: Bool(false) -> False
+                match val {
+                    Value::Bool(b) => println!("{}", if b { "True" } else { "False" }),
+                    Value::Integer(i) => println!("{}", i),
+                    Value::Float(f) => println!("{}", f),
+                    Value::String(s) => println!("{}", s),
+                    Value::Null => println!("None"),
+                }
                 Ok(Some(Value::Null))
             }
             Stmt::Expr(expr) => {
