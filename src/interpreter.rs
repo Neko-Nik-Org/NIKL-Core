@@ -178,6 +178,42 @@ impl Interpreter {
                 let val = self.eval_expr(expr)?;
                 self.eval_unary_op(op, &val)
             }
+            Expr::Call { function, args } => {
+                let func_val = self.eval_expr(function)?;
+
+                match func_val {
+                    Value::Function { name, params, body, closure } => {
+                        if params.len() != args.len() {
+                            return Err(format!(
+                                "Function '{}' expects {} arguments, but got {}",
+                                name,
+                                params.len(),
+                                args.len()
+                            ));
+                        }
+
+                        let mut local_env = Environment::with_parent(closure);
+
+                        for (param, arg_expr) in params.iter().zip(args.iter()) {
+                            let arg_val = self.eval_expr(arg_expr)?;
+                            local_env.define(param, arg_val, true)?;
+                        }
+
+                        let mut local_interpreter = Interpreter { env: local_env };
+
+                        for stmt in body {
+                            if let Stmt::Return(ret_expr) = stmt {
+                                return Ok(local_interpreter.eval_expr(&ret_expr)?);
+                            } else {
+                                local_interpreter.exec_stmt(&stmt)?;
+                            }
+                        }
+
+                        Ok(Value::Bool(true)) // default return value
+                    }
+                    _ => Err("Tried to call non-function".into()),
+                }
+            }
             _ => Err("Unsupported expression in basic interpreter".to_string()),
         }
     }

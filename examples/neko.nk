@@ -40,13 +40,14 @@ fn add(a, b) {
 
 
 fn new_intensive_function() {
-    // This takes a long time to run
     let x = 5 + 3
-    print(x)
-
     return x * 2
 }
+
 print(new_intensive_function)
+let resp = new_intensive_function()
+print(resp)
+
 // let thread_1 = spawn new_intensive_function()
 
 // print(wait thread_1)
