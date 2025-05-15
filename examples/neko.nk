@@ -1,6 +1,6 @@
 // let x = 5 + 3
 
-let x = 5 + 1
+let x = 5 + 1   // let x = 5 + 3
 print(x)
 
 let y = 10
@@ -24,3 +24,28 @@ if x > y {
     print(x)
     print(y)
 }
+
+
+
+// fn new_intensive_function() {
+//     // This takes a long time to run
+//     let x = 5 + 3
+//     print(x)
+
+//     return x * 2
+// }
+
+// let thread_1 = spawn new_intensive_function()
+
+// print(wait thread_1)
+
+// fn add(a, b) {
+//     return a + b
+// }
+
+// fn add(a: int, b: int) -> int {
+//     return a + b
+// }
+
+// let x = 7
+// print(x * 12 + 2)

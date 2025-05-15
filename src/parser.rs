@@ -118,6 +118,7 @@ impl Parser {
                 let expr = self.parse_expr()?;
                 Ok(Stmt::Return(expr))
             }
+            TokenKind::Eof => Ok(Stmt::Expr(Expr::Bool(true))),
             _ => {
                 let expr = self.parse_expr()?;
                 Ok(Stmt::Expr(expr))
@@ -422,10 +423,10 @@ impl Parser {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::lexer::{Lexer, TokenKind};
+    use crate::lexer::Lexer;
 
     fn parse_input(source: &str) -> Result<Vec<Stmt>, String> {
-        let mut lexer = Lexer::new(source);
+        let lexer = Lexer::new(source);
         let tokens = lexer.tokenize().unwrap(); // or handle errors
         let mut parser = Parser::new(tokens);
         parser.parse()
