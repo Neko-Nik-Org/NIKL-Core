@@ -1,7 +1,7 @@
 use crate::lexer::{Token, TokenKind};
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expr {
     Identifier(String),
     Integer(i64),
@@ -27,7 +27,7 @@ pub enum Expr {
     },
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Stmt {
     Let { name: String, value: Expr },
     Const { name: String, value: Expr },

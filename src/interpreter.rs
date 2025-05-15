@@ -10,6 +10,12 @@ pub enum Value {
     Float(f64),
     Bool(bool),
     String(String),
+    Function {
+        name: String,
+        params: Vec<String>,
+        body: Vec<Stmt>,
+        closure: Environment,
+    },
     Null, // for statements with no return (like print)
 }
 
@@ -104,6 +110,16 @@ impl Interpreter {
                 self.env.define(name, val, false)?;  // immutable
                 Ok(None)
             }
+            Stmt::Function { name, params, body } => {
+                let func = Value::Function {
+                    name: name.clone(),
+                    params: params.clone(),
+                    body: body.clone(),
+                    closure: self.env.clone(),
+                };
+                self.env.define(name, func, true)?;
+                Ok(None)
+            }
             Stmt::Print(expr) => {
                 let val = self.eval_expr(expr)?;
                 match val {
@@ -112,6 +128,7 @@ impl Interpreter {
                     Value::Float(f) => println!("{}", f),
                     Value::String(s) => println!("{}", s),
                     Value::Null => println!("None"),
+                    Value::Function { name, .. } => {println!("<function {} at {:#x}>", name, &name as *const _ as usize)},
                 }
                 Ok(Some(Value::Null))
             }

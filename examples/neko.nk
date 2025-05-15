@@ -33,14 +33,20 @@ if x > y {
 const a = 1
 print(a + 1.0 + 1)  // Output: 7
 
-// fn new_intensive_function() {
-//     // This takes a long time to run
-//     let x = 5 + 3
-//     print(x)
 
-//     return x * 2
-// }
+fn add(a, b) {
+    return a + b
+}
 
+
+fn new_intensive_function() {
+    // This takes a long time to run
+    let x = 5 + 3
+    print(x)
+
+    return x * 2
+}
+print(new_intensive_function)
 // let thread_1 = spawn new_intensive_function()
 
 // print(wait thread_1)
