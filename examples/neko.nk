@@ -44,9 +44,28 @@ fn new_intensive_function() {
     return x * 2
 }
 
+
 print(new_intensive_function)
 let resp = new_intensive_function()
 print(resp)
+
+
+fn show() {
+    // let y = 10
+    // print(0 / 0)
+    // print(0.0 / 0.0)
+    // print(0.0 / 0)
+    // print(0 / 0.0)
+    // print(0.0 / 0.0)
+
+    print(y)
+    // print("--Hello, World!")
+    // print(y)
+}
+
+show()
+
+print("Hello, World!")
 
 // let thread_1 = spawn new_intensive_function()
 

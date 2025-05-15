@@ -219,13 +219,48 @@ impl Interpreter {
     }
 
     fn eval_binary_op(&self, left: &Value, op: &TokenKind, right: &Value) -> Result<Value, String> {
+
+        fn divide(left: Value, right: Value) -> Result<Value, String> {
+            match (left, right) {
+                (Value::Integer(l), Value::Integer(r)) => {
+                    if r == 0 {
+                        Err("Division by zero".to_string())
+                    } else {
+                        Ok(Value::Integer(l / r))
+                    }
+                }
+                (Value::Float(l), Value::Float(r)) => {
+                    if r == 0.0 {
+                        Err("Division by zero".to_string())
+                    } else {
+                        Ok(Value::Float(l / r))
+                    }
+                }
+                (Value::Integer(l), Value::Float(r)) => {
+                    if r == 0.0 {
+                        Err("Division by zero".to_string())
+                    } else {
+                        Ok(Value::Float(l as f64 / r))
+                    }
+                }
+                (Value::Float(l), Value::Integer(r)) => {
+                    if r == 0 {
+                        Err("Division by zero".to_string())
+                    } else {
+                        Ok(Value::Float(l / r as f64))
+                    }
+                }
+                _ => Err("Invalid division operation".to_string()),
+            }
+        }
+
         match (left, right) {
             // int, int
             (Value::Integer(l), Value::Integer(r)) => match op {
                 TokenKind::Add => Ok(Value::Integer(l + r)),
                 TokenKind::Subtract => Ok(Value::Integer(l - r)),
                 TokenKind::Multiply => Ok(Value::Integer(l * r)),
-                TokenKind::Divide => Ok(Value::Integer(l / r)),
+                TokenKind::Divide => Ok(divide(Value::Integer(*l), Value::Integer(*r))?),
                 TokenKind::Equals => Ok(Value::Bool(l == r)),
                 TokenKind::NotEqual => Ok(Value::Bool(l != r)),
                 TokenKind::LessThan => Ok(Value::Bool(l < r)),
@@ -237,7 +272,7 @@ impl Interpreter {
                 TokenKind::Add => Ok(Value::Float(l + r)),
                 TokenKind::Subtract => Ok(Value::Float(l - r)),
                 TokenKind::Multiply => Ok(Value::Float(l * r)),
-                TokenKind::Divide => Ok(Value::Float(l / r)),
+                TokenKind::Divide => Ok(divide(Value::Float(*l), Value::Float(*r))?),
                 TokenKind::Equals => Ok(Value::Bool(l == r)),
                 TokenKind::NotEqual => Ok(Value::Bool(l != r)),
                 TokenKind::LessThan => Ok(Value::Bool(l < r)),
@@ -264,7 +299,7 @@ impl Interpreter {
                 TokenKind::Add => Ok(Value::Float(*l as f64 + *r)),
                 TokenKind::Subtract => Ok(Value::Float(*l as f64 - *r)),
                 TokenKind::Multiply => Ok(Value::Float(*l as f64 * *r)),
-                TokenKind::Divide => Ok(Value::Float(*l as f64 / *r)),
+                TokenKind::Divide => Ok(divide(Value::Integer(*l), Value::Float(*r))?),
                 TokenKind::Equals => Ok(Value::Bool(*l as f64 == *r)),
                 TokenKind::NotEqual => Ok(Value::Bool(*l as f64 != *r)),
                 TokenKind::LessThan => Ok(Value::Bool((*l as f64) < *r)),
@@ -276,7 +311,7 @@ impl Interpreter {
                 TokenKind::Add => Ok(Value::Float(*l + *r as f64)),
                 TokenKind::Subtract => Ok(Value::Float(*l - *r as f64)),
                 TokenKind::Multiply => Ok(Value::Float(*l * *r as f64)),
-                TokenKind::Divide => Ok(Value::Float(*l / *r as f64)),
+                TokenKind::Divide => Ok(divide(Value::Float(*l), Value::Integer(*r))?),
                 TokenKind::Equals => Ok(Value::Bool(*l == *r as f64)),
                 TokenKind::NotEqual => Ok(Value::Bool(*l != *r as f64)),
                 TokenKind::LessThan => Ok(Value::Bool(*l < *r as f64)),
@@ -293,5 +328,219 @@ impl Interpreter {
             (TokenKind::Not, Value::Bool(b)) => Ok(Value::Bool(!b)),
             _ => Err(format!("Unsupported unary operation: {:?} {:?}", op, val)),
         }
+    }
+}
+
+
+
+
+// --- Test cases ---
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::lexer::Lexer;
+    use crate::parser::Parser;
+
+
+    fn run_interpreter(input: &str) -> Result<(), String> {
+        let lexer = Lexer::new(input);
+        match lexer.tokenize() {
+            Ok(tokens) => {
+                let mut parser = Parser::new(tokens);
+                let stmts = parser.parse().map_err(|e| e.to_string())?;
+                let mut interpreter = Interpreter::new();
+                interpreter.run(&stmts)
+            },
+            Err(_) => {Err(format!("Lexer error"))}
+        }
+    }
+
+
+    #[test]
+    fn test_variable_declaration_and_assignment() {
+        let input = r#"
+            let x = 10
+            let y = 20
+            x = x + y
+            print(x)    // should print 30
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_constants() {
+        let input = r#"
+            const x = 42
+            print(x)
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_assignment_error_on_const() {
+        let input = r#"
+            const x = 5;
+            x = 10;
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_binary_operations() {
+        let input = r#"
+            let a = 5 + 2 * 3
+            let b = a - 4 / 2
+            print(b)    // should print 9
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_if_statement_true_branch() {
+        let input = r#"
+            let x = 10
+            if (x > 5) {
+                print("greater")
+            } else {
+                print("less")
+            }
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_if_statement_false_branch() {
+        let input = r#"
+            let x = 3
+            if (x > 5) {
+                print("greater")
+            } else {
+                print("less")
+            }
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_function_definition_and_call() {
+        let input = r#"
+            fn add(a, b) {
+                return a + b
+            }
+
+            let result = add(3, 4)
+            print(result)   // should print 7
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_function_with_if_and_return() {
+        let input = r#"
+            fn max(a, b) {
+                if (a > b) {
+                    return a
+                } else {
+                    return b
+                }
+            }
+
+            let m = max(7, 4)
+            print(m)    // should print 7
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_nested_function_calls() {
+        let input = r#"
+            fn square(x) {
+                return x * x
+            }
+
+            fn double(x) {
+                return x + x
+            }
+
+            let result = square(double(3))
+            print(result)   // should print 36
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_variable_shadowing_in_nested_scope() {
+        let input = r#"
+            let x = 5
+            fn foo() {
+                let x = 10
+                print(x)    // should print 10
+            }
+            foo()
+            print(x)        // should print 5
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_division_by_zero() {
+        let input = r#"
+            // let a = 10 / 0
+            // let a = 0 / 10
+            print(a)
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_boolean_logic_operations() {
+        let input = r#"
+            let a = True and False
+            let b = not a
+            let c = b or False
+            print(c)    // should print True
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_function_closure_scope() {
+        let input = r#"
+            let x = 100
+
+            fn show() {
+                print(x)    // should print 100 because of closure
+            }
+
+            show()
+        "#;
+
+        let result = run_interpreter(input);
+        assert!(result.is_ok());
     }
 }

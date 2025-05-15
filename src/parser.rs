@@ -215,6 +215,9 @@ impl Parser {
     
         let mut body = Vec::new();
         while !matches!(self.current().kind, TokenKind::RightBrace) {
+            if self.current().kind == TokenKind::Eof {
+                return Err("Unexpected end of file".to_string());
+            }
             body.push(self.parse_stmt()?);
         }
         self.expect(&TokenKind::RightBrace)?;
@@ -646,4 +649,11 @@ mod tests {
         assert_eq!(ast.len(), 6);
     }
 
+    #[test]
+    fn test_single_print_statement() {
+        let source = "print(42)";
+        let ast = parse_input(source).unwrap();
+        assert_eq!(ast.len(), 1);
+        assert!(matches!(ast[0], Stmt::Print(_)));
+    }
 }
