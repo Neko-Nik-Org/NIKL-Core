@@ -208,3 +208,77 @@ fn test_function_closure_scope() {
     let result = run_script(input);
     assert!(result.is_ok());
 }
+
+#[test]
+fn test_fn_type_hinting_1() {
+    let input = r#"
+        fn add(a: int, b: int) -> int {
+            return a + b
+        }
+
+        let result = add(5, 10)
+        print(result)   // should print 15
+    "#;
+
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_fn_type_hinting_2() {
+    let input = r#"
+        fn concat(a: str, b: bool, c: float, d: int) -> str {
+            return a
+        }
+        concat("Hello", True, 3.14, 42)
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_fn_type_hinting_3() {
+    let input = r#"
+        fn add(a, b: int) -> int {
+            return a + b
+        }
+
+        let result = add(5, 10)
+        print(result)   // should print 15
+    "#;
+
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_fn_type_hinting_4() {
+    let input = r#"
+        fn add(a: int, b) -> int {
+            return a + b
+        }
+
+        let result = add(5, 10)
+        print(result)   // should print 15
+    "#;
+
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_fn_type_hinting_5() {
+    let input = r#"
+        let new_var_type = 5
+
+        // Will allow anything as type hint (even if it is not a type)
+        fn add(a, b: new_var_type) -> str {
+            return a + b
+        }
+
+        let result = add(5, 10)
+        print(result)   // should print 15
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}

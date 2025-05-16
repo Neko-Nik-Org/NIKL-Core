@@ -170,34 +170,95 @@ impl Parser {
         })
     }
 
-    fn parse_function(&mut self) -> Result<Stmt, String> {
-        self.advance(); // consume 'function'
-        let name = if let TokenKind::Identifier(name) = &self.current().kind {
-            let n = name.clone();
-            self.advance();
-            n
-        } else {
-            return Err("Expected function name after 'function'".to_string());
-        };
-    
-        self.expect(&TokenKind::LeftParen)?;
-        let mut params = Vec::new();
-        while !matches!(self.current().kind, TokenKind::RightParen) {
-            if let TokenKind::Identifier(param) = &self.current().kind {
-                params.push(param.clone());
+    /// Consumes a type annotation token after a colon or arrow.
+    /// Supports basic types and compound types like `[]`, `()`, or identifiers.
+    fn consume_type_annotation(&mut self) -> Result<(), String> {
+        use TokenKind::*;
+
+        match &self.current().kind {
+            Integer | Float | String | Boolean | Array | Identifier(_) => {
                 self.advance();
-                if matches!(self.current().kind, TokenKind::Comma) {
-                    self.advance();
-                } else {
-                    break;
-                }
-            } else {
-                return Err("Expected parameter name".to_string());
+            }
+            LeftBracket => {
+                self.advance();
+                self.expect(&RightBracket)?;
+            }
+            LeftParen => {
+                self.advance();
+                self.expect(&RightParen)?;
+            }
+            other => {
+                return Err(format!("Expected type annotation, but found {:?}", other));
             }
         }
+
+        Ok(())
+    }
+
+    /// Parses the function signature: name, parameters, and optional return type.
+    /// Currently returns only function name and parameter names, ignoring type annotations.
+    fn parse_function_signature(&mut self) -> Result<(String, Vec<String>), String> {
+        self.advance(); // consume 'function'
+
+        // Function name
+        let name = match &self.current().kind {
+            TokenKind::Identifier(name) => {
+                let n = name.clone();
+                self.advance();
+                n
+            }
+            _ => return Err("Expected function name after 'function'".to_string()),
+        };
+
+        self.expect(&TokenKind::LeftParen)?;
+        let mut params = Vec::new();
+
+        // Parameter list
+        while !matches!(self.current().kind, TokenKind::RightParen) {
+            // Param name
+            let param = match &self.current().kind {
+                TokenKind::Identifier(name) => {
+                    let p = name.clone();
+                    self.advance();
+                    p
+                }
+                _ => return Err("Expected parameter name".to_string()),
+            };
+
+            // Optional type
+            if matches!(self.current().kind, TokenKind::Colon) {
+                self.advance(); // consume ':'
+                self.consume_type_annotation()?; // cleanly handle type
+            }
+
+            params.push(param);
+
+            if matches!(self.current().kind, TokenKind::Comma) {
+                self.advance();
+            } else {
+                break;
+            }
+        }
+
         self.expect(&TokenKind::RightParen)?;
+
+        // Optional return type
+        if matches!(self.current().kind, TokenKind::Arrow) {
+            self.advance(); // consume '->'
+            self.consume_type_annotation()?;
+        }
+
+        Ok((name, params))
+    }
+
+    /// Parses a function declaration, including its body.
+    /// This function assumes that the function signature has already been parsed.
+    /// It will parse the function body, which consists of statements enclosed in braces.
+    fn parse_function(&mut self) -> Result<Stmt, String> {
+        let (name, params) = self.parse_function_signature()?;
+
         self.expect(&TokenKind::LeftBrace)?;
-    
+
         let mut body = Vec::new();
         while !matches!(self.current().kind, TokenKind::RightBrace) {
             if self.current().kind == TokenKind::Eof {
@@ -205,8 +266,9 @@ impl Parser {
             }
             body.push(self.parse_stmt()?);
         }
+
         self.expect(&TokenKind::RightBrace)?;
-    
+
         Ok(Stmt::Function {
             name,
             params,

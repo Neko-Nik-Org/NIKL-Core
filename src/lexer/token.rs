@@ -51,6 +51,8 @@ pub enum TokenKind {
     LeftBracket,
     RightBracket,
     Comma,
+    Colon,
+    Arrow,
 
     // Keywords
     Eof,
@@ -219,11 +221,20 @@ impl<'a> Lexer<'a> {
                 }
                 '-' => {
                     self.advance();
-                    tokens.push(Token {
-                        kind: TokenKind::Subtract,
-                        line: self.line,
-                        column: self.column,
-                    });
+                    if let Some((_, '>')) = self.chars.peek().copied() {
+                        self.advance();
+                        tokens.push(Token {
+                            kind: TokenKind::Arrow,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    } else {
+                        tokens.push(Token {
+                            kind: TokenKind::Subtract,
+                            line: self.line,
+                            column: self.column,
+                        });
+                    }
                 }
                 '*' => {
                     self.advance();
@@ -279,6 +290,14 @@ impl<'a> Lexer<'a> {
                     } else {
                         return Err(LexError::UnexpectedChar('!', self.line, self.column));
                     }
+                }
+                ':' => {
+                    self.advance();
+                    tokens.push(Token {
+                        kind: TokenKind::Colon,
+                        line: self.line,
+                        column: self.column,
+                    });
                 }
 
                 // String literals
