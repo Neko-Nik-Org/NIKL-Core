@@ -203,6 +203,12 @@ fn run_repl() -> rustyline::Result<()> {
     Ok(())
 }
 
+
+// TODO
+// - Split all into functions and modules
+// - Add more commands to CLI
+// - Add more detailed error handling
+// - Semantic Analysis step – validate the AST
 #[tokio::main]
 async fn main() {
     env_logger::init();

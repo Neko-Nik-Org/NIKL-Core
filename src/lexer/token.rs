@@ -13,6 +13,13 @@ pub enum TokenKind {
     FloatLiteral(f64),
     BooleanLiteral(bool),
 
+    // Data types
+    Integer,
+    Float,
+    String,
+    Boolean,
+    Array,
+
     // Control flow keywords
     If,
     ElseIf,
@@ -364,6 +371,11 @@ impl<'a> Lexer<'a> {
                         "wait" => TokenKind::Wait,
                         "True" => TokenKind::BooleanLiteral(true),
                         "False" => TokenKind::BooleanLiteral(false),
+                        "int" => TokenKind::Integer,
+                        "float" => TokenKind::Float,
+                        "string" => TokenKind::String,
+                        "bool" => TokenKind::Boolean,
+                        "array" => TokenKind::Array,
                         _ => TokenKind::Identifier(ident),
                     };
 
