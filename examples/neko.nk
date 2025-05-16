@@ -6,7 +6,12 @@ print(len("12345")) // 4
 
 
 fn add(a: int, b: int) -> list {
-    return a + b
+
+    fn add_new(c,d) {
+        return c + d
+    }
+
+    return a + b + add_new(a, b)
 }
 
 print(add(1, 2)) // 3

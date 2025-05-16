@@ -282,3 +282,20 @@ fn test_fn_type_hinting_5() {
     let result = run_script(input);
     assert!(result.is_ok());
 }
+
+
+#[test]
+fn test_nested_function_definition() {
+    let input = r#"
+        fn outer() {
+            fn inner() {
+                print("Hello from inner function!")
+            }
+            inner()
+        }
+        outer()
+    "#;
+
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
