@@ -144,8 +144,8 @@ fn test_print_function() {
 #[test]
 fn test_length_function() {
     let input = r#"
-        let str = "Hello"
-        let len_ = len(str)
+        let string_ = "Hello"
+        let len_ = len(string_)
         print(len_)    // should print 5
     "#;
 
@@ -298,4 +298,108 @@ fn test_nested_function_definition() {
 
     let result = run_script(input);
     assert!(result.is_ok());
+}
+
+#[test]
+fn test_print() {
+    let input = r#"
+        print("Hello, world!")
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_len() {
+    let input = r#"
+        let s = "hello"
+        let l = len(s)
+        print(l)  // Expect 5
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_str() {
+    let input = r#"
+        let n = 123
+        let s = str(n)
+        print(s)  // Expect "123"
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_int() {
+    let input = r#"
+        let f = 3.14
+        let i = int(f)
+        print(i)  // Expect 3
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_float() {
+    let input = r#"
+        let i = 7
+        let f = float(i)
+        print(f)  // Expect 7.0
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_bool() {
+    let input = r#"
+        let b1 = bool(0)
+        let b2 = bool(1)
+        print(b1)  // Expect false
+        print(b2)  // Expect true
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_exit() {
+    // Since exit terminates the process, you might want to mock or test the error case only.
+    // let input = r#"
+    //     exit(0)
+    // "#;
+    // This will terminate the test runner if actually called,
+    // so you may want to skip or mock exit in tests.
+    // Here we just check for argument errors:
+    let bad_input = r#"
+        exit("not an int")
+    "#;
+    let bad_result = run_script(bad_input);
+    assert!(bad_result.is_err());
+}
+
+#[test]
+fn test_type() {
+    let input = r#"
+        let x = 123
+        print(type(x))  // Expect "int" or equivalent string
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_input() {
+    // input() requires user interaction; testing it automatically is tricky.
+    // You might want to mock input or test error cases:
+    let bad_input = r#"
+        input(123)
+    "#;
+    let bad_result = run_script(bad_input);
+    assert!(bad_result.is_err());
+
+    // For no-argument input(), you might skip or test manually.
 }

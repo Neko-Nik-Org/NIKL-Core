@@ -1,7 +1,17 @@
 use std::collections::HashMap;
 
 use super::engine::Value;
-use super::builtins::{builtin_print, builtin_len};
+use super::builtins::{
+    builtin_print,
+    builtin_len,
+    builtin_str,
+    builtin_int,
+    builtin_float,
+    builtin_bool,
+    builtin_exit,
+    builtin_type,
+    builtin_input
+};
 
 
 #[derive(Debug, Clone)]
@@ -26,6 +36,13 @@ impl Environment {
 
         env.define("print", Value::BuiltinFunction(builtin_print), false).unwrap();
         env.define("len", Value::BuiltinFunction(builtin_len), false).unwrap();
+        env.define("str", Value::BuiltinFunction(builtin_str), false).unwrap();
+        env.define("int", Value::BuiltinFunction(builtin_int), false).unwrap();
+        env.define("float", Value::BuiltinFunction(builtin_float), false).unwrap();
+        env.define("bool", Value::BuiltinFunction(builtin_bool), false).unwrap();
+        env.define("exit", Value::BuiltinFunction(builtin_exit), false).unwrap();
+        env.define("type", Value::BuiltinFunction(builtin_type), false).unwrap();
+        env.define("input", Value::BuiltinFunction(builtin_input), false).unwrap();
         env
     }
 

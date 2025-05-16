@@ -25,6 +25,7 @@ let array_test: Array = [1, 2, 3, 4, 5]
 let hashmap_test: HashMap = {"key1": "value1", "key2": "value2"}
 let tuple_test: Tuple = (1, "two", 3.0)
 
+
 data_types(
     int_test,
     float_test,
