@@ -19,6 +19,9 @@ pub enum TokenKind {
     String,
     Boolean,
     Array,
+    Tuple,
+    HashMap,
+    Set,
 
     // Control flow keywords
     If,
@@ -390,11 +393,14 @@ impl<'a> Lexer<'a> {
                         "wait" => TokenKind::Wait,
                         "True" => TokenKind::BooleanLiteral(true),
                         "False" => TokenKind::BooleanLiteral(false),
-                        "int" => TokenKind::Integer,
-                        "float" => TokenKind::Float,
-                        "string" => TokenKind::String,
-                        "bool" => TokenKind::Boolean,
-                        "array" => TokenKind::Array,
+                        "Int" => TokenKind::Integer,
+                        "Float" => TokenKind::Float,
+                        "String" => TokenKind::String,
+                        "Bool" => TokenKind::Boolean,
+                        "Array" => TokenKind::Array,
+                        "Tuple" => TokenKind::Tuple,
+                        "HashMap" => TokenKind::HashMap,
+                        "Set" => TokenKind::Set,
                         _ => TokenKind::Identifier(ident),
                     };
 

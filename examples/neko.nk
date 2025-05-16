@@ -4,8 +4,27 @@ print("Cats:", cats, "-> Len:", len(cats)) // Cats: Neko 4
 print(len("12345")) // 4
 
 
+fn data_types(
+    a: Int,
+    b: Float,
+    c: String,
+    d: Bool,
+    e: Array,
+    f: HashMap,
+    g: Tuple,
+    h: Set
+) -> None {
+    print("Int:", a)
+    print("Float:", b)
+    print("String:", c)
+    print("Bool:", d)
+    print("Array:", e)
+    print("HashMap:", f)
+    print("Tuple:", g)
+    print("Set:", h)
+}
 
-fn add(a: int, b: int) -> list {
+fn add(a: Int, b: Int) -> Int {
 
     fn add_new(c,d) {
         return c + d
