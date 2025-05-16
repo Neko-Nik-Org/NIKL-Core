@@ -21,7 +21,6 @@ pub enum TokenKind {
     Array,
     Tuple,
     HashMap,
-    Set,
 
     // Control flow keywords
     If,
@@ -400,7 +399,6 @@ impl<'a> Lexer<'a> {
                         "Array" => TokenKind::Array,
                         "Tuple" => TokenKind::Tuple,
                         "HashMap" => TokenKind::HashMap,
-                        "Set" => TokenKind::Set,
                         _ => TokenKind::Identifier(ident),
                     };
 

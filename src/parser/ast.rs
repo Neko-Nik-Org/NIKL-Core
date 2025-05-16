@@ -180,10 +180,11 @@ impl Parser {
     /// Consumes a type annotation token after a colon or arrow.
     /// Supports basic types and compound types like `[]`, `()`, or identifiers.
     fn consume_type_annotation(&mut self) -> Result<(), String> {
+        // TODO: In future, we should store the type in the AST so we can use it later
         use TokenKind::*;
 
         match &self.current().kind {
-            Integer | Float | String | Boolean | Array | HashMap | Set | Tuple | Identifier(_) => {
+            Integer | Float | String | Boolean | Array | HashMap | Tuple | Identifier(_) => {
                 self.advance();
             }
             LeftBracket => {
