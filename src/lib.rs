@@ -3,7 +3,7 @@
 //! This is the main library entry point for the NIKL interpreter engine.
 //! It exposes the interpreter modules and public APIs required to embed or extend the language.
 
-#![warn(missing_docs)]
+// #![warn(missing_docs)]
 
 pub mod lexer;
 pub mod parser;
