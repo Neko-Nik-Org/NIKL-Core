@@ -8,6 +8,7 @@
 pub mod lexer;
 pub mod parser;
 pub mod interpreter;
+pub mod cli;
 
 pub use interpreter::engine::Interpreter;
 pub use interpreter::environment::Environment;
