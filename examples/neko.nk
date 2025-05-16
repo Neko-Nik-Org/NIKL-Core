@@ -5,7 +5,8 @@ fn data_types(
     d: Bool,
     e: Array,
     f: HashMap,
-    g: Tuple
+    g: Tuple,
+    test_fn: test_fn
 ) -> None {
     print("Int:", a)
     print("Float:", b)
@@ -14,6 +15,8 @@ fn data_types(
     print("Array:", e)
     print("HashMap:", f)
     print("Tuple:", g)
+    print("Function:", test_fn)
+    print("Internal function:", len)
 }
 
 
@@ -22,8 +25,13 @@ let float_test: Float = 3.14
 let string_test: String = "Hello, Neko!"
 let bool_test: Bool = True
 let array_test: Array = [1, 2, 3, 4, 5]
+let array_test_2: Array = [1, 2, 3, 4, array_test]
 let hashmap_test: HashMap = {"key1": "value1", "key2": "value2"}
 let tuple_test: Tuple = (1, "two", 3.0)
+
+fn test_fn() -> None {
+    print("Testing data types...")
+}
 
 
 data_types(
@@ -31,7 +39,8 @@ data_types(
     float_test,
     string_test,
     bool_test,
-    array_test,
+    array_test_2,
     hashmap_test,
-    tuple_test
+    tuple_test,
+    test_fn
 )

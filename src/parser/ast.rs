@@ -8,6 +8,9 @@ pub enum Expr {
     Float(f64),
     Bool(bool),
     String(String),
+    Array(Vec<Expr>),
+    HashMap(Vec<(Expr, Expr)>),
+    Tuple(Vec<Expr>),
     Assign {
         name: String,
         value: Box<Expr>,
@@ -459,11 +462,57 @@ impl Parser {
                     Ok(Expr::Identifier(name.clone()))
                 }
             }
-            TokenKind::LeftParen => {
-                self.advance();
-                let expr = self.parse_expr()?;
+            TokenKind::LeftBracket => { // array literal: [expr, expr, ...]
+                self.advance(); // consume '['
+                let mut elements = Vec::new();
+                while !matches!(self.current().kind, TokenKind::RightBracket) {
+                    elements.push(self.parse_expr()?);
+                    if matches!(self.current().kind, TokenKind::Comma) {
+                        self.advance();
+                    } else {
+                        break;
+                    }
+                }
+                self.expect(&TokenKind::RightBracket)?;
+                Ok(Expr::Array(elements))
+            }
+            TokenKind::LeftBrace => { // hashmap literal: { key: value, key2: value2, ... }
+                self.advance(); // consume '{'
+                let mut pairs = Vec::new();
+                while !matches!(self.current().kind, TokenKind::RightBrace) {
+                    let key = self.parse_expr()?;
+                    self.expect(&TokenKind::Colon)?;
+                    let value = self.parse_expr()?;
+                    pairs.push((key, value));
+                    if matches!(self.current().kind, TokenKind::Comma) {
+                        self.advance();
+                    } else {
+                        break;
+                    }
+                }
+                self.expect(&TokenKind::RightBrace)?;
+                Ok(Expr::HashMap(pairs))
+            }
+            TokenKind::LeftParen => { // tuple literal: (expr, expr, ...)
+                self.advance(); // consume '('
+                let mut elements = Vec::new();
+                if !matches!(self.current().kind, TokenKind::RightParen) {
+                    loop {
+                        elements.push(self.parse_expr()?);
+                        if matches!(self.current().kind, TokenKind::Comma) {
+                            self.advance();
+                        } else {
+                            break;
+                        }
+                    }
+                }
                 self.expect(&TokenKind::RightParen)?;
-                Ok(expr)
+                // Special case: single expr in parentheses is just that expr, not a tuple
+                if elements.len() == 1 {
+                    Ok(elements.into_iter().next().unwrap())
+                } else {
+                    Ok(Expr::Tuple(elements))
+                }
             }
             _ => Err(format!(
                 "Unexpected token: {:?} at line {}, column {}",

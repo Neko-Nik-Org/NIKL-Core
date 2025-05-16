@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::parser::{Expr, Stmt};
 use crate::lexer::TokenKind;
 use super::environment::Environment;
@@ -9,6 +11,9 @@ pub enum Value {
     Float(f64),
     Bool(bool),
     String(String),
+    Array(Vec<Value>),
+    HashMap(Vec<(Value, Value)>),
+    Tuple(Vec<Value>),
     Function {
         name: String,
         params: Vec<String>,
@@ -89,6 +94,29 @@ impl Interpreter {
             Expr::Float(f) => Ok(Value::Float(*f)),
             Expr::Bool(b) => Ok(Value::Bool(*b)),
             Expr::String(s) => Ok(Value::String(s.clone())),
+            Expr::Array(elements) => {
+                let mut values = Vec::new();
+                for elem in elements {
+                    self.eval_expr(elem).map(|v| values.push(v))?;
+                }
+                Ok(Value::Array(values))
+            }
+            Expr::HashMap(pairs) => {
+                let mut values = Vec::new();
+                for (key, value) in pairs {
+                    self.eval_expr(key).and_then(|k| {
+                        self.eval_expr(value).map(|v| values.push((k, v)))
+                    })?;
+                }
+                Ok(Value::HashMap(values))
+            }
+            Expr::Tuple(elements) => {
+                let mut values = Vec::new();
+                for elem in elements {
+                    self.eval_expr(elem).map(|v| values.push(v))?;
+                }
+                Ok(Value::Tuple(values))
+            }
             Expr::Identifier(name) => self
                 .env
                 .get(name)
@@ -260,6 +288,36 @@ impl Interpreter {
             (TokenKind::Subtract, Value::Integer(i)) => Ok(Value::Integer(-i)),
             (TokenKind::Not, Value::Bool(b)) => Ok(Value::Bool(!b)),
             _ => Err(format!("Unsupported unary operation: {:?} {:?}", op, val)),
+        }
+    }
+}
+
+
+impl fmt::Display for Value {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Value::Integer(i) => write!(f, "{}", i),
+            Value::Float(fl) => write!(f, "{}", fl),
+            Value::Bool(b) => write!(f, "{}", b),
+            Value::String(s) => write!(f, "{}", s),
+            Value::Null => write!(f, "None"),
+            Value::Array(arr) => {
+                let items: Vec<String> = arr.iter().map(|v| v.to_string()).collect();
+                write!(f, "[{}]", items.join(", "))
+            }
+            Value::Tuple(items) => {
+                let elements: Vec<String> = items.iter().map(|v| v.to_string()).collect();
+                write!(f, "({})", elements.join(", "))
+            }
+            Value::HashMap(pairs) => {
+                let formatted_pairs: Vec<String> = pairs
+                    .iter()
+                    .map(|(k, v)| format!("{}: {}", k, v))
+                    .collect();
+                write!(f, "{{{}}}", formatted_pairs.join(", "))
+            }
+            Value::Function { name, .. } => write!(f, "<function {} at {:p}>", name, name),
+            Value::BuiltinFunction(_) => write!(f, "<builtin function>"),
         }
     }
 }

@@ -9,18 +9,7 @@ use super::engine::Value;
 /// Built-in function to print values to the console
 /// It accepts any number of arguments and prints them in a single line
 pub fn builtin_print(args: Vec<Value>) -> Result<Value, String> {
-    let output: Vec<String> = args
-        .into_iter()
-        .map(|v| match v {
-            Value::Bool(b) => b.to_string(),
-            Value::Integer(i) => i.to_string(),
-            Value::Float(f) => f.to_string(),
-            Value::String(s) => s,
-            Value::Null => "None".to_string(),
-            _ => "<unprintable>".to_string(),
-        })
-        .collect();
-
+    let output: Vec<String> = args.into_iter().map(|v| v.to_string()).collect();
     println!("{}", output.join(" "));
     Ok(Value::Null)
 }
