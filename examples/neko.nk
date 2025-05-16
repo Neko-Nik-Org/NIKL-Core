@@ -1,9 +1,3 @@
-let cats = "Neko"
-
-print("Cats:", cats, "-> Len:", len(cats)) // Cats: Neko 4
-print(len("12345")) // 4
-
-
 fn data_types(
     a: Int,
     b: Float,
@@ -24,20 +18,23 @@ fn data_types(
     print("Set:", h)
 }
 
-fn add(a: Int, b: Int) -> Int {
 
-    fn add_new(c,d) {
-        return c + d
-    }
+let int_test: Int = 42
+let float_test: Float = 3.14
+let string_test: String = "Hello, Neko!"
+let bool_test: Bool = True
+let array_test: Array = [1, 2, 3, 4, 5]
+let hashmap_test: HashMap = {"key1": "value1", "key2": "value2"}
+let tuple_test: Tuple = (1, "two", 3.0)
+let set_test: Set = {1, 2, 3, 4, 5}
 
-    return a + b + add_new(a, b)
-}
-
-print(add(1, 2)) // 3
-
-// let arrays = [1, 2, 3, 4, 5]
-// print(arrays) // [1, 2, 3, 4, 5]
-// // print(arrays[0]) // 1
-// // print(arrays.append(6)) // [1, 2, 3, 4, 5, 6]
-// // print(arrays.pop()) // 6
-
+data_types(
+    int_test,
+    float_test,
+    string_test,
+    bool_test,
+    array_test,
+    hashmap_test,
+    tuple_test,
+    set_test
+)

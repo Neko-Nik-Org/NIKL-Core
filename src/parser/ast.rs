@@ -129,6 +129,13 @@ impl Parser {
         } else {
             return Err("Expected identifier".to_string());
         };
+        
+        // Optional type annotation: let x: Int = 5
+        if matches!(self.current().kind, TokenKind::Colon) {
+            self.advance(); // consume ':'
+            self.consume_type_annotation()?;
+        }
+
         self.expect(&TokenKind::Assign)?;
         let expr = self.parse_expr()?;
         if is_mut {
@@ -176,7 +183,7 @@ impl Parser {
         use TokenKind::*;
 
         match &self.current().kind {
-            Integer | Float | String | Boolean | Array | Identifier(_) => {
+            Integer | Float | String | Boolean | Array | HashMap | Set | Tuple | Identifier(_) => {
                 self.advance();
             }
             LeftBracket => {
