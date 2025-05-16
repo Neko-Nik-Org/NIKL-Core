@@ -2,14 +2,20 @@
 
 **Nikl** is a lightweight, modern programming language designed for **concurrent**, **network-aware**, and **general-purpose** programming. With native support for threads, asynchronous operations, and networking primitives, Nikl aims to simplify the development of scalable and responsive systems.
 
-This repository — **NIKL-Core** — contains the **Rust-based interpreter** for Nikl, including its lexer, parser, async runtime integration, and core execution engine.
+> 📝 File extension: `.nk`
 
-> 📝 File extension: `.nk`  
 > ⚡ Goal: Simple concurrency, native networking, no boilerplate.
 
-> **NOTE:** This project is **not yet complete** and is currently **in progress**.
-> There are **no guarantees** regarding stability, functionality, or completeness at this stage.  
-Use at your own risk.
+---
+
+## 🔤 What's in a Name?
+
+The name **NIKL** is a blend of personal and symbolic meaning:
+
+* **Nik** comes from **Neko Nik**, derived from **Nikhil** — the creator's name
+* **Neko** (猫) means *cat* in Japanese 🐱 — light, agile, and independent
+* **L** stands for **Language**, but also completes the phonetic sound of **Nikhil**
+* **Nickel**, a lightweight and resilient metal, reflects the language’s design goals: **lightweight**, **robust**, and **efficient**
 
 ---
 
