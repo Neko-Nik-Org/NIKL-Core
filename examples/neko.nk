@@ -17,6 +17,12 @@ fn data_types(
     print("Tuple:", g)
     print("Function:", test_fn)
     print("Internal function:", len)
+
+    // Now lengths of the data types
+    print("Length of String:", len(c))
+    print("Length of Array:", len(e))
+    print("Length of HashMap:", len(f))
+    print("Length of Tuple:", len(g))
 }
 
 

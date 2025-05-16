@@ -24,6 +24,9 @@ pub fn builtin_len(args: Vec<Value>) -> Result<Value, String> {
 
     match &args[0] {
         Value::String(s) => Ok(Value::Integer(s.len() as i64)),
+        Value::Array(a) => Ok(Value::Integer(a.len() as i64)),
+        Value::Tuple(t) => Ok(Value::Integer(t.len() as i64)),
+        Value::HashMap(h) => Ok(Value::Integer(h.len() as i64)),
         _ => Err("len() currently only works on strings".to_string()),
     }
 }
