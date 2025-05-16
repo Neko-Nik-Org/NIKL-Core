@@ -27,7 +27,7 @@ pub fn builtin_len(args: Vec<Value>) -> Result<Value, String> {
         Value::Array(a) => Ok(Value::Integer(a.len() as i64)),
         Value::Tuple(t) => Ok(Value::Integer(t.len() as i64)),
         Value::HashMap(h) => Ok(Value::Integer(h.len() as i64)),
-        _ => Err("len() currently only works on strings".to_string()),
+        _ => Err(format!("len() expects a string, array, tuple, or hashmap, but got {:?}", args[0])),
     }
 }
 
@@ -44,7 +44,11 @@ pub fn builtin_str(args: Vec<Value>) -> Result<Value, String> {
         Value::Integer(i) => Ok(Value::String(i.to_string())),
         Value::Float(f) => Ok(Value::String(f.to_string())),
         Value::Bool(b) => Ok(Value::String(b.to_string())),
-        _ => Err("str() currently only works on strings, integers, floats, and booleans".to_string()),
+        Value::Null => Ok(Value::String("None".to_string())),
+        Value::Array(a) => Ok(Value::String(format!("{:?}", a))),
+        Value::Tuple(t) => Ok(Value::String(format!("{:?}", t))),
+        Value::HashMap(h) => Ok(Value::String(format!("{:?}", h))),
+        _ => Err(format!("str() expects a string, integer, float, boolean, array, tuple, or hashmap, but got {:?}", args[0])),
     }
 }
 
@@ -64,7 +68,7 @@ pub fn builtin_int(args: Vec<Value>) -> Result<Value, String> {
             .map_err(|_| format!("Invalid string for int conversion: {}", s)),
         Value::Integer(i) => Ok(Value::Integer(*i)),
         Value::Float(f) => Ok(Value::Integer(*f as i64)),
-        _ => Err("int() currently only works on strings, integers, and floats".to_string()),
+        _ => Err(format!("int() expects a string, integer, or float, but got {:?}", args[0])),
     }
 }
 
@@ -84,7 +88,7 @@ pub fn builtin_float(args: Vec<Value>) -> Result<Value, String> {
             .map_err(|_| format!("Invalid string for float conversion: {}", s)),
         Value::Integer(i) => Ok(Value::Float(*i as f64)),
         Value::Float(f) => Ok(Value::Float(*f)),
-        _ => Err("float() currently only works on strings, integers, and floats".to_string()),
+        _ => Err(format!("float() expects a string, integer, or float, but got {:?}", args[0])),
     }
 }
 
@@ -102,7 +106,7 @@ pub fn builtin_bool(args: Vec<Value>) -> Result<Value, String> {
         Value::String(s) => Ok(Value::Bool(!s.is_empty())),
         Value::Integer(i) => Ok(Value::Bool(*i != 0)),
         Value::Float(f) => Ok(Value::Bool(*f != 0.0)),
-        _ => Err("bool() currently only works on strings, integers, and floats".to_string()),
+        _ => Err(format!("bool() expects a string, integer, or float, but got {:?}", args[0])),
     }
 }
 
@@ -137,7 +141,11 @@ pub fn builtin_type(args: Vec<Value>) -> Result<Value, String> {
         Value::Float(_) => Ok(Value::String("Float".to_string())),
         Value::Bool(_) => Ok(Value::String("Boolean".to_string())),
         Value::Null => Ok(Value::String("None".to_string())),
-        _ => Err(format!("type() does not support this type: {:?}", args[0])),
+        Value::Array(_) => Ok(Value::String("Array".to_string())),
+        Value::Tuple(_) => Ok(Value::String("Tuple".to_string())),
+        Value::HashMap(_) => Ok(Value::String("HashMap".to_string())),
+        // _ => Err(format!("type() does not support this type: {:?}", args[0])),
+        _ => Err(format!("type() only works with strings, integers, floats, booleans, none, arrays, tuples, and hashmaps, but got {:?}", args[0])),
     }
 }
 
@@ -155,7 +163,7 @@ pub fn builtin_input(args: Vec<Value>) -> Result<Value, String> {
                 return Err("input() argument must be a string".to_string());
             }
         }
-        _ => return Err("input() takes at most one argument".to_string()),
+        _ => return Err(format!("input() takes at most one argument, but got {}", args.len())),
     };
 
     print!("{}", prompt);
