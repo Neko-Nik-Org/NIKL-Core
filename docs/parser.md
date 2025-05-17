@@ -18,31 +18,10 @@
 
 ---
 
-### 2. **No Block Scoping or Indentation/Braces**
-
-* The parser assumes `if (...)` has body directly after `(` and `)`, but doesn't account for nested blocks or scoping.
-* For real languages, you'd need `{}` blocks or indentation rules (like Python).
-
----
-
 ### 3. **No Type System / Semantic Analysis**
 
 * No type checking, constant folding, or validation of variables.
 * You're only building an AST, not checking for undeclared variables, type mismatches, etc.
-
----
-
-### 4. **No Comments or Whitespace Ignorance in Parser**
-
-* Comments are tokenized, but not ignored in the parser (should be skipped).
-* This may cause unexpected parser errors.
-
----
-
-### 5. **No Extensibility for Larger Grammars**
-
-* Recursive descent is fine, but hard to maintain for large grammars.
-* For larger languages, parser generators (like `lalrpop` or `pest` in Rust) may be more scalable.
 
 ---
 

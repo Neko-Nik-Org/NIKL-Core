@@ -58,6 +58,6 @@
 You currently have:
 
 * ✅ Lexer
-* 🔜 Parser
+* ✅ Parser
 * 🔜 Need: Semantic Analyzer
 * 🔜 Optional: Type checker, IR, interpreter

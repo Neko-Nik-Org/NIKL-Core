@@ -75,7 +75,7 @@ pub fn run_file(filename: &str) {
                             }
                         }
 
-                        // ✅ Extract the directory containing the file
+                        // Extract the directory containing the file
                         let base_path = Path::new(filename)
                             .parent()
                             .unwrap_or_else(|| Path::new("."))
