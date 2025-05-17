@@ -8,17 +8,17 @@ let bool_test = False
 fn foo(param_1: Bool) -> String {
     let variable_1 = "1"
 
-    if param_1 {
-        variable_1 = "2"
-        print("\nIF -", variable_1, "of type:", type(variable_1))
-        return "3"
-    } else {
-        variable_1 = "4"
-        print("ELSE -", variable_1, "of type:", type(variable_1))
-        return "5"
-    }
+    // if param_1 {
+    //     variable_1 = "2"
+    //     print("\nIF -", variable_1, "of type:", type(variable_1))
+    //     return "3"
+    // } else {
+    //     variable_1 = "4"
+    //     print("ELSE -", variable_1, "of type:", type(variable_1))
+    //     return "5"
+    // }
 
-    // This line should not execute
     print("X  -", variable_1, type(variable_1), "\n")
     return variable_1
+    // This line should not execute
 }

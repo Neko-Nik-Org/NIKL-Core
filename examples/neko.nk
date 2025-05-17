@@ -1,11 +1,12 @@
 import "examples/os.nk" as os
 
+let a_var = False
 
 if os.bool_test {
     let test = True
     print("Test 1", test, type(test))
 } elif (1 > 2) or True {
-    print("\nTest 2 and got:", os.foo(True), "of type:", type(os.foo(True)), "\n")
+    print("\nTest 2 and got:", os.foo(a_var), "of type:", type(os.foo(a_var)), "\n")
 } 
 
 // else {

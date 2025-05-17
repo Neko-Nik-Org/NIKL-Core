@@ -60,29 +60,29 @@ impl Interpreter {
                 Ok(None)
             }
             Stmt::If { condition, body, else_if_branches, else_body } => {
-                    let cond_val = self.eval_expr(condition)?;
-                    if let Value::Bool(true) = cond_val {
-                        let local_env = Environment::with_parent(self.env.clone());
-                        let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-                        return local_interp.run(body);
-                    } else {
-                        for (else_if_cond, else_if_body) in else_if_branches {
-                            let val = self.eval_expr(else_if_cond)?;
-                            if let Value::Bool(true) = val {
-                                let local_env = Environment::with_parent(self.env.clone());
-                                let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-                                return local_interp.run(else_if_body);
-                            }
-                        }
-
-                        if let Some(else_body) = else_body {
+                let cond_val = self.eval_expr(condition)?;
+                if let Value::Bool(true) = cond_val {
+                    let local_env = Environment::with_parent(self.env.clone());
+                    let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
+                    return local_interp.run(body);
+                } else {
+                    for (else_if_cond, else_if_body) in else_if_branches {
+                        let val = self.eval_expr(else_if_cond)?;
+                        if let Value::Bool(true) = val {
                             let local_env = Environment::with_parent(self.env.clone());
                             let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-                            return local_interp.run(else_body);
+                            return local_interp.run(else_if_body);
                         }
                     }
 
-                    Ok(None)
+                    if let Some(else_body) = else_body {
+                        let local_env = Environment::with_parent(self.env.clone());
+                        let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
+                        return local_interp.run(else_body);
+                    }
+                }
+
+                Ok(None)
             }
             Stmt::Import { path, alias } => {
                 // Check if the module is already loaded
