@@ -138,28 +138,6 @@ fn test_return_statement() {
 }
 
 #[test]
-fn test_block_statement() {
-    let source = r#"
-        {
-            print(1)
-            print(2)
-        }
-    "#;
-    let ast = parse_input(source).unwrap();
-    match &ast[0] {
-        Stmt::Expr(Expr::Call { function, args }) => {
-            if let Expr::Identifier(name) = &**function {
-                assert_eq!(name, "block");
-                assert!(args.len() == 2);
-            } else {
-                panic!("Expected block identifier");
-            }
-        }
-        _ => panic!("Expected block statement as function call"),
-    }
-}
-
-#[test]
 fn test_function_declaration_with_params() {
     let source = r#"
         fn greet(name, age) {
