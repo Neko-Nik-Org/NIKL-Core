@@ -19,7 +19,7 @@ fn foo(param_1: Bool) -> String {
         // return int(variable_1) + 1
     }
 
-    print(cars)
+    // print(cars)
     print("X  -", variable_1, type(variable_1), "\n")
     return variable_1
     // This line should not execute

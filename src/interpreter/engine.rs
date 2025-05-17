@@ -14,10 +14,12 @@ pub struct Interpreter {
 
 #[derive(Debug, Clone)]
 pub enum ControlFlow {
-    Value(Value),      // A normal result (like from evaluating an expression)
+    Value,      // A normal result (like from evaluating an expression)
     Return(Value),     // A return statement
-    Break,             // For loops (if you add them)
-    Continue,          // For loops (if you add them)
+    // Break,             // For loops (Not yet implemented)
+    // Continue,          // For loops (Not yet implemented)
+    // Yield,            // For generators (Not yet implemented)
+    // Exception(String), // For exceptions (Not yet implemented)
 }
 
 
@@ -32,11 +34,11 @@ impl Interpreter {
     pub fn run(&mut self, stmts: &[Stmt]) -> Result<ControlFlow, String> {
         for stmt in stmts {
             match self.exec_stmt(stmt)? {
-                ControlFlow::Value(_) => continue,
+                ControlFlow::Value => continue,
                 cf => return Ok(cf), // Return, Break, Continue — bubble up
             }
         }
-        Ok(ControlFlow::Value(Value::Null))
+        Ok(ControlFlow::Value)
     }
 
     fn exec_stmt(&mut self, stmt: &Stmt) -> Result<ControlFlow, String> {
@@ -44,12 +46,12 @@ impl Interpreter {
             Stmt::Let { name, value } => {
                 let val = self.eval_expr(value)?;
                 self.env.define(name, val, true)?;  // mutable
-                Ok(ControlFlow::Value(Value::Null))
+                Ok(ControlFlow::Value)
             }
             Stmt::Const { name, value } => {
                 let val = self.eval_expr(value)?;
                 self.env.define(name, val, false)?;  // immutable
-                Ok(ControlFlow::Value(Value::Null))
+                Ok(ControlFlow::Value)
             }
             Stmt::Function { name, params, body } => {
                 let func = Value::Function {
@@ -59,15 +61,15 @@ impl Interpreter {
                     closure: self.env.clone(),
                 };
                 self.env.define(name, func, true)?;
-                Ok(ControlFlow::Value(Value::Null))
+                Ok(ControlFlow::Value)
             }
             Stmt::Expr(expr) => {
                 self.eval_expr(expr)?;
-                Ok(ControlFlow::Value(Value::Null))
+                Ok(ControlFlow::Value)
             }
             Stmt::Delete(name) => {
                 self.env.delete(name)?;
-                Ok(ControlFlow::Value(Value::Null))
+                Ok(ControlFlow::Value)
             }
 
             // This will create a new environment and will not update the variable in the current environment
@@ -94,7 +96,7 @@ impl Interpreter {
             //         }
             //     }
 
-            //     Ok(ControlFlow::Value(Value::Null))
+            //     Ok(ControlFlow::Value)
             // }
 
             // This will update the variable in the current environment
@@ -103,7 +105,7 @@ impl Interpreter {
                 if let Value::Bool(true) = cond_val {
                     for stmt in body {
                         match self.exec_stmt(stmt)? {
-                            ControlFlow::Value(_) => continue,
+                            ControlFlow::Value => continue,
                             cf => return Ok(cf),
                         }
                     }
@@ -114,7 +116,7 @@ impl Interpreter {
                         if let Value::Bool(true) = val {
                             for stmt in else_if_body {
                                 match self.exec_stmt(stmt)? {
-                                    ControlFlow::Value(_) => continue,
+                                    ControlFlow::Value => continue,
                                     cf => return Ok(cf),
                                 }
                             }
@@ -127,7 +129,7 @@ impl Interpreter {
                         if let Some(else_body) = else_body {
                             for stmt in else_body {
                                 match self.exec_stmt(stmt)? {
-                                    ControlFlow::Value(_) => continue,
+                                    ControlFlow::Value => continue,
                                     cf => return Ok(cf),
                                 }
                             }
@@ -135,12 +137,12 @@ impl Interpreter {
                     }
                 }
 
-                Ok(ControlFlow::Value(Value::Null))
+                Ok(ControlFlow::Value)
             }
             Stmt::Import { path, alias } => {
                 // Check if the module is already loaded
                 if self.loaded_modules.contains(path) {
-                    return Ok(ControlFlow::Value(Value::Null));
+                    return Ok(ControlFlow::Value);
                 }
 
                 // Load the module file (e.g., os.nk)
@@ -179,7 +181,7 @@ impl Interpreter {
                 )?;
 
                 self.loaded_modules.insert(path.clone());
-                Ok(ControlFlow::Value(Value::Null))
+                Ok(ControlFlow::Value)
             }
             Stmt::Return(expr) => {
                 let val = self.eval_expr(expr)?;
