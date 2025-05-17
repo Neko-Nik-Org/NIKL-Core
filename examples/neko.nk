@@ -1,6 +1,6 @@
 import "examples/os.nk" as os
 
-let a_var = False
+let a_var = True
 
 if os.bool_test {
     let test = True

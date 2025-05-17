@@ -11,13 +11,15 @@ fn foo(param_1: Bool) -> String {
     if param_1 {
         variable_1 = "2"
         print("\nIF -", variable_1, "of type:", type(variable_1))
-        return int(variable_1) + 2
+        const cars = ["Volvo", "BMW", "Ford"]
+        // return int(variable_1) + 2
     } else {
         variable_1 = "4"
         print("ELSE -", variable_1, "of type:", type(variable_1))
-        return int(variable_1) + 1
+        // return int(variable_1) + 1
     }
 
+    print(cars)
     print("X  -", variable_1, type(variable_1), "\n")
     return variable_1
     // This line should not execute

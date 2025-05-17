@@ -69,26 +69,69 @@ impl Interpreter {
                 self.env.delete(name)?;
                 Ok(ControlFlow::Value(Value::Null))
             }
+
+            // This will create a new environment and will not update the variable in the current environment
+            // Stmt::If { condition, body, else_if_branches, else_body } => {
+            //     let cond_val = self.eval_expr(condition)?;
+            //     if let Value::Bool(true) = cond_val {
+            //         let local_env = Environment::with_parent(self.env.clone());
+            //         let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
+            //         return local_interp.run(body);
+            //     } else {
+            //         for (else_if_cond, else_if_body) in else_if_branches {
+            //             let val = self.eval_expr(else_if_cond)?;
+            //             if let Value::Bool(true) = val {
+            //                 let local_env = Environment::with_parent(self.env.clone());
+            //                 let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
+            //                 return local_interp.run(else_if_body);
+            //             }
+            //         }
+
+            //         if let Some(else_body) = else_body {
+            //             let local_env = Environment::with_parent(self.env.clone());
+            //             let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
+            //             return local_interp.run(else_body);
+            //         }
+            //     }
+
+            //     Ok(ControlFlow::Value(Value::Null))
+            // }
+
+            // This will update the variable in the current environment
             Stmt::If { condition, body, else_if_branches, else_body } => {
                 let cond_val = self.eval_expr(condition)?;
                 if let Value::Bool(true) = cond_val {
-                    let local_env = Environment::with_parent(self.env.clone());
-                    let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-                    return local_interp.run(body);
+                    for stmt in body {
+                        match self.exec_stmt(stmt)? {
+                            ControlFlow::Value(_) => continue,
+                            cf => return Ok(cf),
+                        }
+                    }
                 } else {
+                    let mut branch_executed = false;
                     for (else_if_cond, else_if_body) in else_if_branches {
                         let val = self.eval_expr(else_if_cond)?;
                         if let Value::Bool(true) = val {
-                            let local_env = Environment::with_parent(self.env.clone());
-                            let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-                            return local_interp.run(else_if_body);
+                            for stmt in else_if_body {
+                                match self.exec_stmt(stmt)? {
+                                    ControlFlow::Value(_) => continue,
+                                    cf => return Ok(cf),
+                                }
+                            }
+                            branch_executed = true;
+                            break;
                         }
                     }
 
-                    if let Some(else_body) = else_body {
-                        let local_env = Environment::with_parent(self.env.clone());
-                        let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-                        return local_interp.run(else_body);
+                    if !branch_executed {
+                        if let Some(else_body) = else_body {
+                            for stmt in else_body {
+                                match self.exec_stmt(stmt)? {
+                                    ControlFlow::Value(_) => continue,
+                                    cf => return Ok(cf),
+                                }
+                            }
+                        }
                     }
                 }
 
