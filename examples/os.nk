@@ -2,6 +2,10 @@ fn get_cwd() -> String {
     return __nikl__.os.get_cwd()
 }
 
+let bool_test = False
+
+// Major bug
+// TODO: Fix this
 fn foo(do_cwd: Bool) -> String {
     let cwd = "1"
 

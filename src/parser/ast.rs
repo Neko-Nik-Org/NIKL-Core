@@ -41,6 +41,7 @@ pub enum Stmt {
     If {
         condition: Expr,
         body: Vec<Stmt>,
+        else_if_branches: Vec<(Expr, Vec<Stmt>)>,
         else_body: Option<Vec<Stmt>>,
     },
     Return(Expr),
@@ -153,7 +154,7 @@ impl Parser {
     }
 
     fn parse_if(&mut self) -> Result<Stmt, String> {
-        self.advance();
+        self.advance(); // Consume 'if'
         let condition = self.parse_expr()?;
         self.expect(&TokenKind::LeftBrace)?;
 
@@ -161,9 +162,24 @@ impl Parser {
         while self.current().kind != TokenKind::RightBrace {
             body.push(self.parse_stmt()?);
         }
-
         self.expect(&TokenKind::RightBrace)?;
 
+        // Collect all else if branches
+        let mut else_if_branches = Vec::new();
+        while matches!(self.current().kind, TokenKind::ElseIf) {
+            self.advance(); // Consume 'else if'
+            let elif_cond = self.parse_expr()?;
+            self.expect(&TokenKind::LeftBrace)?;
+
+            let mut elif_body = Vec::new();
+            while self.current().kind != TokenKind::RightBrace {
+                elif_body.push(self.parse_stmt()?);
+            }
+            self.expect(&TokenKind::RightBrace)?;
+            else_if_branches.push((elif_cond, elif_body));
+        }
+
+        // Optional else
         let else_body = if matches!(self.current().kind, TokenKind::Else) {
             self.advance();
             self.expect(&TokenKind::LeftBrace)?;
@@ -180,6 +196,7 @@ impl Parser {
         Ok(Stmt::If {
             condition,
             body,
+            else_if_branches,
             else_body,
         })
     }

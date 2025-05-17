@@ -77,17 +77,35 @@ impl Interpreter {
                 self.env.delete(name)?;
                 Ok(None)
             }
-            Stmt::If { condition, body, else_body } => {
+            Stmt::If { condition, body, else_if_branches, else_body } => {
                 let cond_val = self.eval_expr(condition)?;
                 if let Value::Bool(true) = cond_val {
                     let local_env = Environment::with_parent(self.env.clone());
                     let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
                     local_interp.run(body)?;
-                } else if let Some(else_body) = else_body {
-                    let local_env = Environment::with_parent(self.env.clone());
-                    let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-                    local_interp.run(else_body)?;
+                } else {
+                    let mut executed = false;
+
+                    for (else_if_cond, else_if_body) in else_if_branches {
+                        let val = self.eval_expr(else_if_cond)?;
+                        if let Value::Bool(true) = val {
+                            let local_env = Environment::with_parent(self.env.clone());
+                            let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
+                            local_interp.run(else_if_body)?;
+                            executed = true;
+                            break;
+                        }
+                    }
+
+                    if !executed {
+                        if let Some(else_body) = else_body {
+                            let local_env = Environment::with_parent(self.env.clone());
+                            let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
+                            local_interp.run(else_body)?;
+                        }
+                    }
                 }
+
                 Ok(None)
             }
             Stmt::Import { path, alias } => {
