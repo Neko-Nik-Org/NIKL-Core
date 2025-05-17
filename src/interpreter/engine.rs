@@ -456,6 +456,8 @@ impl Interpreter {
                 TokenKind::NotEqual => Ok(Value::Bool(l != r)),
                 TokenKind::LessThan => Ok(Value::Bool(l < r)),
                 TokenKind::GreaterThan => Ok(Value::Bool(l > r)),
+                TokenKind::GreaterThanOrEqual => Ok(Value::Bool(l >= r)),
+                TokenKind::LessThanOrEqual => Ok(Value::Bool(l <= r)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
             // float, float
@@ -468,6 +470,8 @@ impl Interpreter {
                 TokenKind::NotEqual => Ok(Value::Bool(l != r)),
                 TokenKind::LessThan => Ok(Value::Bool(l < r)),
                 TokenKind::GreaterThan => Ok(Value::Bool(l > r)),
+                TokenKind::GreaterThanOrEqual => Ok(Value::Bool(l >= r)),
+                TokenKind::LessThanOrEqual => Ok(Value::Bool(l <= r)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
             // string, string
@@ -495,6 +499,8 @@ impl Interpreter {
                 TokenKind::NotEqual => Ok(Value::Bool(*l as f64 != *r)),
                 TokenKind::LessThan => Ok(Value::Bool((*l as f64) < *r)),
                 TokenKind::GreaterThan => Ok(Value::Bool((*l as f64) > *r)),
+                TokenKind::GreaterThanOrEqual => Ok(Value::Bool((*l as f64) >= *r)),
+                TokenKind::LessThanOrEqual => Ok(Value::Bool((*l as f64) <= *r)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
             // float, int
@@ -507,6 +513,8 @@ impl Interpreter {
                 TokenKind::NotEqual => Ok(Value::Bool(*l != *r as f64)),
                 TokenKind::LessThan => Ok(Value::Bool(*l < *r as f64)),
                 TokenKind::GreaterThan => Ok(Value::Bool(*l > *r as f64)),
+                TokenKind::GreaterThanOrEqual => Ok(Value::Bool(*l >= *r as f64)),
+                TokenKind::LessThanOrEqual => Ok(Value::Bool(*l <= *r as f64)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
             // string, bool

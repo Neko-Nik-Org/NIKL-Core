@@ -1,41 +1,10 @@
-let test_list = [1, 2, 5, 3, 4, 5]
-// let test_tuple = (1, 2, 3, 4, 5)
-// let test_dict = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
-
-
-for int_test in test_list {
-    print("Current int_test is:", int_test)
-    if int_test == 3 {
-        print("Found 3")
+let test_string = "hello"
+let sum = 0
+let test = "l"
+for i in test_string {
+    if (i == test) {
         break
-    } else {
-        continue
     }
+    sum = sum + 1
 }
-
-// let test_int = 0
-
-// while test_int < 10 {
-//     print("Current test_int is:", test_int)
-//     if test_int == 5 {
-//         print("test_int reached 5, breaking the loop", test_int)
-//         break
-//     } else {
-//         test_int = test_int + 1
-//         continue
-//     }
-//     print("This will not be printed")
-// }
-
-
-// let counter = 0
-
-// loop {
-//     print("Current counter is:", counter)
-//     if counter == 500 {
-//         print("Counter reached 5, breaking the loop", counter)
-//         break
-//     }
-//     counter = counter + 1
-//     continue
-// }
+print(sum)  // Expect the sum of ASCII values of 'h', 'e'

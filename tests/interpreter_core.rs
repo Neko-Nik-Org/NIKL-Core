@@ -414,3 +414,339 @@ fn test_imports() {
     let result = run_script(input);
     assert!(result.is_ok());
 }
+
+#[test]
+fn test_imports_with_error() {
+    let input = r#"
+        import "tests/non_existent_file.nk" as sample
+    "#;
+    let result = run_script(input);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_imports_with_invalid_alias() {
+    let input = r#"
+        import "tests/sample.nk" as 123
+    "#;
+    let result = run_script(input);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_loop_break() {
+    let input = r#"
+        let sum = 0
+        loop {
+            sum = sum + 1
+            if (sum >= 5) {
+                break
+            }
+        }
+        print(sum)  // Expect 5
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_loop_continue() {
+    let input = r#"
+        let sum = 0
+        loop {
+            sum = sum + 1
+            if (sum == 3) {
+                continue
+            }
+            if (sum >= 5) {
+                break
+            }
+        }
+        print(sum)  // Expect 5
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_while_loop() {
+    let input = r#"
+        let sum = 0
+        let i = 0
+        while (i < 5) {
+            sum = sum + i
+            i = i + 1
+        }
+        print(sum)  // Expect 10
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_while_loop_with_break() {
+    let input = r#"
+        let sum = 0
+        let i = 0
+        while (i < 10) {
+            if (i == 5) {
+                break
+            }
+            sum = sum + i
+            i = i + 1
+        }
+        print(sum)  // Expect 10
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_while_loop_with_continue() {
+    let input = r#"
+        let sum = 0
+        let i = 0
+        while (i < 5) {
+            i = i + 1
+            if (i == 3) {
+                continue
+            }
+            sum = sum + i
+        }
+        print(sum)  // Expect 12
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop() {
+    let input = r#"
+        let test_array = [1, 2, 3, 4, 5]
+
+        for i in test_array {
+            print(i)
+        }
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_break() {
+    let input = r#"
+        let test_array = [1, 2, 3, 4, 5]
+        let sum = 0
+
+        for i in test_array {
+            if (i == 3) {
+                break
+            }
+            sum = sum + i
+        }
+        print(sum)  // Expect 3
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_continue() {
+    let input = r#"
+        let test_array = [1, 2, 3, 4, 5]
+        let sum = 0
+
+        for i in test_array {
+            if (i == 3) {
+                continue
+            }
+            sum = sum + i
+        }
+        print(sum)  // Expect 12
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_tuple() {
+    let input = r#"
+        let test_tuple = (1, 2, 3, 4, 5)
+        let sum = 0
+        for i in test_tuple {
+            sum = sum + i
+        }
+        print(sum)  // Expect 15
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_tuple_and_break() {
+    let input = r#"
+        let test_tuple = (1, 2, 3, 4, 5)
+        let sum = 0
+        for i in test_tuple {
+            if (i == 3) {
+                break
+            }
+            sum = sum + i
+        }
+        print(sum)  // Expect 3
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_tuple_and_continue() {
+    let input = r#"
+        let test_tuple = (1, 2, 3, 4, 5)
+        let sum = 0
+        for i in test_tuple {
+            if (i == 3) {
+                continue
+            }
+            sum = sum + i
+        }
+        print(sum)  // Expect 12
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_string() {
+    let input = r#"
+        let test_string = "hello"
+        let sum = 0
+        for i in test_string {
+            print(i)
+            sum = sum + 1
+        }
+        print(sum)  // Expect the sum of ASCII values of 'h', 'e', 'l', 'l', 'o'
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_string_and_break() {
+    let input = r#"
+        let test_string = "hello"
+        let sum = 0
+        for i in test_string {
+            if (i == "l") {
+                break
+            }
+            sum = sum + 1
+        }
+        print(sum)  // Expect the sum of ASCII values of 'h', 'e'
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_string_and_continue() {
+    let input = r#"
+        let test_string = "hello"
+        let sum = 0
+        for i in test_string {
+            if (i == "l") {
+                continue
+            }
+            sum = sum + 1
+        }
+        print(sum)  // Expect the sum of ASCII values of 'h', 'e', 'o'
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_dict() {
+    let input = r#"
+        let test_dict = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+        let sum = 0
+
+        for key, value in test_dict {
+            print(key, value)
+            sum = sum + value
+        }
+        print(sum)  // Expect 15
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_dict_and_break() {
+    let input = r#"
+        let test_dict = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+        let sum = 0
+
+        for key, value in test_dict {
+            if (key == "c") {
+                break
+            }
+            sum = sum + value
+        }
+        print(sum)  // Expect 3
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_dict_and_continue() {
+    let input = r#"
+        let test_dict = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+        let sum = 0
+
+        for key, value in test_dict {
+            if (key == "c") {
+                continue
+            }
+            sum = sum + value
+        }
+        print(sum)  // Expect 12
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_for_loop_with_dict_and_key_value() {
+    let input = r#"
+        let test_dict = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+        let sum = 0
+
+        // Unsupported, where HashMap should have a key-value pair
+        for key in test_dict {
+            sum = sum + test_dict[key]
+        }
+        print(sum)  // Expect 15
+    "#;
+    let result = run_script(input);
+    assert!(result.is_err());
+}
+
+#[test]
+fn test_for_loop_with_dict_and_key_value_and_break() {
+    let input = r#"
+        let test_dict = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+        let sum = 0
+
+        for key, value in test_dict {
+            if (key == "c") {
+                break
+            }
+            sum = sum + value
+        }
+        print(sum)  // Expect 3
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
