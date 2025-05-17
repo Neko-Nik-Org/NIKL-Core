@@ -55,6 +55,11 @@ pub enum Stmt {
         condition: Expr,
         body: Vec<Stmt>,
     },
+    For {
+        names: Vec<String>,
+        iterable: Box<Expr>,
+        body: Vec<Stmt>,
+    },
     Import {
         path: String,
         alias: String,
@@ -111,6 +116,7 @@ impl Parser {
             TokenKind::If => self.parse_if(),
             TokenKind::Loop => self.parse_loop(),
             TokenKind::While => self.parse_while(),
+            TokenKind::For => self.parse_for(),
             TokenKind::Function => self.parse_function(),
             TokenKind::Import => self.parse_import(),
             TokenKind::Delete => self.parse_delete(),
@@ -258,6 +264,48 @@ impl Parser {
         self.expect(&TokenKind::RightBrace)?;
 
         Ok(Stmt::While { condition, body })
+    }
+
+    fn parse_for(&mut self) -> Result<Stmt, String> {
+        self.advance(); // Consume 'for'
+
+        // Parse one or two variable names
+        let mut names = Vec::new();
+        if let TokenKind::Identifier(name) = &self.current().kind {
+            names.push(name.clone());
+            self.advance();
+        } else {
+            return Err("Expected identifier after 'for'".to_string());
+        }
+
+        if matches!(self.current().kind, TokenKind::Comma) {
+            self.advance();
+            if let TokenKind::Identifier(name) = &self.current().kind {
+                names.push(name.clone());
+                self.advance();
+            } else {
+                return Err("Expected second identifier after comma".to_string());
+            }
+        }
+
+        self.expect(&TokenKind::In)?;
+
+        let iterable = self.parse_expr()?;
+
+        self.expect(&TokenKind::LeftBrace)?;
+
+        let mut body = Vec::new();
+        while self.current().kind != TokenKind::RightBrace {
+            body.push(self.parse_stmt()?);
+        }
+
+        self.expect(&TokenKind::RightBrace)?;
+
+        Ok(Stmt::For {
+            names,
+            iterable: Box::new(iterable),
+            body,
+        })
     }
 
     fn consume_type_annotation(&mut self) -> Result<(), String> {

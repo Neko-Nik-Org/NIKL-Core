@@ -1,7 +1,10 @@
-let test_list = [1, 2, 3, 4, 5]
+let test_list = [1, 2, 5, 3, 4, 5]
+// let test_tuple = (1, 2, 3, 4, 5)
+// let test_dict = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+
 
 for int_test in test_list {
-    print("int_test", int_test)
+    print("Current int_test is:", int_test)
     if int_test == 3 {
         print("Found 3")
         break

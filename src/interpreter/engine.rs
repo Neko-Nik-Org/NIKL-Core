@@ -91,6 +91,94 @@ impl Interpreter {
                 }
                 Ok(ControlFlow::Value)
             }
+            Stmt::For { names, iterable, body } => {
+                let iter_val = self.eval_expr(iterable)?;
+                match iter_val {
+                    Value::String(s) => {
+                        // There should be only one name in the names vector
+                        if names.len() != 1 {
+                            return Err(format!("'for' loop requires exactly one name for type 'String', got {:?}", names));
+                        }
+                        let name = &names[0];
+                        self.env.define(name, Value::Null, true)?; // mutable
+                        for c in s.chars() {
+                            self.env.assign(name, Value::String(c.to_string()))?;
+                            for stmt in body {
+                                match self.exec_stmt(stmt)? {
+                                    ControlFlow::Break => return Ok(ControlFlow::Value),
+                                    ControlFlow::Continue => break, // Skip to next iteration
+                                    ControlFlow::Value => continue,
+                                    cf => return Ok(cf), // Return bubbles up
+                                }
+                            }
+                        }
+                    }
+                    Value::Array(elements) => {
+                        // There should be only one name in the names vector
+                        if names.len() != 1 {
+                            return Err(format!("'for' loop requires exactly one name for type 'Array', got {:?}", names));
+                        }
+                        let name = &names[0];
+                        self.env.define(name, Value::Null, true)?; // mutable
+                        for elem in elements {
+                            self.env.assign(name, elem.clone())?;
+                            for stmt in body {
+                                match self.exec_stmt(stmt)? {
+                                    ControlFlow::Break => return Ok(ControlFlow::Value),
+                                    ControlFlow::Continue => break, // Skip to next iteration
+                                    ControlFlow::Value => continue,
+                                    cf => return Ok(cf), // Return bubbles up
+                                }
+                            }
+                        }
+                    }
+                    Value::Tuple(elements) => {
+                        // There should be only one name in the names vector
+                        if names.len() != 1 {
+                            return Err(format!("'for' loop requires exactly one name for type 'Tuple', got {:?}", names));
+                        }
+                        let name = &names[0];
+                        self.env.define(name, Value::Null, true)?; // mutable
+                        for elem in elements {
+                            self.env.assign(name, elem.clone())?;
+                            for stmt in body {
+                                match self.exec_stmt(stmt)? {
+                                    ControlFlow::Break => return Ok(ControlFlow::Value),
+                                    ControlFlow::Continue => break, // Skip to next iteration
+                                    ControlFlow::Value => continue,
+                                    cf => return Ok(cf), // Return bubbles up
+                                }
+                            }
+                        }
+                    }
+                    Value::HashMap(pairs) => {
+                        // There should be two names in the names vector, one for key and one for value
+                        if names.len() != 2 {
+                            return Err(format!("'for' loop requires exactly two names for type 'HashMap', got {:?}", names));
+                        }
+                        let key_name = &names[0];
+                        let value_name = &names[1];
+                        self.env.define(key_name, Value::Null, true)?; // mutable
+                        self.env.define(value_name, Value::Null, true)?; // mutable
+                        for (key, value) in pairs {
+                            if let Value::String(s) = key {
+                                self.env.assign(key_name, Value::String(s.clone()))?;
+                            }
+                            self.env.assign(value_name, value.clone())?;
+                            for stmt in body {
+                                match self.exec_stmt(stmt)? {
+                                    ControlFlow::Break => return Ok(ControlFlow::Value),
+                                    ControlFlow::Continue => break, // Skip to next iteration
+                                    ControlFlow::Value => continue,
+                                    cf => return Ok(cf), // Return bubbles up
+                                }
+                            }
+                        }
+                    }
+                    _ => return Err(format!("'for' loop requires an iterable, got {:?}", iter_val)),
+                }
+                Ok(ControlFlow::Value)
+            }
             Stmt::Expr(expr) => {
                 self.eval_expr(expr)?;
                 Ok(ControlFlow::Value)
