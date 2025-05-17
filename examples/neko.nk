@@ -1,22 +1,29 @@
-import "os.nk" as os
+// let test_list = [1, 2, 3, 4, 5]
 
-let a_var = False
+// for int_test in test_list {
+//     print("int_test", int_test)
+//     if int_test == 3 {
+//         print("Found 3")
+//         break
+//     } else {
+//         continue
+//     }
+// }
 
-if os.bool_test {
-    let test = True
-    print("Test 1", test, type(test))
-} elif (1 > 2) or True {
-    print("\nTest 2 and got:", os.foo(a_var), "of type:", type(os.foo(a_var)), "\n")
-} else {
-    let test = True
-    print("Test 3", test, type(test))
+// while True {
+//     print("This is an infinite loop")
+//     break
+// }
+
+
+let counter = 0
+
+loop {
+    print("Current counter is:", counter)
+    if counter == 500 {
+        print("Counter reached 5, breaking the loop", counter)
+        break
+    }
+    counter = counter + 1
+    // continue
 }
-
-let with_true = os.foo(True)
-print("With True", with_true, type(with_true))
-
-// TODO: handle the \n in the print statement
-print("\n-----\n")
-
-let with_false = os.foo(False)
-print("With False", with_false, type(with_false))

@@ -50,11 +50,14 @@ pub enum Stmt {
         params: Vec<String>,
         body: Vec<Stmt>,
     },
+    Loop(Vec<Stmt>),
     Import {
         path: String,
         alias: String,
     },
     Delete(String),
+    Break,
+    Continue,
 }
 
 pub struct Parser {
@@ -102,19 +105,34 @@ impl Parser {
             TokenKind::Let => self.parse_var_decl(true),
             TokenKind::Const => self.parse_var_decl(false),
             TokenKind::If => self.parse_if(),
+            TokenKind::Loop => self.parse_loop(),
             TokenKind::Function => self.parse_function(),
             TokenKind::Import => self.parse_import(),
             TokenKind::Delete => self.parse_delete(),
-            TokenKind::Return => {
-                self.advance();
-                let expr = self.parse_expr()?;
-                Ok(Stmt::Return(expr))
-            }
+            TokenKind::Break => self.parse_break(),
+            TokenKind::Continue => self.parse_continue(),
+            TokenKind::Return => self.parse_return(),
             _ => {
                 let expr = self.parse_expr()?;
                 Ok(Stmt::Expr(expr))
             }
         }
+    }
+
+    fn parse_break(&mut self) -> Result<Stmt, String> {
+        self.advance();
+        Ok(Stmt::Break)
+    }
+
+    fn parse_continue(&mut self) -> Result<Stmt, String> {
+        self.advance();
+        Ok(Stmt::Continue)
+    }
+
+    fn parse_return(&mut self) -> Result<Stmt, String> {
+        self.advance();
+        let expr = self.parse_expr()?;
+        Ok(Stmt::Return(expr))
     }
 
     fn parse_var_decl(&mut self, is_mut: bool) -> Result<Stmt, String> {
@@ -199,6 +217,18 @@ impl Parser {
             else_if_branches,
             else_body,
         })
+    }
+
+    fn parse_loop(&mut self) -> Result<Stmt, String> {
+        // Example: loop { ... }
+        self.advance(); // Consume 'loop'
+        self.expect(&TokenKind::LeftBrace)?;
+        let mut body = Vec::new();
+        while self.current().kind != TokenKind::RightBrace {
+            body.push(self.parse_stmt()?);
+        }
+        self.expect(&TokenKind::RightBrace)?;
+        Ok(Stmt::Loop(body))
     }
 
     fn consume_type_annotation(&mut self) -> Result<(), String> {

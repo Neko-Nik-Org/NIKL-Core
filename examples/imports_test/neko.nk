@@ -1,0 +1,22 @@
+import "os.nk" as os
+
+let a_var = False
+
+if os.bool_test {
+    let test = True
+    print("Test 1", test, type(test))
+} elif (1 > 2) or True {
+    print("\nTest 2 and got:", os.foo(a_var), "of type:", type(os.foo(a_var)), "\n")
+} else {
+    let test = True
+    print("Test 3", test, type(test))
+}
+
+let with_true = os.foo(True)
+print("With True", with_true, type(with_true))
+
+// TODO: handle the \n in the print statement
+print("\n-----\n")
+
+let with_false = os.foo(False)
+print("With False", with_false, type(with_false))

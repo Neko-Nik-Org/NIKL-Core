@@ -18,8 +18,8 @@ pub struct Interpreter {
 pub enum ControlFlow {
     Value,      // A normal result (like from evaluating an expression)
     Return(Value),     // A return statement
-    // Break,             // For loops (Not yet implemented)
-    // Continue,          // For loops (Not yet implemented)
+    Break,             // For loops (Not yet implemented)
+    Continue,          // For loops (Not yet implemented)
     // Yield,            // For generators (Not yet implemented)
     // Exception(String), // For exceptions (Not yet implemented)
 }
@@ -66,6 +66,18 @@ impl Interpreter {
                 self.env.define(name, func, true)?;
                 Ok(ControlFlow::Value)
             }
+            Stmt::Loop(body) => {
+                loop {
+                    for stmt in body {
+                        match self.exec_stmt(stmt)? {
+                            ControlFlow::Break => return Ok(ControlFlow::Value),
+                            ControlFlow::Continue => break, // Skip to next iteration
+                            ControlFlow::Value => continue,
+                            cf => return Ok(cf), // Return bubbles up
+                        }
+                    }
+                }
+            }
             Stmt::Expr(expr) => {
                 self.eval_expr(expr)?;
                 Ok(ControlFlow::Value)
@@ -74,6 +86,8 @@ impl Interpreter {
                 self.env.delete(name)?;
                 Ok(ControlFlow::Value)
             }
+            Stmt::Break => Ok(ControlFlow::Break),
+            Stmt::Continue => Ok(ControlFlow::Continue),
 
             // This will create a new environment and will not update the variable in the current environment
             // Stmt::If { condition, body, else_if_branches, else_body } => {
@@ -189,7 +203,6 @@ impl Interpreter {
                 let val = self.eval_expr(expr)?;
                 Ok(ControlFlow::Return(val))
             }
-            // _ => Err("Unsupported statement in basic interpreter".to_string()), // TODO: Give a more specific error message with the line number etc
         }
     }
 
@@ -292,7 +305,6 @@ impl Interpreter {
                     _ => Err(format!("Dot access on non-object value: {:?}", val)),
                 }
             }
-            // _ => Err("Unsupported expression in basic interpreter".to_string()),
         }
     }
 
