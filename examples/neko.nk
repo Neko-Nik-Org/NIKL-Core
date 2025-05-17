@@ -1,28 +1,10 @@
-fn foo(do_cwd: Bool) -> String {
-    let cwd = "1"
-
-    if do_cwd {
-        cwd = "2"
-        print("--", cwd, type(cwd))
-        print("Returning 3 now")
-        return "3"
-    } else {
-        cwd = "4"
-        // del cwd
-        print("---", cwd, type(cwd))
-        print("Returning 5 now")
-        return "5"
-    }
-
-    print("This line should NOT be printed", cwd, type(cwd))
-    return cwd
-}
+import "examples/os.nk" as os
 
 
-let with_true = foo(True)
+let with_true = os.foo(True)
 print("With True", with_true, type(with_true))
 
 print("\n-----\n")
 
-let with_false = foo(False)
+let with_false = os.foo(False)
 print("With False", with_false, type(with_false))

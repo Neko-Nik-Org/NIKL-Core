@@ -1,3 +1,23 @@
 fn get_cwd() -> String {
     return __nikl__.os.get_cwd()
 }
+
+fn foo(do_cwd: Bool) -> String {
+    let cwd = "1"
+
+    if do_cwd {
+        cwd = "2"
+        print("--", cwd, type(cwd))
+        print("Returning 3 now")
+        return "3"
+    } else {
+        cwd = "4"
+        // del cwd
+        print("---", cwd, type(cwd))
+        print("Returning 5 now")
+        return "5"
+    }
+
+    print("This line should NOT be printed", cwd, type(cwd))
+    return cwd
+}
