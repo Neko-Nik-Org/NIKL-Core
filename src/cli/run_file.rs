@@ -73,6 +73,7 @@ pub fn run_file(filename: &str) {
                             }
                         }
 
+                        log::info!("Running the script now...");
                         match interpret_statements(&stmts) {
                             Ok(_) => log::info!("Script executed successfully."),
                             Err(e) => eprintln!("Error executing script: {}", e),
