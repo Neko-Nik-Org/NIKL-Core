@@ -27,6 +27,13 @@ pub struct Environment {
 }
 
 
+impl VariableEntry {
+    pub fn value(&self) -> &Value {
+        &self.value
+    }
+}
+
+
 impl Environment {
     pub fn new() -> Self {
         let mut env = Self {
@@ -63,6 +70,14 @@ impl Environment {
         }
     }
 
+    pub fn flatten(&self) -> HashMap<String, VariableEntry> {
+        let mut map = HashMap::new();
+        if let Some(parent) = &self.parent {
+            map.extend(parent.flatten());
+        }
+        map.extend(self.values.clone());
+        map
+    }
 
     pub fn define(&mut self, name: &str, value: Value, mutable: bool) -> Result<(), String> {
         if self.values.contains_key(name) {
@@ -78,11 +93,21 @@ impl Environment {
                 return Err(format!("Cannot assign to constant '{}'", name));
             }
             entry.value = value;
-            return Ok(());
+            Ok(())
         } else if let Some(parent) = self.parent.as_mut() {
-            return parent.assign(name, value);
+            parent.assign(name, value)
+        } else {
+            Err(format!("Variable '{}' is not defined", name))
         }
+    }
 
-        Err(format!("Variable '{}' is not defined", name))
+    pub fn delete(&mut self, name: &str) -> Result<(), String> {
+        if self.values.remove(name).is_some() {
+            Ok(())
+        } else if let Some(parent) = self.parent.as_mut() {
+            parent.delete(name)
+        } else {
+            Err(format!("Variable '{}' is not defined", name))
+        }
     }
 }

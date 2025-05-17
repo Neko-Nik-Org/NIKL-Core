@@ -33,6 +33,7 @@ pub enum TokenKind {
     Or,
     Not,
     Return,
+    Delete,
 
     // Operators
     Equals,
@@ -293,6 +294,7 @@ impl<'a> Lexer<'a> {
                         "spawn" => TokenKind::Spawn,
                         "wait" => TokenKind::Wait,
                         "return" => TokenKind::Return,
+                        "del" => TokenKind::Delete,
 
                         "if" => TokenKind::If,
                         "elif" => TokenKind::ElseIf,

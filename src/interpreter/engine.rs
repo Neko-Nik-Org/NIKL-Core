@@ -1,4 +1,5 @@
 use std::fmt;
+use std::collections::HashSet;
 
 use crate::parser::{Expr, Stmt};
 use crate::lexer::TokenKind;
@@ -27,6 +28,7 @@ pub enum Value {
 
 pub struct Interpreter {
     env: Environment,
+    loaded_modules: HashSet<String>,
 }
 
 
@@ -34,6 +36,7 @@ impl Interpreter {
     pub fn new() -> Self {
         Self {
             env: Environment::new(),
+            loaded_modules: HashSet::new(),
         }
     }
 
@@ -70,20 +73,71 @@ impl Interpreter {
                 self.eval_expr(expr)?;
                 Ok(None)
             }
+            Stmt::Delete(name) => {
+                self.env.delete(name)?;
+                Ok(None)
+            }
             Stmt::If { condition, body, else_body } => {
                 let cond_val = self.eval_expr(condition)?;
                 if let Value::Bool(true) = cond_val {
                     let local_env = Environment::with_parent(self.env.clone());
-                    let mut local_interp = Interpreter { env: local_env };
+                    let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
                     local_interp.run(body)?;
                 } else if let Some(else_body) = else_body {
                     let local_env = Environment::with_parent(self.env.clone());
-                    let mut local_interp = Interpreter { env: local_env };
+                    let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
                     local_interp.run(else_body)?;
                 }
                 Ok(None)
             }
-            Stmt::Return(expr) => Ok(Some(self.eval_expr(expr)?)),
+            Stmt::Import { path, alias } => {
+                // Check if the module is already loaded
+                if self.loaded_modules.contains(path) {
+                    return Ok(None);
+                }
+
+                // Load the module file (e.g., os.nk)
+                let module_code = std::fs::read_to_string(path)
+                    .map_err(|_| format!("Failed to read module '{}'", path))?;
+
+                // Lex and parse the file (assuming you have `Lexer` and `Parser`)
+                let lexer = crate::lexer::Lexer::new(&module_code);
+                let tokens = lexer
+                    .tokenize()
+                    .map_err(|_| format!("Failed to tokenize module '{}'", path))?;
+
+                let mut parser = crate::parser::Parser::new(tokens);
+                let module_stmts = parser.parse()?;
+
+                // Create new interpreter and run the module in an isolated environment
+                let mut module_interp = Interpreter {
+                    env: Environment::new(),
+                    loaded_modules: HashSet::new(),
+                };
+                module_interp.loaded_modules.insert(path.clone());
+                module_interp.run(&module_stmts)?;
+
+                // Extract environment and bind it under alias
+                let module_env = module_interp.env;
+                let exports: Vec<(Value, Value)> = module_env
+                    .flatten()
+                    .into_iter()
+                    .map(|(k, entry)| (Value::String(k), entry.value().clone()))
+                    .collect();
+
+                self.env.define(
+                    &alias,
+                    Value::HashMap(exports),
+                    false,
+                )?;
+
+                self.loaded_modules.insert(path.clone());
+                Ok(None)
+            }
+            Stmt::Return(expr) => {
+                let val = self.eval_expr(expr)?;
+                Ok(Some(val)) // important: returns Some(val)
+            }
             // _ => Err("Unsupported statement in basic interpreter".to_string()), // TODO: Give a more specific error message with the line number etc
         }
     }
@@ -150,29 +204,48 @@ impl Interpreter {
                             ));
                         }
 
-                        let mut local_env = Environment::with_parent(closure);
-
+                        let mut local_env = Environment::with_parent(closure.clone());
                         for (param, arg_expr) in params.iter().zip(args.iter()) {
                             let arg_val = self.eval_expr(arg_expr)?;
                             local_env.define(param, arg_val, true)?;
                         }
 
-                        let mut local_interpreter = Interpreter { env: local_env };
+                        let mut local_interpreter = Interpreter {
+                            env: local_env,
+                            loaded_modules: self.loaded_modules.clone(),
+                        };
 
-                        for stmt in body {
-                            if let Stmt::Return(ret_expr) = stmt {
-                                return Ok(local_interpreter.eval_expr(&ret_expr)?);
-                            } else {
-                                local_interpreter.exec_stmt(&stmt)?;
+                        for stmt in &body {
+                            let ret_val = local_interpreter.exec_stmt(stmt)?;
+                            if let Some(val) = ret_val {
+                                if let Value::Null = val {
+                                    continue; // Ignore None return values
+                                } else {
+                                    return Ok(val);
+                                }
                             }
                         }
 
-                        Ok(Value::Bool(true)) // default return value
+                        Ok(Value::Null) // default return
                     }
-                    Value::BuiltinFunction(f) => {
-                        f(arg_values?)
-                    }
+                    Value::BuiltinFunction(f) => f(arg_values?),
                     _ => Err("Tried to call non-function".into()),
+                }
+            }
+            Expr::DotAccess { object, property } => {
+                let val = self.eval_expr(object)?;
+                match val {
+                    Value::HashMap(pairs) => {
+                        for (k, v) in pairs {
+                            if let Value::String(s) = k {
+                                if s == *property {
+                                    return Ok(v.clone());
+                                }
+                            }
+                        }
+                        Err(format!("Property '{}' not found", property))
+                    }
+                    _ => Err(format!("Dot access on non-object value: {:?}", val)),
                 }
             }
             // _ => Err("Unsupported expression in basic interpreter".to_string()),
@@ -279,6 +352,16 @@ impl Interpreter {
                 TokenKind::GreaterThan => Ok(Value::Bool(*l > *r as f64)),
                 _ => Err(format!("Unsupported operator: {:?}", op)),
             },
+            // string, bool
+            (Value::String(l), Value::Bool(r)) => match op {
+                TokenKind::Add => Ok(Value::String(format!("{}{}", l, if *r { "True" } else { "False" }))),
+                _ => Err(format!("Unsupported operator: {:?}", op)),
+            },
+            // bool, string
+            (Value::Bool(l), Value::String(r)) => match op {
+                TokenKind::Add => Ok(Value::String(format!("{}{}", if *l { "True" } else { "False" }, r))),
+                _ => Err(format!("Unsupported operator: {:?}", op)),
+            },
             _ => Err(format!("Type error: {:?} {:?} {:?}", left, op, right)),
         }
     }
@@ -298,7 +381,7 @@ impl fmt::Display for Value {
         match self {
             Value::Integer(i) => write!(f, "{}", i),
             Value::Float(fl) => write!(f, "{}", fl),
-            Value::Bool(b) => write!(f, "{}", b),
+            Value::Bool(b) => write!(f, "{}", if *b { "True" } else { "False" }),
             Value::String(s) => write!(f, "{}", s),
             Value::Null => write!(f, "None"),
             Value::Array(arr) => {

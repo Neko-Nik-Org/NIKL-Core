@@ -1,22 +1,28 @@
-import "examples/os.nk" as os
+fn foo(do_cwd: Bool) -> String {
+    let cwd = "1"
 
+    if do_cwd {
+        cwd = "2"
+        print("--", cwd, type(cwd))
+        print("Returning 3 now")
+        return "3"
+    } else {
+        cwd = "4"
+        // del cwd
+        print("---", cwd, type(cwd))
+        print("Returning 5 now")
+        return "5"
+    }
 
-// os.nk File
-// pub fn get_cwd() {
-//     // A fake current working directory
-//     let cwd = "/Code/Neko_Nik/Repositories/NIKL-Core/examples"
-//     return cwd
-// }
-
-// This is an example of how to export module in nikl
-fn get_cwd() {
-    
-    // A fake current working directory
-    let cwd = "/xxx"
-    
+    print("This line should NOT be printed", cwd, type(cwd))
     return cwd
 }
 
 
-let cwd = os.get_cwd()
-print("Current working directory: ", cwd)
+let with_true = foo(True)
+print("With True", with_true, type(with_true))
+
+print("\n-----\n")
+
+let with_false = foo(False)
+print("With False", with_false, type(with_false))

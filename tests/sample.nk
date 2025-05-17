@@ -1,0 +1,7 @@
+let sample_exp = "sample"
+
+fn get_sample() {
+    // A fake current working directory
+    let cwd = sample_exp
+    return cwd
+}

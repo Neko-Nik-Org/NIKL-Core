@@ -403,3 +403,14 @@ fn test_input() {
 
     // For no-argument input(), you might skip or test manually.
 }
+
+#[test]
+fn test_imports() {
+    let input = r#"
+        import "tests/sample.nk" as sample
+        let result = sample.get_sample()
+        print(result == sample.sample_exp)
+    "#;
+    let result = run_script(input);
+    assert!(result.is_ok());
+}
