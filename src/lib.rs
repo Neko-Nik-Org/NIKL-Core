@@ -33,7 +33,7 @@ pub fn run_script(source: &str) -> Result<(), String> {
             let mut parser = parser::Parser::new(tokens);
             let stmts = parser.parse().map_err(|e| e.to_string())?;
             let mut interpreter = Interpreter::new();
-            interpreter.run(&stmts)
+            interpreter.run(&stmts).map(|_| ())
         },
         Err(_) => Err(format!("Lexer error")),
     }

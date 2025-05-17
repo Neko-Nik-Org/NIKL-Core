@@ -50,7 +50,7 @@ fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<crate::parser::Stmt>, String> 
 
 fn interpret_statements(stmts: &[crate::parser::Stmt]) -> Result<(), String> {
     let mut interpreter = Interpreter::new();
-    interpreter.run(stmts)
+    interpreter.run(stmts).map(|_| ())
 }
 
 pub fn run_file(filename: &str) {
