@@ -96,12 +96,34 @@ fn test_if_statement_without_else() {
     "#;
     let ast = parse_input(source).unwrap();
     match &ast[0] {
-        Stmt::If { condition, body, else_body } => {
+        Stmt::If { condition, body, else_if_branches, else_body } => {
             assert!(matches!(condition, Expr::Bool(true)));
             assert!(body.len() == 1);
+            assert!(else_if_branches.is_empty());
             assert!(else_body.is_none());
         }
         _ => panic!("Expected if statement"),
+    }
+}
+
+#[test]
+fn test_if_statement_with_elif() {
+    let source = r#"
+        if x > 10 {
+            print("x is large")
+        } elif x < 5 {
+            print("x is small")
+        }
+    "#;
+    let ast = parse_input(source).unwrap();
+    match &ast[0] {
+        Stmt::If { condition, body, else_if_branches, else_body } => {
+            assert!(matches!(condition, Expr::BinaryOp { .. }));
+            assert!(body.len() == 1);
+            assert!(else_if_branches.len() == 1);
+            assert!(else_body.is_none());
+        }
+        _ => panic!("Expected if/else if statement"),
     }
 }
 
@@ -116,9 +138,10 @@ fn test_if_statement_with_else() {
     "#;
     let ast = parse_input(source).unwrap();
     match &ast[0] {
-        Stmt::If { condition, body, else_body } => {
+        Stmt::If { condition, body, else_if_branches, else_body } => {
             assert!(matches!(condition, Expr::Bool(false)));
             assert_eq!(body.len(), 1);
+            assert!(else_if_branches.is_empty());
             assert!(else_body.as_ref().unwrap().len() == 1);
         }
         _ => panic!("Expected if/else statement"),

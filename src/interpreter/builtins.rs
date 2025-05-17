@@ -3,7 +3,7 @@
 //! and can be called directly from the user code
 
 use std::io::{self, Write};
-use super::engine::Value;
+use super::value::Value;
 
 
 /// Built-in function to print values to the console
