@@ -78,6 +78,19 @@ impl Interpreter {
                     }
                 }
             }
+            Stmt::While { condition, body } => {
+                while let Value::Bool(true) = self.eval_expr(condition)? {
+                    for stmt in body {
+                        match self.exec_stmt(stmt)? {
+                            ControlFlow::Break => return Ok(ControlFlow::Value),
+                            ControlFlow::Continue => break, // Skip to next iteration
+                            ControlFlow::Value => continue,
+                            cf => return Ok(cf), // Return bubbles up
+                        }
+                    }
+                }
+                Ok(ControlFlow::Value)
+            }
             Stmt::Expr(expr) => {
                 self.eval_expr(expr)?;
                 Ok(ControlFlow::Value)

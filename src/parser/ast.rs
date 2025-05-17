@@ -51,6 +51,10 @@ pub enum Stmt {
         body: Vec<Stmt>,
     },
     Loop(Vec<Stmt>),
+    While {
+        condition: Expr,
+        body: Vec<Stmt>,
+    },
     Import {
         path: String,
         alias: String,
@@ -106,6 +110,7 @@ impl Parser {
             TokenKind::Const => self.parse_var_decl(false),
             TokenKind::If => self.parse_if(),
             TokenKind::Loop => self.parse_loop(),
+            TokenKind::While => self.parse_while(),
             TokenKind::Function => self.parse_function(),
             TokenKind::Import => self.parse_import(),
             TokenKind::Delete => self.parse_delete(),
@@ -228,7 +233,31 @@ impl Parser {
             body.push(self.parse_stmt()?);
         }
         self.expect(&TokenKind::RightBrace)?;
+
         Ok(Stmt::Loop(body))
+    }
+
+    fn parse_while(&mut self) -> Result<Stmt, String> {
+        // Example: while condition { ... } / while (condition) { ... }
+        self.advance(); // Consume 'while'
+        let condition = if matches!(self.current().kind, TokenKind::LeftParen) {
+            self.advance();
+            let cond = self.parse_expr()?;
+            self.expect(&TokenKind::RightParen)?;
+            cond
+        } else {
+            self.parse_expr()?
+        };
+
+        self.expect(&TokenKind::LeftBrace)?;
+        let mut body = Vec::new();
+        
+        while self.current().kind != TokenKind::RightBrace {
+            body.push(self.parse_stmt()?);
+        }
+        self.expect(&TokenKind::RightBrace)?;
+
+        Ok(Stmt::While { condition, body })
     }
 
     fn consume_type_annotation(&mut self) -> Result<(), String> {
