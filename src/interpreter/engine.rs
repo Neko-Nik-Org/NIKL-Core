@@ -12,6 +12,15 @@ pub struct Interpreter {
 }
 
 
+#[derive(Debug, Clone)]
+pub enum ControlFlow {
+    Value(Value),      // A normal result (like from evaluating an expression)
+    Return(Value),     // A return statement
+    Break,             // For loops (if you add them)
+    Continue,          // For loops (if you add them)
+}
+
+
 impl Interpreter {
     pub fn new() -> Self {
         Self {
@@ -20,26 +29,27 @@ impl Interpreter {
         }
     }
 
-    pub fn run(&mut self, stmts: &[Stmt]) -> Result<Option<Value>, String> {
+    pub fn run(&mut self, stmts: &[Stmt]) -> Result<ControlFlow, String> {
         for stmt in stmts {
-            if let Some(val) = self.exec_stmt(stmt)? {
-                return Ok(Some(val)); // Exit early on return
+            match self.exec_stmt(stmt)? {
+                ControlFlow::Value(_) => continue,
+                cf => return Ok(cf), // Return, Break, Continue — bubble up
             }
         }
-        Ok(None)
+        Ok(ControlFlow::Value(Value::Null))
     }
 
-    fn exec_stmt(&mut self, stmt: &Stmt) -> Result<Option<Value>, String> {
+    fn exec_stmt(&mut self, stmt: &Stmt) -> Result<ControlFlow, String> {
         match stmt {
             Stmt::Let { name, value } => {
                 let val = self.eval_expr(value)?;
                 self.env.define(name, val, true)?;  // mutable
-                Ok(None)
+                Ok(ControlFlow::Value(Value::Null))
             }
             Stmt::Const { name, value } => {
                 let val = self.eval_expr(value)?;
                 self.env.define(name, val, false)?;  // immutable
-                Ok(None)
+                Ok(ControlFlow::Value(Value::Null))
             }
             Stmt::Function { name, params, body } => {
                 let func = Value::Function {
@@ -49,15 +59,15 @@ impl Interpreter {
                     closure: self.env.clone(),
                 };
                 self.env.define(name, func, true)?;
-                Ok(None)
+                Ok(ControlFlow::Value(Value::Null))
             }
             Stmt::Expr(expr) => {
                 self.eval_expr(expr)?;
-                Ok(None)
+                Ok(ControlFlow::Value(Value::Null))
             }
             Stmt::Delete(name) => {
                 self.env.delete(name)?;
-                Ok(None)
+                Ok(ControlFlow::Value(Value::Null))
             }
             Stmt::If { condition, body, else_if_branches, else_body } => {
                 let cond_val = self.eval_expr(condition)?;
@@ -82,12 +92,12 @@ impl Interpreter {
                     }
                 }
 
-                Ok(None)
+                Ok(ControlFlow::Value(Value::Null))
             }
             Stmt::Import { path, alias } => {
                 // Check if the module is already loaded
                 if self.loaded_modules.contains(path) {
-                    return Ok(None);
+                    return Ok(ControlFlow::Value(Value::Null));
                 }
 
                 // Load the module file (e.g., os.nk)
@@ -126,11 +136,11 @@ impl Interpreter {
                 )?;
 
                 self.loaded_modules.insert(path.clone());
-                Ok(None)
+                Ok(ControlFlow::Value(Value::Null))
             }
             Stmt::Return(expr) => {
                 let val = self.eval_expr(expr)?;
-                Ok(Some(val)) // important: returns Some(val)
+                Ok(ControlFlow::Return(val))
             }
             // _ => Err("Unsupported statement in basic interpreter".to_string()), // TODO: Give a more specific error message with the line number etc
         }
@@ -191,7 +201,7 @@ impl Interpreter {
                     Value::Function { name, params, body, closure } => {
                         if params.len() != args.len() {
                             return Err(format!(
-                                "Function '{}' expects {} arguments, but got {}",
+                                "Function '{}' expects {} arguments, got {}",
                                 name,
                                 params.len(),
                                 args.len()
@@ -209,18 +219,10 @@ impl Interpreter {
                             loaded_modules: self.loaded_modules.clone(),
                         };
 
-                        for stmt in &body {
-                            let ret_val = local_interpreter.exec_stmt(stmt)?;
-                            if let Some(val) = ret_val {
-                                if let Value::Null = val {
-                                    continue; // Ignore None return values
-                                } else {
-                                    return Ok(val);
-                                }
-                            }
+                        match local_interpreter.run(&body)? {
+                            ControlFlow::Return(val) => Ok(val),
+                            _ => Ok(Value::Null),
                         }
-
-                        Ok(Value::Null) // default return
                     }
                     Value::BuiltinFunction(f) => f(arg_values?),
                     _ => Err("Tried to call non-function".into()),
