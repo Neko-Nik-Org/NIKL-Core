@@ -4,24 +4,21 @@ fn get_cwd() -> String {
 
 let bool_test = False
 
-// Major bug
-// TODO: Fix this
-fn foo(do_cwd: Bool) -> String {
-    let cwd = "1"
+// TODO: Fix this is a major bug
+fn foo(param_1: Bool) -> String {
+    let variable_1 = "1"
 
-    if do_cwd {
-        cwd = "2"
-        print("--", cwd, type(cwd))
-        print("Returning 3 now")
+    if param_1 {
+        variable_1 = "2"
+        print("\nIF >", variable_1, type(variable_1))
         return "3"
     } else {
-        cwd = "4"
-        // del cwd
-        print("---", cwd, type(cwd))
-        print("Returning 5 now")
+        variable_1 = "4"
+        print("ELSE >", variable_1, type(variable_1))
         return "5"
     }
 
-    print("This line should NOT be printed", cwd, type(cwd))
-    return cwd
+    // This line should not execute
+    print("X >", variable_1, type(variable_1), "\n")
+    return variable_1
 }

@@ -3,13 +3,40 @@
 //! and can be called directly from the user code
 
 use std::io::{self, Write};
+use regex::Regex;
 use super::value::Value;
+
+
+/// Unescapes a string by replacing escape sequences with their corresponding characters
+fn unescape_string(s: &str) -> String {
+    // Regex to match escape sequences like \n, \t, \\, \r, \", \'
+    let re = Regex::new(r#"\\([ntr\\"'])"#).unwrap();
+
+    // Replace each escape sequence with the corresponding char
+    re.replace_all(s, |caps: &regex::Captures| {
+        match &caps[1] {
+            "n" => "\n",
+            "t" => "\t",
+            "r" => "\r",
+            "\\" => "\\",
+            "\"" => "\"",
+            "'" => "'",
+            _ => &caps[0], // fallback (shouldn't happen)
+        }.to_string()
+    }).to_string()
+}
 
 
 /// Built-in function to print values to the console
 /// It accepts any number of arguments and prints them in a single line
 pub fn builtin_print(args: Vec<Value>) -> Result<Value, String> {
-    let output: Vec<String> = args.into_iter().map(|v| v.to_string()).collect();
+    let output: Vec<String> = args.into_iter().map(|v| {
+        match v {
+            Value::String(s) => unescape_string(&s),
+            _ => v.to_string(),
+        }
+    }).collect();
+
     println!("{}", output.join(" "));
     Ok(Value::Null)
 }

@@ -4,11 +4,8 @@ import "examples/os.nk" as os
 if os.bool_test {
     let test = True
     print("Test 1", test, type(test))
-} 
-
-elif True {
-    let test = [1, 2, 3]
-    print("Test 2", test, type(test), len(test))
+} elif (1 > 2) or True {
+    print("Test 2 and got:", os.foo(True), "of type:", type(os.foo(True)), "\n")
 } 
 
 // else {
@@ -19,6 +16,7 @@ elif True {
 // let with_true = os.foo(True)
 // print("With True", with_true, type(with_true))
 
+// TODO: handle the \n in the print statement
 // print("\n-----\n")
 
 // let with_false = os.foo(False)
