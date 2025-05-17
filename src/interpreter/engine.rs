@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::path::PathBuf;
 
 use crate::parser::{Expr, Stmt};
 use crate::lexer::TokenKind;
@@ -9,6 +10,7 @@ use super::value::Value;
 pub struct Interpreter {
     env: Environment,
     loaded_modules: HashSet<String>,
+    base_path: PathBuf,
 }
 
 
@@ -24,10 +26,11 @@ pub enum ControlFlow {
 
 
 impl Interpreter {
-    pub fn new() -> Self {
+    pub fn new(base_path: PathBuf) -> Self {
         Self {
             env: Environment::new(),
             loaded_modules: HashSet::new(),
+            base_path,
         }
     }
 
@@ -140,16 +143,21 @@ impl Interpreter {
                 Ok(ControlFlow::Value)
             }
             Stmt::Import { path, alias } => {
-                // Check if the module is already loaded
-                if self.loaded_modules.contains(path) {
+                // Resolve relative to base_path of current interpreter
+                let mut final_path = self.base_path.clone();
+                final_path.push(path); // appends e.g., "os.nk"
+
+                // Normalize path to avoid duplicates
+                let canonical = std::fs::canonicalize(&final_path)
+                    .map_err(|_| format!("Failed to read module '{}'", final_path.display()))?;
+
+                if self.loaded_modules.contains(canonical.to_str().unwrap()) {
                     return Ok(ControlFlow::Value);
                 }
 
-                // Load the module file (e.g., os.nk)
-                let module_code = std::fs::read_to_string(path)
-                    .map_err(|_| format!("Failed to read module '{}'", path))?;
+                let module_code = std::fs::read_to_string(&canonical)
+                    .map_err(|_| format!("Failed to read module '{}'", canonical.display()))?;
 
-                // Lex and parse the file (assuming you have `Lexer` and `Parser`)
                 let lexer = crate::lexer::Lexer::new(&module_code);
                 let tokens = lexer
                     .tokenize()
@@ -158,29 +166,23 @@ impl Interpreter {
                 let mut parser = crate::parser::Parser::new(tokens);
                 let module_stmts = parser.parse()?;
 
-                // Create new interpreter and run the module in an isolated environment
                 let mut module_interp = Interpreter {
                     env: Environment::new(),
                     loaded_modules: HashSet::new(),
+                    base_path: canonical.parent().unwrap().to_path_buf(), // <- important
                 };
-                module_interp.loaded_modules.insert(path.clone());
+                module_interp.loaded_modules.insert(canonical.to_string_lossy().to_string());
                 module_interp.run(&module_stmts)?;
 
-                // Extract environment and bind it under alias
-                let module_env = module_interp.env;
-                let exports: Vec<(Value, Value)> = module_env
+                let exports: Vec<(Value, Value)> = module_interp.env
                     .flatten()
                     .into_iter()
-                    .map(|(k, entry)| (Value::String(k), entry.value().clone()))
+                    .map(|(k, v)| (Value::String(k), v.value().clone()))
                     .collect();
 
-                self.env.define(
-                    &alias,
-                    Value::HashMap(exports),
-                    false,
-                )?;
+                self.env.define(&alias, Value::HashMap(exports), false)?;
+                self.loaded_modules.insert(canonical.to_string_lossy().to_string());
 
-                self.loaded_modules.insert(path.clone());
                 Ok(ControlFlow::Value)
             }
             Stmt::Return(expr) => {
@@ -262,6 +264,7 @@ impl Interpreter {
                         let mut local_interpreter = Interpreter {
                             env: local_env,
                             loaded_modules: self.loaded_modules.clone(),
+                            base_path: self.base_path.clone(),
                         };
 
                         match local_interpreter.run(&body)? {

@@ -37,7 +37,8 @@ pub fn run_repl() -> rustyline::Result<()> {
         debug!("Loaded history from file");
     }
 
-    let mut interpreter = Interpreter::new();
+    let base_path = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
+    let mut interpreter = Interpreter::new(base_path);
 
     loop {
         let readline = rl.readline(">>> ");

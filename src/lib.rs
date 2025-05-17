@@ -32,7 +32,8 @@ pub fn run_script(source: &str) -> Result<(), String> {
         Ok(tokens) => {
             let mut parser = parser::Parser::new(tokens);
             let stmts = parser.parse().map_err(|e| e.to_string())?;
-            let mut interpreter = Interpreter::new();
+            let base_path = std::env::current_dir().map_err(|e| e.to_string())?;
+            let mut interpreter = Interpreter::new(base_path);
             interpreter.run(&stmts).map(|_| ())
         },
         Err(_) => Err(format!("Lexer error")),

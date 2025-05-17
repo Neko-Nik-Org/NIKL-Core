@@ -1,4 +1,4 @@
-import "examples/os.nk" as os
+import "os.nk" as os
 
 let a_var = False
 

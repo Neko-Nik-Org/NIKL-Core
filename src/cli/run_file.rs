@@ -1,7 +1,9 @@
 use std::fs;
+use std::path::{Path, PathBuf};
 use log::{debug, log_enabled, Level};
 
 use crate::{lexer::{Lexer, LexError, Token}, parser::Parser, interpreter::Interpreter};
+
 
 fn check_file_is_valid(filename: &str) -> bool {
     match fs::metadata(filename) {
@@ -48,8 +50,8 @@ fn parse_tokens(tokens: Vec<Token>) -> Result<Vec<crate::parser::Stmt>, String> 
     parser.parse()
 }
 
-fn interpret_statements(stmts: &[crate::parser::Stmt]) -> Result<(), String> {
-    let mut interpreter = Interpreter::new();
+fn interpret_statements(stmts: &[crate::parser::Stmt], base_path: PathBuf) -> Result<(), String> {
+    let mut interpreter = Interpreter::new(base_path);
     interpreter.run(stmts).map(|_| ())
 }
 
@@ -73,8 +75,14 @@ pub fn run_file(filename: &str) {
                             }
                         }
 
+                        // ✅ Extract the directory containing the file
+                        let base_path = Path::new(filename)
+                            .parent()
+                            .unwrap_or_else(|| Path::new("."))
+                            .to_path_buf();
+
                         log::info!("Running the script now...");
-                        match interpret_statements(&stmts) {
+                        match interpret_statements(&stmts, base_path) {
                             Ok(_) => log::info!("Script executed successfully."),
                             Err(e) => eprintln!("Error executing script: {}", e),
                         }

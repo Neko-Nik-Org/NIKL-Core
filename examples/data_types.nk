@@ -36,6 +36,9 @@ let hashmap_test: HashMap = {"key1": "value1", "key2": "value2"}
 let tuple_test: Tuple = (1, "two", 3.0)
 
 fn test_fn() -> None {
+    let test = True
+    del test
+    // print(test) -> XXX: Will throw an error since test is deleted
     print("Testing data types...")
 }
 
