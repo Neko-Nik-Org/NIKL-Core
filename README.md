@@ -23,7 +23,9 @@ The name **NIKL** is a blend of personal and symbolic meaning:
 
 ## 🚀 Features
 
-- ✅ Clean, Python-like syntax
+- ✅ Clean, minimal syntax
+- ✅ Lightweight, fast, and efficient
+- ✅ Built-in support for **package management**
 - ✅ Concurrency with `spawn` and `wait`
 - ✅ Async execution using a Rust-based async runtime (`tokio`)
 - ✅ Built-in networking and automation primitives
@@ -69,6 +71,7 @@ print(add_numbers(1, 2)) // Prints 3
 
 **Note**: There's lot to explore in the language, including for loops, while loops, and infinite loops. The syntax is designed to be simple and intuitive
 
+> Syntax highlighter is available for NIKL in [VSCode](https://marketplace.visualstudio.com/items?itemName=Neko-Nik.nikl-language-support)
 
 ---
 
@@ -126,15 +129,21 @@ print(add_numbers(1, 2)) // Prints 3
 
 The following domains and subdomains are officially owned and maintained by the author (Neko Nik):
 
-* [nekonik.com](https://www.nekonik.com) - **Author's Website**
-* [nikl.nekonik.com](https://nikl.nekonik.com) - **Official NIKL website** Not yet live/implemented
-* [nikl-pkg.nekonik.com](https://nikl-pkg.nekonik.com) - **NIKL Package Manager** Not yet live/implemented
-* [api.nikl-pkg.nekonik.com](https://api.nikl-pkg.nekonik.com) - **NIKL Package Manager API** Not yet live/implemented
+* [nikl.nekonik.com](https://nikl.nekonik.com) - **Official NIKL website**
+* [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=Neko-Nik.nikl-language-support) - **NIKL Language Support for Visual Studio Code**
+* [nikl-pkg.nekonik.com](https://nikl-pkg.nekonik.com) - **NIKL Package Manager** (Not yet live/implemented)
+* [api.nikl-pkg.nekonik.com](https://api.nikl-pkg.nekonik.com) - **NIKL Package Manager API** (Not yet live/implemented)
 * [forums.nekonik.com](https://forums.nekonik.com) - **Neko Nik Forums**
+
+
+Below are the official links to the author's personal website and social media:
+
+* [nekonik.com](https://www.nekonik.com) - **Author's Website**
 * [status.nekonik.com](https://status.nekonik.com) - **Author's Status Page**
 * [github.com/Neko-Nik](https://github.com/Neko-Nik) - **Author's GitHub**
 * [orcid.org/0009-0008-3435-5674](https://orcid.org/0009-0008-3435-5674) - **Author's ORCID** (Open Researcher and Contributor ID)
 * [linkedin.com/in/neko-nik](https://www.linkedin.com/in/neko-nik) - **Author's LinkedIn**
+
 
 ## 👤 Author
 
