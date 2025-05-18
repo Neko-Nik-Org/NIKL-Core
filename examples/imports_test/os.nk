@@ -1,7 +1,3 @@
-fn get_cwd() -> String {
-    return __nikl__.os.get_cwd()
-}
-
 let bool_test = False
 
 import "os" as os

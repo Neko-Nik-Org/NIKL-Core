@@ -59,20 +59,16 @@ cargo run -- path/to/script.nk
 ## 📄 Example Nikl Script
 
 ```nk
-let data = spawn fetch_data("https://example.com")
-print(1 + 1)
+// Easy function (type hinting is optional)
+fn add_numbers(a: Int, b: Int) -> Int {
+    return a + b
+}
 
-sleep(1000)
-
-print(wait data)
+print(add_numbers(1, 2)) // Prints 3
 ```
 
-This script:
+**Note**: There's lot to explore in the language, including for loops, while loops, and infinite loops. The syntax is designed to be simple and intuitive
 
-* Spawns an async network request
-* Prints `2`
-* Waits for 1 second
-* Awaits and prints the fetched result
 
 ---
 
