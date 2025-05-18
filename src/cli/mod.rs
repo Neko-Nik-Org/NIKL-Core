@@ -61,7 +61,9 @@ pub fn init_package(args: &[String]) {
 
 pub fn build_package() {
     println!("Building the current package...");
-    todo!("Implement package building logic");
+    crate::packages::create_tar_gz().unwrap_or_else(|e| {
+        eprintln!("Failed to create package: {}", e);
+    });
 }
 
 pub fn login() {

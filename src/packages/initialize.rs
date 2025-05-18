@@ -52,7 +52,8 @@ fn generate_config(project_name: &str) -> String {
         }}
     ],
     "license": "MIT",
-    "readme": "README.md",
+    "readmeFile": "README.md",
+    "licenseFile": "LICENSE",
     "repository": "https://github.com/Neko-Nik/NIKL-Core",
     "homepage": "https://nekonik.com",
     "dependencies": {{
@@ -122,6 +123,7 @@ pub fn create_package_structure(dir: &Path, project_name: &str) -> io::Result<()
     create_file(&dir.join("README.md"), &generate_readme(project_name))?;
     create_file(&dir.join("config.json"), &generate_config(project_name))?;
     create_file(&main_file_path, generate_main())?;
+    create_file(&dir.join("LICENSE"), "")?;
 
     Ok(())
 }

@@ -29,8 +29,9 @@
     // The license under which the project is distributed
     "license": "MIT",
 
-    // The license file for the project
-    "readme": "README.md",
+    // The README/LICENSE file for the project
+    "readmeFile": "README.md",
+    "licenseFile": "LICENSE",
 
     // The repository URL for the project
     "repository": "https://github.com/Neko-Nik/NIKL-Core",
