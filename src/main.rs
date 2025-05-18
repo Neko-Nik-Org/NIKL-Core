@@ -1,9 +1,6 @@
 use std::env;
+use nikl::cli;
 
-mod cli;
-mod lexer;
-mod parser;
-mod interpreter;
 
 #[tokio::main]
 async fn main() {

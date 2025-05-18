@@ -5,10 +5,12 @@
 
 // #![warn(missing_docs)]
 
+pub mod cli;
 pub mod lexer;
 pub mod parser;
+pub mod modules;
 pub mod interpreter;
-pub mod cli;
+
 
 pub use interpreter::engine::Interpreter;
 pub use interpreter::environment::Environment;

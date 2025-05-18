@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use super::value::Value;
-use super::builtins::{
+use crate::modules::builtin_core::{
     builtin_print,
     builtin_len,
     builtin_str,
@@ -79,10 +79,18 @@ impl Environment {
         map
     }
 
-    pub fn define(&mut self, name: &str, value: Value, mutable: bool) -> Result<(), String> {
+    pub fn is_defined(&self, name: &str) -> bool {
         if self.values.contains_key(name) {
-            return Err(format!("Variable '{}' is already declared in this scope", name));
+            true
+        // If required, we can add a check for the name in the parent environment
+        } else {
+            false
         }
+    }
+
+    // This function will overwrite any existing variable with the same name when invoked
+    pub fn define(&mut self, name: &str, value: Value, mutable: bool) -> Result<(), String> {
+        // TODO: Check for reserved keywords and built-in functions etc.
         self.values.insert(name.to_string(), VariableEntry { value, mutable });
         Ok(())
     }

@@ -5,6 +5,7 @@ use crate::parser::{Expr, Stmt};
 use crate::lexer::TokenKind;
 use super::environment::Environment;
 use super::value::Value;
+use crate::modules;
 
 
 pub struct Interpreter {
@@ -46,265 +47,296 @@ impl Interpreter {
 
     fn exec_stmt(&mut self, stmt: &Stmt) -> Result<ControlFlow, String> {
         match stmt {
-            Stmt::Let { name, value } => {
-                let val = self.eval_expr(value)?;
-                self.env.define(name, val, true)?;  // mutable
-                Ok(ControlFlow::Value)
-            }
-            Stmt::Const { name, value } => {
-                let val = self.eval_expr(value)?;
-                self.env.define(name, val, false)?;  // immutable
-                Ok(ControlFlow::Value)
-            }
-            Stmt::Function { name, params, body } => {
-                let func = Value::Function {
-                    name: name.clone(),
-                    params: params.clone(),
-                    body: body.clone(),
-                    closure: self.env.clone(),
-                };
-                self.env.define(name, func, true)?;
-                Ok(ControlFlow::Value)
-            }
-            Stmt::Loop(body) => {
-                loop {
-                    for stmt in body {
-                        match self.exec_stmt(stmt)? {
-                            ControlFlow::Break => return Ok(ControlFlow::Value),
-                            ControlFlow::Continue => break, // Skip to next iteration
-                            ControlFlow::Value => continue,
-                            cf => return Ok(cf), // Return bubbles up
-                        }
-                    }
-                }
-            }
-            Stmt::While { condition, body } => {
-                while let Value::Bool(true) = self.eval_expr(condition)? {
-                    for stmt in body {
-                        match self.exec_stmt(stmt)? {
-                            ControlFlow::Break => return Ok(ControlFlow::Value),
-                            ControlFlow::Continue => break, // Skip to next iteration
-                            ControlFlow::Value => continue,
-                            cf => return Ok(cf), // Return bubbles up
-                        }
-                    }
-                }
-                Ok(ControlFlow::Value)
-            }
-            Stmt::For { names, iterable, body } => {
-                let iter_val = self.eval_expr(iterable)?;
-                match iter_val {
-                    Value::String(s) => {
-                        // There should be only one name in the names vector
-                        if names.len() != 1 {
-                            return Err(format!("'for' loop requires exactly one name for type 'String', got {:?}", names));
-                        }
-                        let name = &names[0];
-                        self.env.define(name, Value::Null, true)?; // mutable
-                        for c in s.chars() {
-                            self.env.assign(name, Value::String(c.to_string()))?;
-                            for stmt in body {
-                                match self.exec_stmt(stmt)? {
-                                    ControlFlow::Break => return Ok(ControlFlow::Value),
-                                    ControlFlow::Continue => break, // Skip to next iteration
-                                    ControlFlow::Value => continue,
-                                    cf => return Ok(cf), // Return bubbles up
-                                }
-                            }
-                        }
-                    }
-                    Value::Array(elements) => {
-                        // There should be only one name in the names vector
-                        if names.len() != 1 {
-                            return Err(format!("'for' loop requires exactly one name for type 'Array', got {:?}", names));
-                        }
-                        let name = &names[0];
-                        self.env.define(name, Value::Null, true)?; // mutable
-                        for elem in elements {
-                            self.env.assign(name, elem.clone())?;
-                            for stmt in body {
-                                match self.exec_stmt(stmt)? {
-                                    ControlFlow::Break => return Ok(ControlFlow::Value),
-                                    ControlFlow::Continue => break, // Skip to next iteration
-                                    ControlFlow::Value => continue,
-                                    cf => return Ok(cf), // Return bubbles up
-                                }
-                            }
-                        }
-                    }
-                    Value::Tuple(elements) => {
-                        // There should be only one name in the names vector
-                        if names.len() != 1 {
-                            return Err(format!("'for' loop requires exactly one name for type 'Tuple', got {:?}", names));
-                        }
-                        let name = &names[0];
-                        self.env.define(name, Value::Null, true)?; // mutable
-                        for elem in elements {
-                            self.env.assign(name, elem.clone())?;
-                            for stmt in body {
-                                match self.exec_stmt(stmt)? {
-                                    ControlFlow::Break => return Ok(ControlFlow::Value),
-                                    ControlFlow::Continue => break, // Skip to next iteration
-                                    ControlFlow::Value => continue,
-                                    cf => return Ok(cf), // Return bubbles up
-                                }
-                            }
-                        }
-                    }
-                    Value::HashMap(pairs) => {
-                        // There should be two names in the names vector, one for key and one for value
-                        if names.len() != 2 {
-                            return Err(format!("'for' loop requires exactly two names for type 'HashMap', got {:?}", names));
-                        }
-                        let key_name = &names[0];
-                        let value_name = &names[1];
-                        self.env.define(key_name, Value::Null, true)?; // mutable
-                        self.env.define(value_name, Value::Null, true)?; // mutable
-                        for (key, value) in pairs {
-                            if let Value::String(s) = key {
-                                self.env.assign(key_name, Value::String(s.clone()))?;
-                            }
-                            self.env.assign(value_name, value.clone())?;
-                            for stmt in body {
-                                match self.exec_stmt(stmt)? {
-                                    ControlFlow::Break => return Ok(ControlFlow::Value),
-                                    ControlFlow::Continue => break, // Skip to next iteration
-                                    ControlFlow::Value => continue,
-                                    cf => return Ok(cf), // Return bubbles up
-                                }
-                            }
-                        }
-                    }
-                    _ => return Err(format!("'for' loop requires an iterable, got {:?}", iter_val)),
-                }
-                Ok(ControlFlow::Value)
-            }
-            Stmt::Expr(expr) => {
-                self.eval_expr(expr)?;
-                Ok(ControlFlow::Value)
-            }
-            Stmt::Delete(name) => {
-                self.env.delete(name)?;
-                Ok(ControlFlow::Value)
-            }
+            Stmt::Let { name, value } => self.handle_let(name, value),
+            Stmt::Const { name, value } => self.handle_const(name, value),
+            Stmt::Function { name, params, body } => self.handle_function(name, params, body),
+            Stmt::Loop(body) => self.handle_loop(body),
+            Stmt::While { condition, body } => self.handle_while(condition, body),
+            Stmt::For { names, iterable, body } => self.handle_for(names, iterable, body),
+            Stmt::Expr(expr) => self.handle_expr(expr),
+            Stmt::Delete(name) => self.handle_delete(name),
             Stmt::Break => Ok(ControlFlow::Break),
             Stmt::Continue => Ok(ControlFlow::Continue),
+            Stmt::If { condition, body, else_if_branches, else_body } => self.handle_if(condition, body, else_if_branches, else_body.as_ref()),
+            Stmt::Import { path, alias } => self.handle_import(path, alias),
+            Stmt::Return(expr) => self.handle_return(expr),
+        }
+    }
 
-            // This will create a new environment and will not update the variable in the current environment
-            // Stmt::If { condition, body, else_if_branches, else_body } => {
-            //     let cond_val = self.eval_expr(condition)?;
-            //     if let Value::Bool(true) = cond_val {
-            //         let local_env = Environment::with_parent(self.env.clone());
-            //         let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-            //         return local_interp.run(body);
-            //     } else {
-            //         for (else_if_cond, else_if_body) in else_if_branches {
-            //             let val = self.eval_expr(else_if_cond)?;
-            //             if let Value::Bool(true) = val {
-            //                 let local_env = Environment::with_parent(self.env.clone());
-            //                 let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-            //                 return local_interp.run(else_if_body);
-            //             }
-            //         }
+    fn handle_let(&mut self, name: &str, value: &Expr) -> Result<ControlFlow, String> {
+        if self.env.is_defined(name) {
+            return Err(format!("Variable '{}' already defined in this scope", name));
+        }
+        let val = self.eval_expr(value)?;
+        self.env.define(name, val, true)?;  // mutable
+        Ok(ControlFlow::Value)
+    }
 
-            //         if let Some(else_body) = else_body {
-            //             let local_env = Environment::with_parent(self.env.clone());
-            //             let mut local_interp = Interpreter { env: local_env, loaded_modules: self.loaded_modules.clone() };
-            //             return local_interp.run(else_body);
-            //         }
-            //     }
+    fn handle_const(&mut self, name: &str, value: &Expr) -> Result<ControlFlow, String> {
+        if self.env.is_defined(name) {
+            return Err(format!("Variable '{}' already defined in this scope", name));
+        }
+        let val = self.eval_expr(value)?;
+        self.env.define(name, val, false)?;  // immutable
+        Ok(ControlFlow::Value)
+    }
 
-            //     Ok(ControlFlow::Value)
-            // }
+    fn handle_function(&mut self, name: &String, params: &Vec<String>, body: &Vec<Stmt>) -> Result<ControlFlow, String> {
+        if self.env.is_defined(name) {
+            return Err(format!("Function '{}' already defined in this scope", name));
+        }
+        // TODO: Check if the function name is valid
+        let func = Value::Function {
+            name: name.clone(),
+            params: params.clone(),
+            body: body.clone(),
+            closure: self.env.clone(),
+        };
+        self.env.define(name, func, true)?;
+        Ok(ControlFlow::Value)
+    }
 
-            // This will update the variable in the current environment
-            Stmt::If { condition, body, else_if_branches, else_body } => {
-                let cond_val = self.eval_expr(condition)?;
-                if let Value::Bool(true) = cond_val {
+    fn handle_loop(&mut self, body: &Vec<Stmt>) -> Result<ControlFlow, String> {
+        loop {
+            for stmt in body {
+                match self.exec_stmt(stmt)? {
+                    ControlFlow::Break => return Ok(ControlFlow::Value),
+                    ControlFlow::Continue => break, // Skip to next iteration
+                    ControlFlow::Value => continue,
+                    cf => return Ok(cf), // Return bubbles up
+                }
+            }
+        }
+    }
+
+    fn handle_while(&mut self, condition: &Expr, body: &Vec<Stmt>) -> Result<ControlFlow, String> {
+        while let Value::Bool(true) = self.eval_expr(condition)? {
+            for stmt in body {
+                match self.exec_stmt(stmt)? {
+                    ControlFlow::Break => return Ok(ControlFlow::Value),
+                    ControlFlow::Continue => break, // Skip to next iteration
+                    ControlFlow::Value => continue,
+                    cf => return Ok(cf), // Return bubbles up
+                }
+            }
+        }
+        Ok(ControlFlow::Value)
+    }
+
+    fn handle_for(&mut self, names: &Vec<String>, iterable: &Expr, body: &Vec<Stmt>) -> Result<ControlFlow, String> {
+        let iter_val = self.eval_expr(iterable)?;
+        match iter_val {
+            Value::String(s) => {
+                // There should be only one name in the names vector
+                if names.len() != 1 {
+                    return Err(format!("'for' loop requires exactly one name for type 'String', got {:?}", names));
+                }
+                let name = &names[0];
+                // For loop's variable will overwrite any existing variable/constant with the same name
+                self.env.define(name, Value::Null, true)?; // mutable
+                for c in s.chars() {
+                    self.env.assign(name, Value::String(c.to_string()))?;
                     for stmt in body {
+                        match self.exec_stmt(stmt)? {
+                            ControlFlow::Break => return Ok(ControlFlow::Value),
+                            ControlFlow::Continue => break, // Skip to next iteration
+                            ControlFlow::Value => continue,
+                            cf => return Ok(cf), // Return bubbles up
+                        }
+                    }
+                }
+            }
+            Value::Array(elements) => {
+                // There should be only one name in the names vector
+                if names.len() != 1 {
+                    return Err(format!("'for' loop requires exactly one name for type 'Array', got {:?}", names));
+                }
+                let name = &names[0];
+                // For loop's variable will overwrite any existing variable/constant with the same name
+                self.env.define(name, Value::Null, true)?; // mutable
+                for elem in elements {
+                    self.env.assign(name, elem.clone())?;
+                    for stmt in body {
+                        match self.exec_stmt(stmt)? {
+                            ControlFlow::Break => return Ok(ControlFlow::Value),
+                            ControlFlow::Continue => break, // Skip to next iteration
+                            ControlFlow::Value => continue,
+                            cf => return Ok(cf), // Return bubbles up
+                        }
+                    }
+                }
+            }
+            Value::Tuple(elements) => {
+                // There should be only one name in the names vector
+                if names.len() != 1 {
+                    return Err(format!("'for' loop requires exactly one name for type 'Tuple', got {:?}", names));
+                }
+                let name = &names[0];
+                // For loop's variable will overwrite any existing variable/constant with the same name
+                self.env.define(name, Value::Null, true)?; // mutable
+                for elem in elements {
+                    self.env.assign(name, elem.clone())?;
+                    for stmt in body {
+                        match self.exec_stmt(stmt)? {
+                            ControlFlow::Break => return Ok(ControlFlow::Value),
+                            ControlFlow::Continue => break, // Skip to next iteration
+                            ControlFlow::Value => continue,
+                            cf => return Ok(cf), // Return bubbles up
+                        }
+                    }
+                }
+            }
+            Value::HashMap(pairs) => {
+                // There should be two names in the names vector, one for key and one for value
+                if names.len() != 2 {
+                    return Err(format!("'for' loop requires exactly two names for type 'HashMap', got {:?}", names));
+                }
+                let key_name = &names[0];
+                let value_name = &names[1];
+                self.env.define(key_name, Value::Null, true)?; // mutable
+                self.env.define(value_name, Value::Null, true)?; // mutable
+                for (key, value) in pairs {
+                    if let Value::String(s) = key {
+                        self.env.assign(key_name, Value::String(s.clone()))?;
+                    }
+                    self.env.assign(value_name, value.clone())?;
+                    for stmt in body {
+                        match self.exec_stmt(stmt)? {
+                            ControlFlow::Break => return Ok(ControlFlow::Value),
+                            ControlFlow::Continue => break, // Skip to next iteration
+                            ControlFlow::Value => continue,
+                            cf => return Ok(cf), // Return bubbles up
+                        }
+                    }
+                }
+            }
+            _ => return Err(format!("'for' loop requires an iterable, got {:?}", iter_val)),
+        }
+        Ok(ControlFlow::Value)
+    }
+
+    fn handle_if(&mut self, condition: &Expr, body: &Vec<Stmt>, else_if_branches: &Vec<(Expr, Vec<Stmt>)>, else_body: Option<&Vec<Stmt>>) -> Result<ControlFlow, String> {
+        // This "if" will update the variable in the current environment also
+        let cond_val = self.eval_expr(condition)?;
+        if let Value::Bool(true) = cond_val {
+            for stmt in body {
+                match self.exec_stmt(stmt)? {
+                    ControlFlow::Value => continue,
+                    cf => return Ok(cf),
+                }
+            }
+        } else {
+            let mut branch_executed = false;
+            for (else_if_cond, else_if_body) in else_if_branches {
+                let val = self.eval_expr(else_if_cond)?;
+                if let Value::Bool(true) = val {
+                    for stmt in else_if_body {
                         match self.exec_stmt(stmt)? {
                             ControlFlow::Value => continue,
                             cf => return Ok(cf),
                         }
                     }
-                } else {
-                    let mut branch_executed = false;
-                    for (else_if_cond, else_if_body) in else_if_branches {
-                        let val = self.eval_expr(else_if_cond)?;
-                        if let Value::Bool(true) = val {
-                            for stmt in else_if_body {
-                                match self.exec_stmt(stmt)? {
-                                    ControlFlow::Value => continue,
-                                    cf => return Ok(cf),
-                                }
-                            }
-                            branch_executed = true;
-                            break;
-                        }
-                    }
+                    branch_executed = true;
+                    break;
+                }
+            }
 
-                    if !branch_executed {
-                        if let Some(else_body) = else_body {
-                            for stmt in else_body {
-                                match self.exec_stmt(stmt)? {
-                                    ControlFlow::Value => continue,
-                                    cf => return Ok(cf),
-                                }
-                            }
+            if !branch_executed {
+                if let Some(else_body) = else_body {
+                    for stmt in else_body {
+                        match self.exec_stmt(stmt)? {
+                            ControlFlow::Value => continue,
+                            cf => return Ok(cf),
                         }
                     }
                 }
-
-                Ok(ControlFlow::Value)
-            }
-            Stmt::Import { path, alias } => {
-                // Resolve relative to base_path of current interpreter
-                let mut final_path = self.base_path.clone();
-                final_path.push(path); // appends e.g., "os.nk"
-
-                // Normalize path to avoid duplicates
-                let canonical = std::fs::canonicalize(&final_path)
-                    .map_err(|_| format!("Failed to read module '{}'", final_path.display()))?;
-
-                if self.loaded_modules.contains(canonical.to_str().unwrap()) {
-                    return Ok(ControlFlow::Value);
-                }
-
-                let module_code = std::fs::read_to_string(&canonical)
-                    .map_err(|_| format!("Failed to read module '{}'", canonical.display()))?;
-
-                let lexer = crate::lexer::Lexer::new(&module_code);
-                let tokens = lexer
-                    .tokenize()
-                    .map_err(|_| format!("Failed to tokenize module '{}'", path))?;
-
-                let mut parser = crate::parser::Parser::new(tokens);
-                let module_stmts = parser.parse()?;
-
-                let mut module_interp = Interpreter {
-                    env: Environment::new(),
-                    loaded_modules: HashSet::new(),
-                    base_path: canonical.parent().unwrap().to_path_buf(), // <- important
-                };
-                module_interp.loaded_modules.insert(canonical.to_string_lossy().to_string());
-                module_interp.run(&module_stmts)?;
-
-                let exports: Vec<(Value, Value)> = module_interp.env
-                    .flatten()
-                    .into_iter()
-                    .map(|(k, v)| (Value::String(k), v.value().clone()))
-                    .collect();
-
-                self.env.define(&alias, Value::HashMap(exports), false)?;
-                self.loaded_modules.insert(canonical.to_string_lossy().to_string());
-
-                Ok(ControlFlow::Value)
-            }
-            Stmt::Return(expr) => {
-                let val = self.eval_expr(expr)?;
-                Ok(ControlFlow::Return(val))
             }
         }
+        Ok(ControlFlow::Value)
+    }
+
+    fn handle_import(&mut self, path: &String, alias: &String) -> Result<ControlFlow, String> {
+        // Check if the internal module is already loaded
+        if self.loaded_modules.contains(path) {
+            return Ok(ControlFlow::Value);
+        }
+
+        // Check if the module alias is already defined
+        if self.env.is_defined(alias) {
+            return Err(format!("Module alias '{}' already defined", alias));
+        }
+
+        // Add Internal modules like os, network, regex, etc.
+        match path.as_str() {
+            "os" => {
+                let module = modules::make_os_module();
+                self.env.define(alias, module, false)?;
+                self.loaded_modules.insert(path.clone()); // track internal
+                return Ok(ControlFlow::Value);
+            }
+            "network" => {
+                println!("Loading network module");
+                return Ok(ControlFlow::Value);
+            }
+            _ => {}
+        }
+
+        // Resolve relative to base_path of current interpreter
+        let mut final_path = self.base_path.clone();
+        final_path.push(path); // appends e.g., "os.nk"
+
+        // Normalize path to avoid duplicates
+        let canonical = std::fs::canonicalize(&final_path)
+            .map_err(|_| format!("Failed to read module '{}'", final_path.display()))?;
+
+        if self.loaded_modules.contains(canonical.to_str().unwrap()) {
+            return Ok(ControlFlow::Value);
+        }
+
+        let module_code = std::fs::read_to_string(&canonical)
+            .map_err(|_| format!("Failed to read module '{}'", canonical.display()))?;
+
+        let lexer = crate::lexer::Lexer::new(&module_code);
+        let tokens = lexer
+            .tokenize()
+            .map_err(|_| format!("Failed to tokenize module '{}'", path))?;
+
+        let mut parser = crate::parser::Parser::new(tokens);
+        let module_stmts = parser.parse()?;
+
+        let mut module_interp = Interpreter {
+            env: Environment::new(),
+            loaded_modules: HashSet::new(),
+            base_path: canonical.parent().unwrap().to_path_buf(), // <- important
+        };
+        module_interp.loaded_modules.insert(canonical.to_string_lossy().to_string());
+        module_interp.run(&module_stmts)?;
+
+        let exports: Vec<(Value, Value)> = module_interp.env
+            .flatten()
+            .into_iter()
+            .map(|(k, v)| (Value::String(k), v.value().clone()))
+            .collect();
+
+        self.env.define(&alias, Value::HashMap(exports), false)?;
+        self.loaded_modules.insert(canonical.to_string_lossy().to_string());
+
+        Ok(ControlFlow::Value)
+    }
+
+    fn handle_delete(&mut self, name: &String) -> Result<ControlFlow, String> {
+        self.env.delete(name)?;
+        Ok(ControlFlow::Value)
+    }
+
+    fn handle_return(&mut self, expr: &Expr) -> Result<ControlFlow, String> {
+        let val = self.eval_expr(expr)?;
+        Ok(ControlFlow::Return(val))
+    }
+
+    fn handle_expr(&mut self, expr: &Expr) -> Result<ControlFlow, String> {
+        self.eval_expr(expr)?;
+        Ok(ControlFlow::Value)
     }
 
     fn eval_expr(&mut self, expr: &Expr) -> Result<Value, String> {
@@ -372,6 +404,7 @@ impl Interpreter {
                         let mut local_env = Environment::with_parent(closure.clone());
                         for (param, arg_expr) in params.iter().zip(args.iter()) {
                             let arg_val = self.eval_expr(arg_expr)?;
+                            // Parameter names will overwrite any existing variable/constant with the same name
                             local_env.define(param, arg_val, true)?;
                         }
 
