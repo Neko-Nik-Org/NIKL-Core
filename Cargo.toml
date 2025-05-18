@@ -1,6 +1,6 @@
 [package]
 name = "nikl"
-version = "0.4.0"
+version = "0.1.0"
 edition = "2024"
 authors = ["Neko Nik <admin@nekonik.com>"]
 description = "Nikl is a lightweight, modern programming language designed for concurrent, network-aware, and general-purpose programming"
