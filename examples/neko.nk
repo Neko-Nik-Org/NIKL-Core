@@ -23,3 +23,5 @@ fn test_function() {
 
 test_function()  // Call the test function
 print("Sum: ", sum)  // Expect the sum of ASCII values of 'h', 'e'
+print(os_file.os.get_cwd())  // Expect the current working directory
+print(os_file.foo(True)) 

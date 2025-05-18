@@ -256,14 +256,14 @@ impl Interpreter {
     }
 
     fn handle_import(&mut self, path: &String, alias: &String) -> Result<ControlFlow, String> {
-        // Check if the internal module is already loaded
-        if self.loaded_modules.contains(path) {
-            return Ok(ControlFlow::Value);
-        }
-
         // Check if the module alias is already defined
         if self.env.is_defined(alias) {
             return Err(format!("Module alias '{}' already defined", alias));
+        }
+
+        // Check if the internal module is already loaded at this scope
+        if self.loaded_modules.contains(path) {
+            return Err(format!("Module '{}' already loaded", path));
         }
 
         // Add Internal modules like os, network, regex, etc.

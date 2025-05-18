@@ -4,9 +4,11 @@ fn get_cwd() -> String {
 
 let bool_test = False
 
+import "os" as os
 
 fn foo(param_1: Bool) -> String {
     let variable_1 = "1"
+    print("Current working directory:", os.get_cwd())
 
     if param_1 {
         variable_1 = "2"
