@@ -99,8 +99,11 @@ This script:
 ## 📌 Roadmap
 
 * [x] Tokenizer / Lexer
-* [ ] Parser
-* [ ] Core Interpreter (Eval / Runtime)
+* [x] Parser
+* [x] Core Interpreter (Eval / Runtime)
+* [x] Module System
+* [x] Basic I/O
+* [x] OS, Regex internal module support
 * [ ] `spawn` and `wait` for concurrency
 * [ ] File & socket I/O
 * [ ] Native async DNS, HTTP, etc.
