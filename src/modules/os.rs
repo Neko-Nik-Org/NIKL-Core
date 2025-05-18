@@ -1,3 +1,5 @@
+use std::{fs, env};
+
 use crate::interpreter::value::Value;
 
 
@@ -10,7 +12,7 @@ pub fn make_os_module() -> Value {
 }
 
 fn os_getcwd(_: Vec<Value>) -> Result<Value, String> {
-    std::env::current_dir()
+    env::current_dir()
         .map(|p| Value::String(p.to_string_lossy().to_string()))
         .map_err(|e| format!("os.getcwd error: {}", e))
 }
@@ -21,7 +23,7 @@ fn os_listdir(args: Vec<Value>) -> Result<Value, String> {
     }
 
     if let Value::String(path) = &args[0] {
-        let entries = std::fs::read_dir(path)
+        let entries = fs::read_dir(path)
             .map_err(|e| format!("os.listdir error: {}", e))?;
 
         let files = entries
