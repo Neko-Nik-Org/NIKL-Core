@@ -1,10 +1,12 @@
 # 🐾 NIKL-Core
 
-**Nikl** is a lightweight, modern programming language designed for **concurrent**, **network-aware**, and **general-purpose** programming. With native support for threads, asynchronous operations, and networking primitives, Nikl aims to simplify the development of scalable and responsive systems.
+**NIKL** is a lightweight, modern programming language designed for **concurrent**, **network-aware**, and **general-purpose** programming. With native support for threads, asynchronous operations, and networking primitives, NIKL aims to simplify the development of scalable and responsive systems.
 
 > 📝 File extension: `.nk`
 
 > ⚡ Goal: Simple concurrency, native networking, no boilerplate.
+
+> **Note**: `NIKL` is independently developed and **not affiliated with or endorsed by the Rust Foundation**
 
 ---
 
@@ -23,7 +25,7 @@ The name **NIKL** is a blend of personal and symbolic meaning:
 
 - ✅ Clean, Python-like syntax
 - ✅ Concurrency with `spawn` and `wait`
-- ✅ Async execution using real Rust async runtime (`tokio`)
+- ✅ Async execution using a Rust-based async runtime (`tokio`)
 - ✅ Built-in networking and automation primitives
 - ✅ Lightweight interpreter written in Rust
 - ✅ Minimal dependencies and fast startup
@@ -89,7 +91,7 @@ This script:
 
 ## 🛠 Tech Stack
 
-* 🦀 **Rust** — safe and fast systems programming
+* 🦀 **Rust** — used as the implementation language for performance and safety
 * ⚡ **Tokio** — async runtime for concurrency
 * 🧩 Custom **lexer**, **parser**, and **bytecode VM**
 * 🧪 Tests and tracing support via `tracing` and `cargo test`
