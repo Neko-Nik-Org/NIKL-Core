@@ -9,6 +9,7 @@ pub mod cli;
 pub mod lexer;
 pub mod parser;
 pub mod modules;
+pub mod packages;
 pub mod interpreter;
 
 

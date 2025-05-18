@@ -1,0 +1,53 @@
+{
+    // Project name should be unique and match the src/<name>.nk file
+    "name": "example-project",
+
+    // The name of the project in a human-readable format
+    "displayName": "Example Project",
+    
+    // The version of the project, following semantic versioning
+    // https://semver.org/
+    // Major.Minor.Patch
+    "version": "1.0.0",
+
+    // The type of the project, can be "application" or "library"
+    // "application" is for standalone applications
+    // "library" is for reusable libraries
+    "type": "application",
+
+    // The description of the project
+    "description": "An example project to demonstrate the use of a configuration file.",
+
+    // Author information for the project
+    "authors": [
+        {
+            "name": "Neko Nik",
+            "email": "admin@nekonik.com"
+        }
+    ],
+
+    // The license under which the project is distributed
+    "license": "MIT",
+
+    // The license file for the project
+    "readme": "README.md",
+
+    // The repository URL for the project
+    "repository": "https://github.com/Neko-Nik/NIKL-Core",
+
+    // The homepage URL for the project
+    "homepage": "https://nekonik.com",
+
+    // The dependencies required for the project
+    "dependencies": {
+        "os": "0.0.1",
+        "regex": "1.0.0"
+    },
+
+    // The keywords associated with the project
+    "keywords": [
+        "example",
+        "project",
+        "configuration"
+    ]
+}
