@@ -11,7 +11,7 @@ print(sum)  // Expect the sum of ASCII values of 'h', 'e'
 
 import "imports_test/os.nk" as os_file
 
-import "os" as os
+import "osa" as os
 
 print(os.get_cwd())  // Expect the current working directory
 

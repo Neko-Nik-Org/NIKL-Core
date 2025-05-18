@@ -274,11 +274,18 @@ impl Interpreter {
                 self.loaded_modules.insert(path.clone()); // track internal
                 return Ok(ControlFlow::Value);
             }
-            "network" => {
-                println!("Loading network module");
+            "regex" => {
+                let module = modules::make_regex_module();
+                self.env.define(alias, module, false)?;
+                self.loaded_modules.insert(path.clone()); // track internal
                 return Ok(ControlFlow::Value);
             }
-            _ => {}
+            _ => {
+                // Check if the module has .nk extension before moving to filesystem
+                if !path.ends_with(".nk") {
+                    return Err(format!("Module '{}' must have .nk extension, if its not an internal module", path));
+                }
+            }
         }
 
         // Resolve relative to base_path of current interpreter
