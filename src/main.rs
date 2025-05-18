@@ -10,17 +10,16 @@ async fn main() {
         let cmd_or_file = &args[1];
 
         match cmd_or_file.as_str() {
-            "help" => {
-                println!("Usage:");
-                println!("  nikl            # Start REPL");
-                println!("  nikl <file.nk>  # Run script file");
-            }
-            file if file.ends_with(".nk") => {
-                cli::run_file(file);
-            }
-            other => {
-                eprintln!("Unknown command or invalid file: {}", other);
-            }
+            "help" => cli::print_help(),
+            "init" => cli::init_package(&args[2..]),
+            "build" => cli::build_package(),
+            "login" => cli::login(),
+            "logout" => cli::logout(),
+            "publish" => cli::publish_package(),
+            "install" => cli::install_package(&args[2..]),
+            "uninstall" => cli::uninstall_package(&args[2..]),
+            file if file.ends_with(".nk") => cli::run_file(file),
+            other => eprintln!("Unknown command or invalid file: {}", other),
         }
     } else {
         if let Err(e) = cli::run_repl() {
