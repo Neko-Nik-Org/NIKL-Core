@@ -1,27 +1,3 @@
-let test_string = "hello"
-let sum = 0
-let test = "l"
-for i in test_string {
-    if (i == test) {
-        break
-    }
-    sum = sum + 1
-}
-print(sum)  // Expect the sum of ASCII values of 'h', 'e'
-
-import "imports_test/os.nk" as os_file
-
-import "osa" as os
-
-print(os.get_cwd())  // Expect the current working directory
-
-
-fn test_function() {
-    let sum = 1
-    print("This is a test function", sum)  // Expect the sum of ASCII values of 'h', 'e'
-}
-
-test_function()  // Call the test function
-print("Sum: ", sum)  // Expect the sum of ASCII values of 'h', 'e'
-print(os_file.os.get_cwd())  // Expect the current working directory
-print(os_file.foo(True)) 
+import "regex" as regex
+let all = regex.find_all("\w+", "a b c123")
+print(all)
