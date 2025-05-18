@@ -52,9 +52,6 @@ cargo build --release
 cargo run -- path/to/script.nk
 ```
 
-> 💡 For debugging, enable logging:
-> `export RUST_LOG=nikl=trace`
-
 ---
 
 ## 📄 Example Nikl Script
@@ -90,7 +87,7 @@ This script:
 
 ---
 
-## 🛠 Technology Stack
+## 🛠 Tech Stack
 
 * 🦀 **Rust** — safe and fast systems programming
 * ⚡ **Tokio** — async runtime for concurrency

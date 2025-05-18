@@ -4,8 +4,6 @@ use nikl::cli;
 
 #[tokio::main]
 async fn main() {
-    env_logger::init();
-
     let args: Vec<String> = env::args().collect();
 
     if args.len() > 1 {

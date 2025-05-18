@@ -1,6 +1,5 @@
 use std::fs;
 use std::path::{Path, PathBuf};
-use log::{debug, log_enabled, Level};
 
 use crate::{lexer::{Lexer, LexError, Token}, parser::Parser, interpreter::Interpreter};
 
@@ -11,16 +10,16 @@ fn check_file_is_valid(filename: &str) -> bool {
             if metadata.len() > 0 {
                 true
             } else {
-                log::error!("Error: Script '{}' is empty.", filename);
+                eprintln!("Error: File '{}' is empty", filename);
                 false
             }
         }
         Ok(_) => {
-            log::error!("Error: File '{}' is not a valid script, it should end with .nk", filename);
+            eprintln!("Error: File '{}' is not a valid script, it should end with .nk", filename);
             false
         }
         Err(_) => {
-            log::error!("Error: File '{}' does not exist.", filename);
+            eprintln!("Error: File '{}' does not exist", filename);
             false
         }
     }
@@ -34,7 +33,7 @@ fn read_file(filename: &str) -> Option<String> {
     match fs::read_to_string(filename) {
         Ok(content) => Some(content),
         Err(e) => {
-            log::error!("Error reading file '{}': {}", filename, e);
+            eprintln!("Error reading file '{}': {}", filename, e);
             None
         }
     }
@@ -59,21 +58,16 @@ pub fn run_file(filename: &str) {
     if let Some(content) = read_file(filename) {
         match tokenize_input(&content) {
             Ok(tokens) => {
-                if log_enabled!(Level::Debug) {
-                    debug!("Parsing tokens from file: {}", filename);
-                    for token in &tokens {
-                        println!("{:?}", token);
-                    }
-                }
-
+                // If required, log the tokens
+                // for token in &tokens {
+                //     println!("{:?}", token);
+                // }
                 match parse_tokens(tokens.clone()) {
                     Ok(stmts) => {
-                        if log_enabled!(Level::Debug) {
-                            debug!("Parsed statements from tokens:");
-                            for stmt in &stmts {
-                                debug!("{:?}", stmt);
-                            }
-                        }
+                        // If required, log the parsed statements
+                        // for stmt in &stmts {
+                        //     println!("{:?}", stmt);
+                        // }
 
                         // Extract the directory containing the file
                         let base_path = Path::new(filename)
@@ -81,9 +75,9 @@ pub fn run_file(filename: &str) {
                             .unwrap_or_else(|| Path::new("."))
                             .to_path_buf();
 
-                        log::info!("Running the script now...");
+                        // Execute the statements
                         match interpret_statements(&stmts, base_path) {
-                            Ok(_) => log::info!("Script executed successfully."),
+                            Ok(_) => (),    // Successfully executed
                             Err(e) => eprintln!("Error executing script: {}", e),
                         }
                     }
@@ -103,6 +97,6 @@ pub fn run_file(filename: &str) {
             },
         }
     } else {
-        eprintln!("Failed to read or validate the file.");
+        eprintln!("Failed to read or validate the file '{}'", filename);
     }
 }

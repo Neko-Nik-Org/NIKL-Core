@@ -1,10 +1,9 @@
 use rustyline::{Editor, history::FileHistory};
 use rustyline::error::ReadlineError;
-use log::{debug, log_enabled, Level};
+use std::fs;
 
 use crate::{lexer::{Lexer, LexError, Token}, parser::Parser, interpreter::Interpreter};
 
-use std::fs;
 
 fn create_history_file_if_not_exists(filename: &str) -> std::io::Result<()> {
     let path = std::path::Path::new(filename);
@@ -33,8 +32,8 @@ pub fn run_repl() -> rustyline::Result<()> {
 
     let mut rl = Editor::<(), FileHistory>::new()?;
     create_history_file_if_not_exists("/tmp/.nikl_history")?;
-    if rl.load_history("/tmp/.nikl_history").is_ok() {
-        debug!("Loaded history from file");
+    if !rl.load_history("/tmp/.nikl_history").is_ok() {
+        eprintln!("No previous history found");
     }
 
     let base_path = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
@@ -56,11 +55,10 @@ pub fn run_repl() -> rustyline::Result<()> {
 
                 match tokenize_input(input) {
                     Ok(tokens) => {
-                        if log_enabled!(Level::Debug) {
-                            for token in &tokens {
-                                debug!("{:?}", token);
-                            }
-                        }
+                        // If required, get the tokens for debugging
+                        // for token in &tokens {
+                        //     println!("{:?}", token);
+                        // }
                         match parse_tokens(tokens.clone()) {
                             Ok(stmts) => {
                                 match interpreter.run(&stmts) {
@@ -99,8 +97,8 @@ pub fn run_repl() -> rustyline::Result<()> {
         }
     }
 
-    if rl.save_history("/tmp/.nikl_history").is_ok() {
-        debug!("Saved history to file");
+    if !rl.save_history("/tmp/.nikl_history").is_ok() {
+        eprintln!("Failed to save history");
     }
 
     Ok(())
