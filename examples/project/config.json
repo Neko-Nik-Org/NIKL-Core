@@ -10,11 +10,6 @@
     // Major.Minor.Patch
     "version": "1.0.0",
 
-    // The type of the project, can be "application" or "library"
-    // "application" is for standalone applications
-    // "library" is for reusable libraries
-    "type": "application",
-
     // The description of the project
     "description": "An example project to demonstrate the use of a configuration file.",
 

@@ -43,7 +43,6 @@ fn generate_config(project_name: &str) -> String {
     "name": "{0}",
     "displayName": "{1}",
     "version": "1.0.0",
-    "type": "application",
     "description": "An example project to demonstrate the use of a configuration file.",
     "authors": [
         {{
