@@ -9,7 +9,7 @@ homepage = "https://github.com/Neko-Nik/NIKL-Core"
 repository = "https://github.com/Neko-Nik/NIKL-Core"
 documentation = "https://github.com/Neko-Nik/NIKL-Core/blob/main/README.md"
 keywords = ["interpreter", "language", "nikl", "concurrency", "networking"]
-categories = ["compilers", "interpreters", "network-programming"]
+categories = ["compilers", "interpreters", "network-programming", "general-purpose", "programming-languages"]
 rust-version = "1.85.0"
 
 
