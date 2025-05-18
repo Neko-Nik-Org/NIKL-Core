@@ -1,6 +1,6 @@
 [package]
 name = "nikl"
-version = "0.3.4"
+version = "0.4.0"
 edition = "2024"
 authors = ["Neko Nik <admin@nekonik.com>"]
 description = "Nikl is a lightweight, modern programming language designed for concurrent, network-aware, and general-purpose programming"
@@ -14,7 +14,6 @@ rust-version = "1.85.0"
 
 
 [dependencies]
-clap = { version = "4.4", features = ["derive"] }
 tokio = { version = "1.38", features = ["full"] }
 env_logger = "0.11.6"
 rustyline = "13"
