@@ -145,6 +145,13 @@ Below are the official links to the author's personal website and social media:
 * [linkedin.com/in/neko-nik](https://www.linkedin.com/in/neko-nik) - **Author's LinkedIn**
 
 
+## 📨 Stay Updated
+
+**Join the newsletter** and get instant updates on releases, features, and community announcements:
+
+👉🏻 [https://mailer.nekonik.com/subscription/form](https://mailer.nekonik.com/subscription/form)
+
+
 ## 👤 Author
 
 Made with ❤️ by [Neko Nik](https://www.nekonik.com/impressum)
