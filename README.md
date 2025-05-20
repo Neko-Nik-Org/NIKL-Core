@@ -164,11 +164,19 @@ NIKL-Core is licensed under the [MIT License](https://github.com/Neko-Nik/NIKL-C
 
 Perfect — you're on the right track. Here's a clean, simple, and legally sound version of your license section, keeping the tone clear and minimal while hitting all your points:
 
+
 > ⚠️ **Disclaimer**:
+
 > • All domains under *.nekonik.com, including but not limited to nikl.nekonik.com, are owned and managed by the author, Nikhil ("Neko Nik"). These are the only official sources for NIKL-related materials, documentation, and announcements.
+
 > • You are responsible for any code written or executed using NIKL.
+
 > • Modifications to the interpreter are at your own risk.
+
 > • This is a personal project, not affiliated with or endorsed by the Rust Foundation or any other organization.
+
 > • This is a work in progress — features may change as development continues.
+
 > • Use at your own risk. No warranties or guarantees are provided. By using NIKL, you agree to these terms.
+
 > • For more details, see the [License](https://github.com/Neko-Nik/NIKL-Core/blob/main/LICENSE) file.
