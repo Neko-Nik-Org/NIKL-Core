@@ -125,6 +125,80 @@ print(add_numbers(1, 2)) // Prints 3
 
 ---
 
+## 🛡 Contributing
+
+We welcome contributions of all kinds—bug fixes, feature implementations, documentation improvements, and more! If you'd like to get involved:
+
+1. Fork the repo and create a branch for your feature or fix.
+2. Follow the [Contributing Guidelines](https://github.com/Neko-Nik/NIKL-Core/blob/main/CONTRIBUTING.md).
+3. Submit a Pull Request (PR) for review.
+
+Before contributing, please make sure to read the [Code of Conduct](https://github.com/Neko-Nik/NIKL-Core/blob/main/CODE_OF_CONDUCT.md).
+
+---
+
+## 📜 Code of Conduct
+
+This project follows the [Contributor Covenant Code of Conduct](https://github.com/Neko-Nik/NIKL-Core/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the project’s codebase, issue trackers, discussion forums, and other spaces is expected to follow these guidelines to foster a safe, inclusive, and respectful environment.
+
+---
+
+## 📜 Contributing Guidelines
+
+To maintain a clean and collaborative development experience, contributors are encouraged to follow the [Contributing Guidelines](https://github.com/Neko-Nik/NIKL-Core/blob/main/CONTRIBUTING.md), which include:
+
+* Branching and commit conventions
+* PR and issue templates
+* Code review expectations
+* Testing and formatting rules
+
+---
+
+## 🧑‍💻 Code Owners
+
+Code owners are responsible for reviewing and approving changes before they are merged into the main branch. The list of maintainers and reviewers is defined in the [`CODEOWNERS`](https://github.com/Neko-Nik/NIKL-Core/blob/main/CODEOWNERS) file.
+
+---
+
+## 🔐 Security
+
+Found a security issue or vulnerability? Please **do not** open a public issue. Instead, follow our [Security Policy](https://github.com/Neko-Nik/NIKL-Core/blob/main/SECURITY.md) to report it responsibly. We'll work with you to investigate, triage, and address the problem.
+
+---
+
+## 💬 Support
+
+Need help using NIKL or have a general question?
+
+* Check out the [SUPPORT.md](https://github.com/Neko-Nik/NIKL-Core/blob/main/SUPPORT.md) for guidelines.
+* Join discussions on the [Neko Nik Forums](https://forums.nekonik.com).
+* Contact via [nekonik.com](https://www.nekonik.com/impressum) for inquiries. Or by email at [nikhil@nekonik.com](mailto:nikhil@nekonik.com).
+* For urgent issues, please open an issue on GitHub.
+* For feature requests, please open a new issue on GitHub.
+
+---
+
+## 🐞 Bug Reporting
+
+If you encounter a bug, please open an issue on the [GitHub Issues page](https://github.com/Neko-Nik/NIKL-Core/issues) and include:
+
+* A clear title and description
+* Steps to reproduce
+* Your environment (OS, version, etc.)
+* Screenshots or logs if available
+
+This helps us fix issues faster and keep the language stable for everyone.
+
+---
+
+## 🙏🏻 Acknowledgments
+
+Special thanks to the open-source community, especially the Rust ecosystem, for inspiration and guidance.
+Gratitude to everyone who has contributed code, ideas, feedback, and encouragement to the NIKL project. You make this work possible. ❤️
+
+---
+
 ## 🌐 Official Domains
 
 The following domains and subdomains are officially owned and maintained by the author (Neko Nik):
