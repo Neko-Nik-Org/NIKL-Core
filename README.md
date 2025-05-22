@@ -37,20 +37,54 @@ The name **NIKL** is a blend of personal and symbolic meaning:
 
 ## 📦 Getting Started
 
-### 1. Clone the Repository
+### Prerequisites
+
+* **Docker**: For running the interpreter in a container
+* **Rust**: For building the interpreter from source (optional)
+* **VSCode**: For editing and syntax highlighting (optional)
+
+### Installation via Docker
+
+If you prefer to use Docker, you can run the NIKL interpreter without installing it on your local machine. This is a great way to quickly test and run Nikl scripts.
+
+1. **Pull the Docker image**:
+
+   ```bash
+   docker pull nekonik/nikl:latest
+   ```
+
+2. **Run the interpreter**:
+
+   ```bash
+    docker run -it --rm nekonik/nikl:latest
+    ```
+3. **Run a script**:
+
+You can run directly run this command to run the example script provided in the repository:
+
+    ```bash
+    docker run --rm -v "$PWD":/examples nekonik/nikl:latest /examples/examples/neko.nk
+    ```
+
+
+### Installation from Source
+
+If you prefer to build from source, follow these steps:
+
+1. **Clone the repository**:
 
 ```bash
 git clone https://github.com/Neko-Nik/NIKL-Core
 cd NIKL-Core
 ```
 
-### 2. Build the Interpreter
+2. **Build the project**:
 
 ```bash
 cargo build --release
 ```
 
-### 3. Run a Nikl Script
+3. **Run the interpreter**:
 
 ```bash
 cargo run -- path/to/script.nk
