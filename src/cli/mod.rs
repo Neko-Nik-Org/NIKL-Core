@@ -9,6 +9,7 @@ pub fn print_help() {
     println!("Usage:");
     println!("  nikl            # Start REPL");
     println!("  nikl <file.nk>  # Run script file");
+    println!("  nikl run        # Run the current package");    // TODO: Not sure if really needed (not yet considered)
     println!("  nikl init <dir> # Initialize a new package");
     println!("  nikl build      # Build the current package");
     println!("  nikl login      # Login to your account");

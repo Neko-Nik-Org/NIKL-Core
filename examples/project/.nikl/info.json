@@ -6,6 +6,13 @@
             "dependencies": {
                 "nikl": "^0.1.0"
             }
+        },
+        {
+            "name": "math",
+            "version": "0.1.0",
+            "dependencies": {
+                "nikl": "^0.1.0"
+            }
         }
     ]
 }

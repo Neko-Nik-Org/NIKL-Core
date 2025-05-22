@@ -109,5 +109,6 @@ fn add_metadata_files(
         }
     }
 
+    // TODO: Return the readme and license files, to be used in the upload process
     Ok(())
 }
