@@ -87,7 +87,7 @@ For most contributions, after your first pull request is accepted and merged, yo
 
 - **Update the example project** if one exists to exercise any new functionality you have added.
 
-- **Add documentation.** Document your changes with code doc comments or in [the documentation](https://NIKL-Core.nekonik.com). Feel free to edit the documentation directly if you are comfortable with it.
+- **Add documentation.** Document your changes with code doc comments or in [the documentation](https://nikl.nekonik.com). Feel free to edit the documentation directly if you are comfortable with it.
 
 - **Update the CHANGELOG** for all enhancements and bug fixes. Include the corresponding issue number if one exists, and your GitHub username. (example: "- Fixed crash in profile view. #86 @Neko-Nik")
 
