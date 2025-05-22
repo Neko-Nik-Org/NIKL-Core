@@ -15,7 +15,6 @@ if os.bool_test {
 let with_true = os.foo(True)
 print("With True", with_true, type(with_true))
 
-// TODO: handle the \n in the print statement
 print("\n-----\n")
 
 let with_false = os.foo(False)

@@ -15,6 +15,7 @@ use tar::Builder;
 #[derive(Deserialize)]
 struct Config {
     name: String,
+    version: String,
     #[serde(rename = "readmeFile")]
     #[serde(default)]
     readme_file: Option<String>,
@@ -29,7 +30,12 @@ pub fn create_tar_gz() -> io::Result<()> {
     let config = read_and_validate_config(&current_dir)?;
     validate_required_files(&current_dir, &config)?;
 
-    let tar_gz_name = format!("{}.tar.gz", config.name);
+    let tar_gz_name = format!("{}-{}.tar.gz", config.name, config.version);
+    if Path::new(&tar_gz_name).exists() {
+        panic!("File {} already exists. Please remove it before creating a new package.", tar_gz_name);
+    }
+    println!("Creating {}...", tar_gz_name);
+
     let tar_gz_file = File::create(&tar_gz_name)?;
     let encoder = GzEncoder::new(tar_gz_file, Compression::default());
     let mut archive = Builder::new(encoder);
