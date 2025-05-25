@@ -23,7 +23,7 @@ Please review our [Code of Conduct](https://github.com/Neko-Nik/NIKL-Core/blob/m
 
 ## :bulb: Asking Questions
 
-See our [Support Guide](https://github.com/Neko-Nik/NIKL-Core/blob/main/SUPPORT.md). In short, GitHub issues are not the appropriate place to debug your specific project, but should be reserved for filing bugs and feature requests. Use [GitHub Discussions](https://github.com/Neko-Nik/NIKL-Core/discussions) for general questions and help.
+See our [Support Guide](https://github.com/Neko-Nik/NIKL-Core/blob/main/SUPPORT.md). In short, GitHub issues are not the appropriate place to debug your specific project, but should be reserved for filing bugs and feature requests. Use [GitHub Discussions](https://github.com/Neko-Nik/NIKL-Core/discussions) for general questions and help. Or ask in the [Neko Nik Discord Server](https://discord.gg/PYqHVUGdwv) examples are welcome in issues, but please do not post entire projects or large code snippets. If you need help with a specific problem, try to isolate the issue to a small code snippet that reproduces the problem. This will help us help you.
 
 ## :inbox_tray: Opening an Issue
 

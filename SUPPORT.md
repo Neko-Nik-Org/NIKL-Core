@@ -5,7 +5,7 @@ Need help getting started or using `NIKL`? Here's how.
 
 ## How to get help
 
-Use GitHub issues for **bug reports** and **feature requests**. For general questions, please use [GitHub Discussions](https://github.com/Neko-Nik/NIKL-Core/discussions). This is the best way to get help with the NIKL project.
+Use GitHub issues for **bug reports** and **feature requests**. For general questions, please use [GitHub Discussions](https://github.com/Neko-Nik/NIKL-Core/discussions). Or join the [Neko Nik Discord server](https://discord.gg/PYqHVUGdwv) to ask questions in the respective channel. This is the best way to get help with the NIKL project.
 
 
 ## How to ask for help
@@ -14,7 +14,7 @@ When asking for help, please follow these guidelines:
 
 1. :book: **Read the documentation and other guides** of NIKL to see if you can figure it out on your own. The documentation is available at [Nik-Lang Documentation](https://nikl.nekonik.com). See if there are any guides or tutorials that can help you.
 
-2. :bulb: **Search for answers and ask questions on [GitHub Discussions](https://github.com/Neko-Nik/NIKL-Core/discussions)**. This is the best place to ask general questions about Nik-Lang. You can also search for existing discussions to see if your question has already been answered.
+2. :bulb: **Search for answers and ask questions on [GitHub Discussions](https://github.com/Neko-Nik/NIKL-Core/discussions)**. This is the best place to ask general questions about Nik-Lang. You can also search for existing discussions to see if your question has already been answered. Or join the [Neko Nik Discord server](https://discord.gg/PYqHVUGdwv) to ask questions in the respective channel. The community is friendly and willing to help, so don't hesitate to ask!
 
 3. :memo: As a **last resort**, you may open an issue on [GitHub Issues](https://github.com/Neko-Nik/NIKL-Core/issues) to ask for help. However, please clearly explain what you are trying to do, and list what you have already attempted to solve the problem. Provide code samples, but **do not** attach your entire project for someone else to debug. Review our [contributing guidelines](https://github.com/Neko-Nik/NIKL-Core/blob/main/CONTRIBUTING.md).
 
