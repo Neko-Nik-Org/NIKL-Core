@@ -241,6 +241,7 @@ The following domains and subdomains are officially owned and maintained by the 
 * [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=Neko-Nik.nikl-language-support) - **NIKL Language Support for Visual Studio Code**
 * [nikl-pkg.nekonik.com](https://nikl-pkg.nekonik.com) - **NIKL Package Manager** (Not yet live/implemented)
 * [api.nikl-pkg.nekonik.com](https://api.nikl-pkg.nekonik.com) - **NIKL Package Manager API** (Not yet live/implemented)
+* [Neko Nik Discord Server](https://discord.gg/PYqHVUGdwv) - **Neko Nik Discord Community**
 * [forums.nekonik.com](https://forums.nekonik.com) - **Neko Nik Forums**
 
 
