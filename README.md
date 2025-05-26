@@ -1,6 +1,31 @@
-# 🐾 NIKL-Core
+<div align="center">
+    <a href="https://nikl.nekonik.com/">
+        <img alt="Nik-Lang" src="https://nikl.nekonik.com/img/logo.svg" width="300px">
+        <h1>Nik-Lang</h1>
+    </a>
+    <strong>Modern, lightweight programming language for concurrent, network-aware, and general-purpose programming</strong>
+</div>
+<br>
+<p align="center">
+    <a href="https://github.com/Neko-Nik/NIKL-Core/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/Neko-Nik/NIKL-Core" alt="License">
+    </a>
+    <img src="https://img.shields.io/github/languages/code-size/Neko-Nik/NIKL-Core" alt="GitHub code size in bytes">
+    <img src="https://img.shields.io/github/commit-activity/w/Neko-Nik/NIKL-Core" alt="GitHub commit activity">
+    <img src="https://img.shields.io/docker/pulls/neko7nik/nikl" alt="Docker Pulls">
+    <a href="https://github.com/Neko-Nik/NIKL-Core/issues">
+        <img src="https://img.shields.io/github/issues/Neko-Nik/NIKL-Core" alt="GitHub issues">
+    </a>
+    <a href="https://github.com/Neko-Nik/NIKL-Core/pulls">
+        <img src="https://img.shields.io/github/issues-pr/Neko-Nik/NIKL-Core" alt="GitHub pull requests">
+    </a>
+    <!-- <a href="https://github.com/Neko-Nik/NIKL-Core/releases">
+        <img src="https://img.shields.io/github/v/release/Neko-Nik/NIKL-Core.svg?style=flat" alt="GitHub Release">
+    </a> -->
+</p>
 
-**NIKL** is a lightweight, modern programming language designed for **concurrent**, **network-aware**, and **general-purpose** programming. With native support for threads, asynchronous operations, and networking primitives, NIKL aims to simplify the development of scalable and responsive systems.
+
+**NIKL / Nik-Lang / Nik Programming Language** (pronounced "nickel") is a modern, lightweight programming language designed for **concurrent**, **network-aware**, and **general-purpose** programming. With native support for threads, asynchronous operations, and networking primitives, NIKL aims to simplify the development of scalable and responsive systems.
 
 > 📝 File extension: `.nk`
 
@@ -139,12 +164,12 @@ print(add_numbers(1, 2)) // Prints 3
 * [x] Module System
 * [x] Basic I/O
 * [x] OS, Regex internal module support
+* [x] Documentation & Language Reference
 * [ ] `spawn` and `wait` for concurrency
 * [ ] File & socket I/O
 * [ ] Native async DNS, HTTP, etc.
 * [ ] Package system (`nikl-pkg`)
 * [ ] Compiler (To be planned, not yet started)
-* [ ] Documentation & Language Reference
 * [ ] Package Manager website
 
 ---
@@ -270,9 +295,6 @@ Made with ❤️ by [Neko Nik](https://www.nekonik.com/impressum)
 ## 🪪 License
 
 NIKL-Core is licensed under the [MIT License](https://github.com/Neko-Nik/NIKL-Core/blob/main/LICENSE) — use it freely, with attribution. No warranties, no liability.
-
-Perfect — you're on the right track. Here's a clean, simple, and legally sound version of your license section, keeping the tone clear and minimal while hitting all your points:
-
 
 > ⚠️ **Disclaimer**:
 
