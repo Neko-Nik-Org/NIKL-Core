@@ -67,11 +67,6 @@ fn validate_required_files(current_dir: &Path, config: &Config) -> io::Result<()
         panic!("Required file src/{}.nk not found", config.name);
     }
 
-    let nikl_info = current_dir.join(".nikl/info.json");
-    if !nikl_info.exists() {
-        panic!("Required file .nikl/info.json not found");
-    }
-
     Ok(())
 }
 
@@ -95,7 +90,6 @@ fn add_metadata_files(
     config: &Config,
 ) -> io::Result<()> {
     archive.append_path_with_name("config.json", "config.json")?;
-    archive.append_path_with_name(".nikl/info.json", ".nikl/info.json")?;
 
     if let Some(readme) = &config.readme_file {
         if Path::new(readme).exists() {

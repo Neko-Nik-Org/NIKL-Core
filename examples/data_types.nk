@@ -53,3 +53,37 @@ data_types(
     tuple_test,
     test_fn
 )
+
+let cats = ["Maine Coon", "Siamese", "Persian"]    // Array of cat breeds
+
+for cat in cats {
+    print("Cat breed:", cat)
+}
+
+
+fn test_fn_2() {
+    fn test_fn_inner() {
+        print("This is an internal function.")
+    }
+
+    print("cats:", cats)
+    
+    let cats = {
+        "cat1": "Maine",
+        "cat2": "Siamese",
+        "cat3": "Persian"
+    }
+    for name_, cat_ in cats {
+        print("\tCat name:", name_)
+        print("Cat breed:", cat_, "\n")
+
+        if cat_ == "Maine" {
+            test_fn_inner()
+            return ""
+        }
+    }
+}
+
+cats = "cats"
+
+test_fn_2()

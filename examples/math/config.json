@@ -1,0 +1,26 @@
+{
+    "name": "math",
+    "displayName": "Math",
+    "version": "1.0.0",
+    "description": "An example project to demonstrate the use of a configuration file.",
+    "authors": [
+        {
+            "name": "Neko Nik",
+            "email": "admin@nekonik.com"
+        }
+    ],
+    "license": "MIT",
+    "readmeFile": "README.md",
+    "licenseFile": "LICENSE",
+    "repository": "https://github.com/Neko-Nik/NIKL-Core",
+    "homepage": "https://nekonik.com",
+    "dependencies": {
+        "os": "0.0.1",
+        "regex": "1.0.0"
+    },
+    "keywords": [
+        "example",
+        "project",
+        "configuration"
+    ]
+}

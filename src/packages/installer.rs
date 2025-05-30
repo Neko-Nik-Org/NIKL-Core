@@ -1,13 +1,43 @@
-pub fn install_package(package_name: &str) {
-    // TODO: Implement package installation logic
-    todo!("Implement package installation logic");
-    // Check if we are in a correct directory and has ".nikl" directory and "info.json" file in it
-    // If not, Ask user to run "nikl init" for creating a package repository or just ask to just create a virtual environment
-    // Check if the package is already installed by checking in "info.json" file
-    // If the package is already installed, print a message and return
-    // If not installed, there are two options:
-    // 1. Given package name is a local path (math-0.1.0.tar.gz file)
-    // 2. Given package name is a remote package ("math" or "math@0.1.0")
-    // If local path, install it
-    // If remote package, download it from the server and install it (No login required)
+use std::path::Path;
+use super::initialize::create_nikl_environment;
+use super::Package;
+
+
+
+fn check_and_create_nikl_directory() {
+    // See if ".nikl" directory exists and in that directory
+    let nikl_dir = Path::new(".nikl");
+
+    if !nikl_dir.exists() {
+        println!("Creating .nikl directory for package management...");
+        
+        // Create the .nikl directory
+        let current_dir = std::env::current_dir().expect("Failed to get current directory");
+        create_nikl_environment(current_dir.as_path()).expect("Failed to create .nikl environment");
+    } else {
+        let packages_dir = nikl_dir.join("packages");
+        if !packages_dir.exists() {
+            std::fs::create_dir(&packages_dir).expect("Failed to create packages directory");
+        }
+
+        let info_file = nikl_dir.join("info.json");
+        if !info_file.exists() {
+            std::fs::File::create(&info_file).expect("Failed to create info.json file");
+        } else {
+            // TODO: Check if it has the correct structure
+            // For now, we assume it has the correct structure
+            // TODO: In future, we can add more checks to validate the structure
+            // For now, we just print a message
+            // This is a placeholder for future validation logic
+        }
+    }
+}
+
+
+pub fn install_package(full_package_name: &str) {
+    // Check if virtual environment is valid
+    check_and_create_nikl_directory();
+
+    // Parse and install the package
+    Package::new(full_package_name.to_string()).install_package();
 }

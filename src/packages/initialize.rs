@@ -92,6 +92,46 @@ print("Hello, Neko Nik!")
 "#
 }
 
+/// Creates a virtual environment for Nikl projects
+pub fn create_nikl_environment(dir: &Path) -> io::Result<()> {
+    // Create a virtual environment directory
+    let nikl_dir = dir.join(".nikl");
+    let packages_dir = nikl_dir.join("packages");
+
+    // Create the .nikl directory and packages subdirectory
+    create_dir_all(&packages_dir)?;
+
+    // Create an info.json file to store package information
+    create_file(&nikl_dir.join("info.json"), r#"{ "packages": [] }"#)
+}
+
+/// Creates the standard Source Code Package Structure for a Nikl project
+fn create_source_code_package_structure(dir: &Path, project_name: &str) -> io::Result<()> {
+    // Make the src directory and main source file paths
+    let src_dir = dir.join("src");
+    let main_file_path = src_dir.join(format!("{}.nk", project_name));
+
+    // Create a main source file
+    create_dir_all(&src_dir)?;
+
+    // Create main source file with default content
+    create_file(&main_file_path, generate_main())
+}
+
+/// Create Additional files for the Nikl project
+fn create_additional_files(dir: &Path, project_name: &str) -> io::Result<()> {
+    // Create README.md
+    let readme_content = generate_readme(project_name);
+    create_file(&dir.join("README.md"), &readme_content)?;
+
+    // Create config.json
+    let config_content = generate_config(project_name);
+    create_file(&dir.join("config.json"), &config_content)?;
+
+    // Create LICENSE file
+    create_file(&dir.join("LICENSE"), "")
+}
+
 /// Creates the standard project structure for a Nikl project
 pub fn create_package_structure(dir: &Path, project_name: &str) -> io::Result<()> {
     // Validate project name (basic check)
@@ -107,22 +147,10 @@ pub fn create_package_structure(dir: &Path, project_name: &str) -> io::Result<()
         ));
     }
 
-    // Paths
-    let nikl_dir = dir.join(".nikl");
-    let packages_dir = nikl_dir.join("packages");
-    let src_dir = dir.join("src");
-    let main_file_path = src_dir.join(format!("{}.nk", project_name));
-
-    // Create directories
-    create_dir_all(&packages_dir)?;
-    create_dir_all(&src_dir)?;
-
-    // Create files
-    create_file(&nikl_dir.join("info.json"), r#"{ "packages": [] }"#)?;
-    create_file(&dir.join("README.md"), &generate_readme(project_name))?;
-    create_file(&dir.join("config.json"), &generate_config(project_name))?;
-    create_file(&main_file_path, generate_main())?;
-    create_file(&dir.join("LICENSE"), "")?;
+    // Create the .nikl environment
+    create_nikl_environment(dir)?;
+    create_source_code_package_structure(dir, project_name)?;
+    create_additional_files(dir, project_name)?;
 
     Ok(())
 }

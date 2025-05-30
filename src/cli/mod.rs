@@ -88,8 +88,7 @@ pub fn install_package(args: &[String]) {
         return;
     }
     let pkg = &args[0];
-    println!("Installing package: {}", pkg);
-    todo!("Implement package installation logic");
+    crate::packages::install_package(pkg);
 }
 
 pub fn uninstall_package(args: &[String]) {
