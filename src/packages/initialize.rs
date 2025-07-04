@@ -53,7 +53,7 @@ fn generate_config(project_name: &str) -> String {
     "license": "MIT",
     "readmeFile": "README.md",
     "licenseFile": "LICENSE",
-    "repository": "https://github.com/Neko-Nik/NIKL-Core",
+    "repository": "https://github.com/Neko-Nik-Org/NIKL-Core",
     "homepage": "https://nekonik.com",
     "dependencies": {{
         "os": "0.0.1",

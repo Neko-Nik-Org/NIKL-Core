@@ -19,11 +19,11 @@
 
 ## :book: Code of Conduct
 
-Please review our [Code of Conduct](https://github.com/Neko-Nik/NIKL-Core/blob/main/CODE_OF_CONDUCT.md). It is in effect at all times. We expect it to be honored by everyone who contributes to this project. Acting like an asshole will not be tolerated.
+Please review our [Code of Conduct](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/CODE_OF_CONDUCT.md). It is in effect at all times. We expect it to be honored by everyone who contributes to this project. Acting like an asshole will not be tolerated.
 
 ## :bulb: Asking Questions
 
-See our [Support Guide](https://github.com/Neko-Nik/NIKL-Core/blob/main/SUPPORT.md). In short, GitHub issues are not the appropriate place to debug your specific project, but should be reserved for filing bugs and feature requests. Use [GitHub Discussions](https://github.com/Neko-Nik/NIKL-Core/discussions) for general questions and help. Or ask in the [Neko Nik Discord Server](https://discord.gg/PYqHVUGdwv). Examples are welcome in issues, but please do not post entire projects or large code snippets. If you need help with a specific problem, try to isolate the issue to a small code snippet that reproduces the problem. This will help us help you.
+See our [Support Guide](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/SUPPORT.md). In short, GitHub issues are not the appropriate place to debug your specific project, but should be reserved for filing bugs and feature requests. Use [GitHub Discussions](https://github.com/Neko-Nik-Org/NIKL-Core/discussions) for general questions and help. Or ask in the [Neko Nik Discord Server](https://discord.gg/PYqHVUGdwv). Examples are welcome in issues, but please do not post entire projects or large code snippets. If you need help with a specific problem, try to isolate the issue to a small code snippet that reproduces the problem. This will help us help you.
 
 ## :inbox_tray: Opening an Issue
 
@@ -33,7 +33,7 @@ Follow the project at [GitHub Project](https://github.com/users/Neko-Nik/project
 
 ### :lock: Reporting Security Issues
 
-Review our [Security Policy](https://github.com/Neko-Nik/NIKL-Core/blob/main/SECURITY.md). **Do not** file a public issue for security vulnerabilities.
+Review our [Security Policy](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/SECURITY.md). **Do not** file a public issue for security vulnerabilities.
 
 ### :beetle: Bug Reports and Other Issues
 
@@ -41,7 +41,7 @@ A great way to contribute to the project is to send a detailed issue when you en
 
 In short, since you are most likely a developer, **provide a ticket that you would like to receive**.
 
-- **Review the [documentation](https://nikl.nekonik.com) and [Support Guide](https://github.com/Neko-Nik/NIKL-Core/blob/main/SUPPORT.md)** before opening a new issue.
+- **Review the [documentation](https://nikl.nekonik.org) and [Support Guide](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/SUPPORT.md)** before opening a new issue.
 
 - **Align your issue with the project's goals.** See the [GitHub Project](https://github.com/users/Neko-Nik/projects/3) to understand the project's direction.
 
@@ -87,7 +87,7 @@ For most contributions, after your first pull request is accepted and merged, yo
 
 - **Update the example project** if one exists to exercise any new functionality you have added.
 
-- **Add documentation.** Document your changes with code doc comments or in [the documentation](https://nikl.nekonik.com). Feel free to edit the documentation directly if you are comfortable with it.
+- **Add documentation.** Document your changes with code doc comments or in [the documentation](https://nikl.nekonik.org). Feel free to edit the documentation directly if you are comfortable with it.
 
 - **Update the CHANGELOG** for all enhancements and bug fixes. Include the corresponding issue number if one exists, and your GitHub username. (example: "- Fixed crash in profile view. #86 @Neko-Nik")
 

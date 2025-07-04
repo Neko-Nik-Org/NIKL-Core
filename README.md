@@ -1,25 +1,25 @@
 <div align="center">
-    <a href="https://nikl.nekonik.com/">
-        <img alt="Nik-Lang" src="https://nikl.nekonik.com/img/logo.svg" width="300px">
+    <a href="https://nikl.nekonik.org/">
+        <img alt="Nik-Lang" src="https://nikl.nekonik.org/img/logo.svg" width="300px">
         <h1>Nik-Lang</h1>
     </a>
     <strong>Modern, lightweight programming language for concurrent, network-aware, and general-purpose programming</strong>
 </div>
 <br>
 <p align="center">
-    <a href="https://github.com/Neko-Nik/NIKL-Core/blob/master/LICENSE">
+    <a href="https://github.com/Neko-Nik-Org/NIKL-Core/blob/master/LICENSE">
         <img src="https://img.shields.io/github/license/Neko-Nik/NIKL-Core" alt="License">
     </a>
     <img src="https://img.shields.io/github/languages/code-size/Neko-Nik/NIKL-Core" alt="GitHub code size in bytes">
     <img src="https://img.shields.io/github/commit-activity/w/Neko-Nik/NIKL-Core" alt="GitHub commit activity">
     <img src="https://img.shields.io/docker/pulls/neko7nik/nikl" alt="Docker Pulls">
-    <a href="https://github.com/Neko-Nik/NIKL-Core/issues">
+    <a href="https://github.com/Neko-Nik-Org/NIKL-Core/issues">
         <img src="https://img.shields.io/github/issues/Neko-Nik/NIKL-Core" alt="GitHub issues">
     </a>
-    <a href="https://github.com/Neko-Nik/NIKL-Core/pulls">
+    <a href="https://github.com/Neko-Nik-Org/NIKL-Core/pulls">
         <img src="https://img.shields.io/github/issues-pr/Neko-Nik/NIKL-Core" alt="GitHub pull requests">
     </a>
-    <!-- <a href="https://github.com/Neko-Nik/NIKL-Core/releases">
+    <!-- <a href="https://github.com/Neko-Nik-Org/NIKL-Core/releases">
         <img src="https://img.shields.io/github/v/release/Neko-Nik/NIKL-Core.svg?style=flat" alt="GitHub Release">
     </a> -->
 </p>
@@ -99,7 +99,7 @@ If you prefer to build from source, follow these steps:
 1. **Clone the repository**:
 
 ```bash
-git clone https://github.com/Neko-Nik/NIKL-Core
+git clone https://github.com/Neko-Nik-Org/NIKL-Core
 cd NIKL-Core
 ```
 
@@ -178,7 +178,7 @@ print(add_numbers(1, 2)) // Prints 3
 
 * 📦 **Prebuilt binaries**: Easily download and run `nikl` without building from source.
 * 📖 **Documentation & Language Reference**: Comprehensive guides and examples.
-* 🌐 **Official Website**: [nikl.nekonik.com](https://nikl.nekonik.com) (Work in Progress).
+* 🌐 **Official Website**: [nikl.nekonik.org](https://nikl.nekonik.org) (Work in Progress).
 * 🛠 **Package Manager**: `nikl-pkg` for managing dependencies and modules.
 * 🧪 **Standard Library**: Core utilities for common tasks.
 
@@ -189,23 +189,23 @@ print(add_numbers(1, 2)) // Prints 3
 We welcome contributions of all kinds—bug fixes, feature implementations, documentation improvements, and more! If you'd like to get involved:
 
 1. Fork the repo and create a branch for your feature or fix.
-2. Follow the [Contributing Guidelines](https://github.com/Neko-Nik/NIKL-Core/blob/main/CONTRIBUTING.md).
+2. Follow the [Contributing Guidelines](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/CONTRIBUTING.md).
 3. Submit a Pull Request (PR) for review.
 
-Before contributing, please make sure to read the [Code of Conduct](https://github.com/Neko-Nik/NIKL-Core/blob/main/CODE_OF_CONDUCT.md).
+Before contributing, please make sure to read the [Code of Conduct](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/CODE_OF_CONDUCT.md).
 
 ---
 
 ## 📜 Code of Conduct
 
-This project follows the [Contributor Covenant Code of Conduct](https://github.com/Neko-Nik/NIKL-Core/blob/main/CODE_OF_CONDUCT.md).
+This project follows the [Contributor Covenant Code of Conduct](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/CODE_OF_CONDUCT.md).
 Everyone interacting in the project’s codebase, issue trackers, discussion forums, and other spaces is expected to follow these guidelines to foster a safe, inclusive, and respectful environment.
 
 ---
 
 ## 📜 Contributing Guidelines
 
-To maintain a clean and collaborative development experience, contributors are encouraged to follow the [Contributing Guidelines](https://github.com/Neko-Nik/NIKL-Core/blob/main/CONTRIBUTING.md), which include:
+To maintain a clean and collaborative development experience, contributors are encouraged to follow the [Contributing Guidelines](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/CONTRIBUTING.md), which include:
 
 * Branching and commit conventions
 * PR and issue templates
@@ -216,13 +216,13 @@ To maintain a clean and collaborative development experience, contributors are e
 
 ## 🧑‍💻 Code Owners
 
-Code owners are responsible for reviewing and approving changes before they are merged into the main branch. The list of maintainers and reviewers is defined in the [`CODEOWNERS`](https://github.com/Neko-Nik/NIKL-Core/blob/main/CODEOWNERS) file.
+Code owners are responsible for reviewing and approving changes before they are merged into the main branch. The list of maintainers and reviewers is defined in the [`CODEOWNERS`](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/CODEOWNERS) file.
 
 ---
 
 ## 🔐 Security
 
-Found a security issue or vulnerability? Please **do not** open a public issue. Instead, follow our [Security Policy](https://github.com/Neko-Nik/NIKL-Core/blob/main/SECURITY.md) to report it responsibly. We'll work with you to investigate, triage, and address the problem.
+Found a security issue or vulnerability? Please **do not** open a public issue. Instead, follow our [Security Policy](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/SECURITY.md) to report it responsibly. We'll work with you to investigate, triage, and address the problem.
 
 ---
 
@@ -230,7 +230,7 @@ Found a security issue or vulnerability? Please **do not** open a public issue. 
 
 Need help using NIKL or have a general question?
 
-* Check out the [SUPPORT.md](https://github.com/Neko-Nik/NIKL-Core/blob/main/SUPPORT.md) for guidelines.
+* Check out the [SUPPORT.md](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/SUPPORT.md) for guidelines.
 * Join discussions on the [Neko Nik Forums](https://forums.nekonik.com).
 * Contact via [nekonik.com](https://www.nekonik.com/impressum) for inquiries. Or by email at [nikhil@nekonik.com](mailto:nikhil@nekonik.com).
 * For urgent issues, please open an issue on GitHub.
@@ -240,7 +240,7 @@ Need help using NIKL or have a general question?
 
 ## 🐞 Bug Reporting
 
-If you encounter a bug, please open an issue on the [GitHub Issues page](https://github.com/Neko-Nik/NIKL-Core/issues) and include:
+If you encounter a bug, please open an issue on the [GitHub Issues page](https://github.com/Neko-Nik-Org/NIKL-Core/issues) and include:
 
 * A clear title and description
 * Steps to reproduce
@@ -262,10 +262,10 @@ Gratitude to everyone who has contributed code, ideas, feedback, and encourageme
 
 The following domains and subdomains are officially owned and maintained by the author (Neko Nik):
 
-* [nikl.nekonik.com](https://nikl.nekonik.com) - **Official NIKL website**
+* [nikl.nekonik.org](https://nikl.nekonik.org) - **Official NIKL website**
 * [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=Neko-Nik.nikl-language-support) - **NIKL Language Support for Visual Studio Code**
-* [nikl-pkg.nekonik.com](https://nikl-pkg.nekonik.com) - **NIKL Package Manager** (Not yet live/implemented)
-* [api.nikl-pkg.nekonik.com](https://api.nikl-pkg.nekonik.com) - **NIKL Package Manager API** (Not yet live/implemented)
+* [nikl-pkg.nekonik.org](https://nikl-pkg.nekonik.org) - **NIKL Package Manager** (Not yet live/implemented)
+* [api.nikl-pkg.nekonik.org](https://api.nikl-pkg.nekonik.org) - **NIKL Package Manager API** (Not yet live/implemented)
 * [Neko Nik Discord Server](https://discord.gg/PYqHVUGdwv) - **Neko Nik Discord Community**
 * [forums.nekonik.com](https://forums.nekonik.com) - **Neko Nik Forums**
 
@@ -274,7 +274,7 @@ Below are the official links to the author's personal website and social media:
 
 * [nekonik.com](https://www.nekonik.com) - **Author's Website**
 * [status.nekonik.com](https://status.nekonik.com) - **Author's Status Page**
-* [github.com/Neko-Nik](https://github.com/Neko-Nik) - **Author's GitHub**
+* [github.com/Neko-Nik-Org](https://github.com/Neko-Nik-Org) - **Author's GitHub**
 * [orcid.org/0009-0008-3435-5674](https://orcid.org/0009-0008-3435-5674) - **Author's ORCID** (Open Researcher and Contributor ID)
 * [linkedin.com/in/neko-nik](https://www.linkedin.com/in/neko-nik) - **Author's LinkedIn**
 
@@ -294,11 +294,11 @@ Made with ❤️ by [Neko Nik](https://www.nekonik.com/impressum)
 
 ## 🪪 License
 
-NIKL-Core is licensed under the [MIT License](https://github.com/Neko-Nik/NIKL-Core/blob/main/LICENSE) — use it freely, with attribution. No warranties, no liability.
+NIKL-Core is licensed under the [MIT License](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/LICENSE) — use it freely, with attribution. No warranties, no liability.
 
 > ⚠️ **Disclaimer**:
 
-> • All domains under *.nekonik.com, including but not limited to nikl.nekonik.com, are owned and managed by the author, Nikhil ("Neko Nik"). These are the only official sources for NIKL-related materials, documentation, and announcements.
+> • All domains under *.nekonik.com and *.nekonik.org, including but not limited to nikl.nekonik.org, are owned and managed by the author, Nikhil ("Neko Nik"). These are the only official sources for NIKL-related materials, documentation, and announcements.
 
 > • You are responsible for any code written or executed using NIKL.
 
@@ -310,4 +310,4 @@ NIKL-Core is licensed under the [MIT License](https://github.com/Neko-Nik/NIKL-C
 
 > • Use at your own risk. No warranties or guarantees are provided. By using NIKL, you agree to these terms.
 
-> • For more details, see the [License](https://github.com/Neko-Nik/NIKL-Core/blob/main/LICENSE) file.
+> • For more details, see the [License](https://github.com/Neko-Nik-Org/NIKL-Core/blob/main/LICENSE) file.

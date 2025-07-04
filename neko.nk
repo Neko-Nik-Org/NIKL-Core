@@ -1,0 +1,52 @@
+// Title: Greeting Users
+// Description: Simple greeting for a list of users.
+
+let greeting: String = "Welcome to Nik-lang!"
+let users: Array = ["Alice", "Bob", "Charlie"]
+
+fn greet_user(user: String) -> None {
+    print(greeting)
+    print("Hello,", user, "!", "\n")
+}
+
+for user in users {
+    greet_user(user)
+}
+
+
+
+// -------
+
+
+// Title: User Profile Analyzer
+// Description: Analyzes complex user data and demonstrates Nik-lang features.
+
+fn analyze_user(
+    skills: Array, profile: HashMap, stats: Tuple,
+    on_analyze: callback_fn
+) -> None {
+    print("Skills:", skills)
+    print("Profile:", profile)
+    print("Stats:", stats)
+
+    print("Skill Count:", len(skills))
+    print("Profile Fields:", len(profile))
+    print("Stats Elements:", len(stats))
+
+    on_analyze()
+}
+
+fn callback_fn() -> None {
+    let temp_flag = True
+    print("Callback: Data has been analyzed.")
+    del temp_flag
+}
+
+let skill_set: Array = ["Nik", "Lang", "Design"]
+let user_profile: HashMap = {
+    "email": "neko@example.com",
+    "role": "Admin"
+}
+let user_stats: Tuple = (250, 4.9, "Gold")
+
+analyze_user(skill_set, user_profile, user_stats, callback_fn)
